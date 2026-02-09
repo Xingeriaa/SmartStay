@@ -1,0 +1,74 @@
+﻿@model List<do_an_tot_nghiep.Models.User>
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+<h2>Quản lý người dùng</h2>
+
+<a asp-action="Create" class="btn btn-success mb-3">+ Tạo tài khoản</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Họ tên</th>
+            <th>Role</th>
+            <th>Trạng thái</th>
+            <th width="280"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Username</td>
+                <td>@u.FullName</td>
+                <td>@u.RoleName</td>
+                <td>
+                    @(u.IsLocked ? "Bị khóa" : "Hoạt động")
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@u.Id" class="btn btn-info btn-sm">Xem</a>
+                    <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-warning btn-sm">Sửa</a>
+
+                    <form asp-action="@(u.IsLocked ? "Unlock" : "Lock")"
+                          asp-route-id="@u.Id"
+                          method="post"
+                          class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-secondary btn-sm">
+                            @(u.IsLocked ? "Mở khóa" : "Khóa")
+                        </button>
+                    </form>
+
+                    <button class="btn btn-dark btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#resetPasswordModal"
+                            data-user-id="@u.Id">
+                        Reset MK
+                    </button>
+
+                    <form asp-action="Delete"
+                          asp-route-id="@u.Id"
+                          method="post"
+                          class="d-inline"
+                          onsubmit="return confirm('Xóa người dùng này?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<partial name="~/Views/Shared/_ResetPasswordModal.cshtml" />
+
+@section Scripts {
+    <script>
+        $('#resetPasswordModal').on('show.bs.modal', function (e) {
+            const btn = $(e.relatedTarget);
+            $('#resetUserId').val(btn.data('user-id'));
+        });
+    </script>
+}

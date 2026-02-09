@@ -1,0 +1,74 @@
+﻿@model List<do_an_tot_nghiep.Models.RoomAsset>
+@{
+    ViewData["Title"] = "Thiết bị phòng";
+    var roomId = ViewBag.RoomId;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center page-header">
+        <div>
+            <h3 class="page-title text-gradient">Thiết bị phòng</h3>
+            <p class="text-muted mb-0">Quản lý danh sách thiết bị theo phòng</p>
+        </div>
+        <a asp-action="Create"
+           asp-route-roomId="@roomId"
+           class="btn btn-grad">
+            <i class="fa fa-plus-circle"></i> Thêm thiết bị
+        </a>
+    </div>
+
+    <div class="card main-card">
+        <div class="card-header-custom d-flex align-items-center justify-content-between">
+            <div>
+                <h5 class="fw-bold mb-1">Danh sách thiết bị</h5>
+                <small class="text-muted">Theo dõi số lượng và trạng thái sử dụng</small>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table custom-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Số lượng</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var statusText = item.Status == 1 ? "Hoạt động"
+                            : item.Status == 2 ? "Hư hỏng"
+                            : "Thanh lý";
+                        var statusClass = item.Status == 1 ? "badge-modern"
+                            : item.Status == 2 ? "badge bg-light text-danger"
+                            : "badge bg-light text-muted";
+                        <tr>
+                            <td class="fw-semibold">@item.AssetName</td>
+                            <td>@item.Quantity</td>
+                            <td><span class="@statusClass">@statusText</span></td>
+                            <td class="text-end">
+                                <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-outline-brand btn-sm">Xem</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-grad btn-sm">Sửa</a>
+
+                                <form asp-action="Delete"
+                                      asp-route-id="@item.Id"
+                                      asp-route-roomId="@item.RoomId"
+                                      method="post"
+                                      class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Xóa thiết bị này?');">
+                                        Xóa
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

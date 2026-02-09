@@ -1,0 +1,46 @@
+﻿@model do_an_tot_nghiep.Models.RoomAsset
+@{
+    ViewData["Title"] = "Cập nhật thiết bị";
+}
+
+<div class="container-fluid">
+    <div class="page-header">
+        <h3 class="page-title text-gradient">Cập nhật thiết bị</h3>
+        <p class="text-muted">Điều chỉnh thông tin và trạng thái sử dụng</p>
+    </div>
+
+    <div class="card main-card p-4">
+        <form asp-action="Edit"
+              asp-controller="RoomAssets"
+              asp-route-id="@Model.Id"
+              method="post"
+              id="assetForm">
+
+            @Html.AntiForgeryToken()
+
+            <partial name="~/Views/Shared/_RoomAssetForm.cshtml" model="Model" />
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-grad" id="btnSubmit">
+                    <span class="btn-text">Cập nhật</span>
+                    <span class="spinner-border spinner-border-sm d-none"></span>
+                </button>
+
+                <a asp-action="Index"
+                   asp-route-roomId="@Model.RoomId"
+                   class="btn btn-outline-brand">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $('#assetForm').on('submit', function () {
+            $('#btnSubmit').prop('disabled', true);
+            $('#btnSubmit .btn-text').text('Đang xử lý...');
+            $('#btnSubmit .spinner-border').removeClass('d-none');
+        });
+    </script>
+}

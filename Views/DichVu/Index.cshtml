@@ -1,0 +1,228 @@
+﻿@model IEnumerable<do_an_tot_nghiep.Models.DichVu>
+@{
+    ViewData["Title"] = "Quản Lý Danh Mục Dịch Vụ";
+    var services = Model?.ToList() ?? new List<do_an_tot_nghiep.Models.DichVu>();
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<div class="container-fluid py-5 animate__animated animate__fadeIn">
+
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="card stat-card bg-brand-gradient p-4 text-white">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape me-3">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 opacity-75 fw-medium">Tổng Số Dịch Vụ</p>
+                        <h2 class="mb-0 fw-bold">@services.Count</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card bg-brand-gradient p-4 text-white">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape me-3">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 opacity-75 fw-medium">Giá Trung Bình</p>
+                        <h2 class="mb-0 fw-bold">@(services.Count > 0 ? services.Average(x => x.DonGia).ToString("N0") : "0") <small style="font-size: 14px">đ</small></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card bg-brand-gradient p-4 text-white">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape me-3">
+                        <i class="fas fa-shapes"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 opacity-75 fw-medium">Nhóm Dịch Vụ</p>
+                        <h2 class="mb-0 fw-bold">@services.Select(x => x.LoaiDichVu).Distinct().Count()</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card main-card">
+        <div class="card-header-custom">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h3 class="fw-bold text-dark mb-1">Quản Lý Dịch Vụ</h3>
+                    <p class="text-muted mb-0">Hệ thống quản lý thông tin và đơn giá dịch vụ đồ án</p>
+                </div>
+                <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
+                    <button type="button" class="btn btn-grad me-2" id="btnDeleteSelected">
+                        <i class="fas fa-trash-alt"></i> Xóa mục chọn
+                    </button>
+                    <a asp-action="Create" class="btn btn-grad">
+                        <i class="fas fa-plus-circle"></i> Thêm dịch vụ mới
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-4">
+                <div class="col-md-5">
+                    <div class="search-group d-flex align-items-center">
+                        <i class="fas fa-search text-muted"></i>
+                        <input type="text" id="smartSearch" placeholder="Tìm tên dịch vụ, loại hoặc ghi chú...">
+                    </div>
+                </div>
+                <div class="col-md-7 text-md-end d-flex justify-content-md-end align-items-center gap-3">
+                    <span class="text-muted">Xem</span>
+                    <select class="form-select w-auto border-0 bg-light rounded-pill">
+                        <option>10 dòng</option>
+                        <option>25 dòng</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table custom-table align-middle">
+                    <thead>
+                        <tr>
+                            <th width="60" class="text-center">
+                                <input type="checkbox" class="form-check-input shadow-none" id="selectAllMain">
+                            </th>
+                            <th>Tên dịch vụ</th>
+                            <th>Loại dịch vụ</th>
+                            <th class="text-center">Đơn giá (VNĐ)</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody id="serviceBody">
+                        @if (services.Count > 0)
+                        {
+                            foreach (var item in services)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" class="form-check-input ckbItem shadow-none" value="@item.Id">
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="p-2 rounded-3 bg-soft-primary me-3">
+                                                <i class="fas fa-concierge-bell fa-lg"></i>
+                                            </div>
+                                            <span class="fw-bold text-dark fs-6">@item.Ten</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-modern text-white shadow-sm">
+                                            @item.LoaiDichVu
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="fw-bolder text-primary fs-5">@item.DonGia.ToString("N0")</span>
+                                    </td>
+                                    <td>
+                                        <div class="text-muted italic" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            <i class="far fa-comment-alt me-2"></i> @(string.IsNullOrEmpty(item.GhiChu) ? "Không có ghi chú" : item.GhiChu)
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-5 border-top pt-4">
+                <p class="text-muted mb-md-0">Hiển thị <b>@services.Count</b> kết quả tìm thấy</p>
+                <nav>
+                    <ul class="pagination pagination-animated mb-0">
+                        <li class="page-item disabled"><a class="page-link rounded-start-pill border-0 px-4" href="#">Trước</a></li>
+                        <li class="page-item active"><a class="page-link border-0 px-3" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link border-0 px-3" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link rounded-end-pill border-0 px-4" href="#">Tiếp</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            // Hiệu ứng FadeIn tuần tự cho từng dòng bảng
+            $("#serviceBody tr").each(function(i) {
+                $(this).addClass("animate__animated animate__fadeInUp");
+                $(this).css("animation-delay", (i * 0.1) + "s");
+            });
+
+            // Chọn tất cả
+            $('#selectAllMain').click(function () {
+                $('.ckbItem').prop('checked', this.checked);
+            });
+
+            // Tìm kiếm thông minh tức thì
+            $("#smartSearch").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#serviceBody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            // Xử lý Xóa mục đã chọn
+            $('#btnDeleteSelected').click(function () {
+                var ids = $('.ckbItem:checked').map(function() { return $(this).val(); }).get();
+
+                if (ids.length === 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Chưa chọn mục nào',
+                        text: 'Vui lòng tích vào ô trống ở cột đầu tiên!',
+                        confirmButtonColor: '#00b894'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Xác nhận xóa?',
+                    text: "Bạn chuẩn bị xóa " + ids.length + " dịch vụ đã chọn!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#00b894',
+                    cancelButtonColor: '#0984e3',
+                    confirmButtonText: 'Đồng ý xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/DichVu/DeleteSelected',
+                            type: 'POST',
+                            data: { ids: ids },
+                            success: function () {
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: 'Dữ liệu đã được xóa sạch.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#00b894'
+                                }).then(() => location.reload());
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Không thể kết nối máy chủ.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#00b894'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

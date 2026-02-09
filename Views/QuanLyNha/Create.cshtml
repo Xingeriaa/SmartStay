@@ -1,0 +1,835 @@
+﻿@using do_an_tot_nghiep.Models
+@model do_an_tot_nghiep.Models.NhaTro
+@{
+    ViewData["Title"] = "Thêm Nhà Trọ Mới";
+    var listDichVu = ViewBag.ListDichVu as List<DichVu>;
+}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* --- 1. CORE VARIABLES (BẢNG MÀU & CẤU HÌNH CHUNG) --- */
+    :root {
+        /* USER REQUEST: 1 Tông màu duy nhất (Tím đậm sang Xanh dương) */
+        --main-gradient: var(--brand-gradient);
+        /* Áp dụng gradient này cho cả chính và phụ */
+        --primary-gradient: var(--main-gradient);
+        --secondary-gradient: var(--main-gradient);
+        /* Màu nền kính mờ */
+        --glass-bg: rgba(255, 255, 255, 0.9);
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --glass-shadow: 0 8px 32px 0 rgba(37, 117, 252, 0.1); /* Shadow ám xanh dương nhẹ */
+        /* Typography colors */
+        --text-main: #2d3748;
+        --text-light: #718096;
+        /* Border Radius */
+        --radius-xl: 24px;
+        --radius-md: 16px;
+        /* Input styling */
+        --input-bg: #f8fafc;
+        /* Focus ring màu xanh dương từ gradient */
+        --focus-ring: rgba(37, 117, 252, 0.25);
+    }
+
+    /* --- 2. GLOBAL RESET & BODY STYLE --- */
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f0f2f5;
+        /* Mesh Gradient Background: Đã chỉnh lại tông tím/xanh cho hợp theme */
+        background-image: radial-gradient(at 0% 0%, rgba(106, 17, 203, 0.15) 0, transparent 50%), radial-gradient(at 50% 0%, rgba(37, 117, 252, 0.1) 0, transparent 50%), radial-gradient(at 100% 0%, rgba(106, 17, 203, 0.15) 0, transparent 50%);
+        background-attachment: fixed;
+        background-size: cover;
+        color: var(--text-main);
+        min-height: 100vh;
+        padding-bottom: 60px;
+    }
+
+    /* --- 3. LAYOUT GRID SYSTEM --- */
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .main-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    @@media (max-width: 992px) {
+        .main-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-sticky {
+        position: static !important;
+        margin-bottom: 2rem;
+        order: -1;
+    }
+
+    }
+
+    /* --- 4. GLASS CARD (HIỆU ỨNG KÍNH) --- */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .glass-card:hover {
+            box-shadow: 0 12px 40px 0 rgba(37, 117, 252, 0.2);
+        }
+
+    /* --- 5. PAGE HEADER --- */
+    .page-header {
+        margin-bottom: 2.5rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .page-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        font-size: 2.5rem;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+    }
+
+    .page-subtitle {
+        color: #5a67d8; /* Màu tím xanh nhẹ cho text phụ */
+        font-size: 1.1rem;
+        font-weight: 400;
+        opacity: 0.9;
+    }
+
+    /* --- 6. FORM STYLING --- */
+    .form-section {
+        padding: 2.5rem;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px dashed #e2e8f0;
+    }
+
+    /* Icons tiêu đề từng phần - ĐÃ ĐỒNG BỘ MÀU */
+    .section-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+        color: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        background: var(--primary-gradient); /* Dùng chung 1 gradient */
+    }
+
+    /* Các class cũ vẫn giữ để HTML không lỗi, nhưng màu đã được override ở trên */
+    .icon-info, .icon-map, .icon-service {
+        background: var(--primary-gradient);
+    }
+
+    .section-title-text {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .custom-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    /* Input & Select Custom */
+    .custom-input, .custom-select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 2px solid transparent;
+        border-radius: var(--radius-md);
+        background-color: var(--input-bg);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        color: #333;
+    }
+
+        .custom-input:focus, .custom-select:focus {
+            background-color: white;
+            border-color: var(--brand-600);
+            box-shadow: 0 0 0 4px var(--focus-ring);
+            outline: none;
+        }
+
+    /* Input có Icon bên trái */
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon-left {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+        z-index: 1;
+        transition: color 0.3s;
+    }
+
+    .input-padding-left {
+        padding-left: 2.8rem;
+    }
+
+    /* Badge đơn vị (VNĐ) */
+    .unit-badge {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: 600;
+        color: var(--brand-600);
+        background: #eef2ff;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+    }
+
+    /* --- 7. SERVICE SELECTION (CHECKBOX CARDS) --- */
+    .service-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .service-item-label {
+        position: relative;
+        cursor: pointer;
+        height: 100%;
+    }
+
+    .service-item-input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .service-box {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .service-box i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #cbd5e0;
+            transition: color 0.3s;
+        }
+
+        .service-box h6 {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+    /* Trạng thái được chọn (Checked) - Đổi sang màu tím/xanh */
+    .service-item-input:checked + .service-box {
+        border-color: var(--brand-600);
+        background: #f0f4ff;
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(37, 117, 252, 0.2);
+    }
+
+        .service-item-input:checked + .service-box i {
+            color: var(--brand-600);
+        }
+
+    /* --- 8. PREVIEW CARD (RIGHT SIDE) --- */
+    .preview-sticky {
+        position: sticky;
+        top: 2rem;
+    }
+
+    .preview-container {
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .preview-image-placeholder {
+        height: 220px;
+        background: var(--secondary-gradient); /* Bây giờ cũng là Tím-Xanh */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3.5rem;
+        position: relative;
+    }
+
+    .preview-tag {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: rgba(0,0,0,0.4);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        backdrop-filter: blur(4px);
+        font-weight: 600;
+    }
+
+    .preview-body {
+        padding: 1.5rem;
+    }
+
+    .preview-price {
+        color: var(--brand-600);
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .preview-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.15rem;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: #1a202c;
+    }
+
+    .preview-address {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: start;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .preview-features {
+        display: flex;
+        gap: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 1rem;
+        color: #4a5568;
+        font-size: 0.9rem;
+    }
+
+    /* --- 9. BUTTON ACTION AREA --- */
+    .action-area {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Nút Submit chính */
+    .btn-submit {
+        background: var(--primary-gradient);
+        color: white;
+        font-weight: 700;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: var(--radius-md);
+        flex-grow: 1;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 15px -3px rgba(37, 117, 252, 0.4);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(37, 117, 252, 0.5);
+        }
+
+    .btn-back {
+        background: white;
+        color: #4a5568;
+        font-weight: 600;
+        padding: 1rem 2rem;
+        border: 2px solid transparent;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        min-width: 200px;
+    }
+
+        .btn-back:hover {
+            background: #f8fafc;
+            color: #2d3748;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 10px -2px rgba(0, 0, 0, 0.1);
+        }
+
+    /* --- 10. ANIMATION --- */
+    .fade-in-up {
+        animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    @@keyframes fadeInUp {
+        to
+
+    {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
+
+</style>
+
+<div class="page-container">
+
+    <div class="page-header fade-in-up">
+        <h1 class="page-title">@ViewData["Title"]</h1>
+        <p class="page-subtitle">Kiến tạo không gian sống tuyệt vời cho khách hàng của bạn</p>
+    </div>
+
+    <form asp-controller="QuanLyNha" asp-action="Create" method="post" id="createForm">
+        <div class="main-grid">
+
+            <div class="left-col">
+
+                <div class="glass-card mb-4 fade-in-up delay-100">
+                    <div class="form-section">
+                        <div class="section-heading">
+                            <div class="section-icon icon-info">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div>
+                                <h3 class="section-title-text">Thông Tin Cơ Bản</h3>
+                                <small class="text-muted">Tên gọi, giá cả và đặc điểm chính</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <label class="custom-label">Tên nhà trọ <span class="text-danger">*</span></label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-heading input-icon-left"></i>
+                                    <input asp-for="TenNhaTro" class="custom-input input-padding-left" id="inputName" placeholder="Ví dụ: Căn hộ Mini Luxury Quận 7" required />
+                                </div>
+                                <span asp-validation-for="TenNhaTro" class="text-danger small mt-1"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="custom-label">Giá thuê (VNĐ) <span class="text-danger">*</span></label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-tag input-icon-left"></i>
+                                    <input asp-for="GiaThue" type="number" class="custom-input input-padding-left" id="inputPrice" placeholder="0" required min="0" />
+                                    <span class="unit-badge">VNĐ/tháng</span>
+                                </div>
+                                <span asp-validation-for="GiaThue" class="text-danger small mt-1"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="custom-label">Tầng</label>
+                                <select asp-for="LoaiNha" class="custom-select" id="inputFloor">
+                                    <option value="1">1 tầng (tầng trệt)</option>
+                                    <option value="2">2 tầng (tầng trệt + 1 tầng trên)</option>
+                                    <option value="3">3 tầng (tầng trệt + 2 tầng trên)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="custom-label">Ngày thu tiền</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-calendar-check input-icon-left"></i>
+                                    <select asp-for="NgayThuTien" class="custom-select input-padding-left">
+                                        @for (int i = 1; i <= 31; i++)
+                                        {
+                                            <option value="@i">Ngày @i hàng tháng</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card mb-4 fade-in-up delay-200">
+                    <div class="form-section">
+                        <div class="section-heading">
+                            <div class="section-icon icon-map">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <div>
+                                <h3 class="section-title-text">Vị Trí Bất Động Sản</h3>
+                                <small class="text-muted">Khách hàng sẽ tìm thấy bạn ở đâu?</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="custom-label">Tỉnh / Thành phố</label>
+                                <select id="city" asp-for="TinhThanh" class="custom-select" required>
+                                    <option value="" selected disabled>Chọn Tỉnh/Thành</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="custom-label">Quận / Huyện</label>
+                                <select id="district" asp-for="QuanHuyen" class="custom-select" required disabled>
+                                    <option value="" selected disabled>Chọn Quận/Huyện</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="custom-label">Phường / Xã</label>
+                                <select id="ward" asp-for="PhuongXa" class="custom-select" required disabled>
+                                    <option value="" selected disabled>Chọn Phường/Xã</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="custom-label">Số nhà, Tên đường</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-road input-icon-left"></i>
+                                    <input asp-for="DiaChiChiTiet" class="custom-input input-padding-left" id="inputAddress" placeholder="Ví dụ: 123 Nguyễn Thị Minh Khai" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card mb-4 fade-in-up delay-300">
+                    <div class="form-section">
+                        <div class="section-heading">
+                            <div class="section-icon icon-service">
+                                <i class="fas fa-concierge-bell"></i>
+                            </div>
+                            <div>
+                                <h3 class="section-title-text">Tiện Ích & Dịch Vụ</h3>
+                                <small class="text-muted">Những gì đã bao gồm hoặc tính phí thêm</small>
+                            </div>
+                        </div>
+
+                        <div class="service-grid">
+                            @if (listDichVu != null && listDichVu.Any())
+                            {
+                                foreach (var item in listDichVu)
+                                {
+                                    <label class="service-item-label">
+                                        <input type="checkbox" class="service-item-input" name="DichVuSelect" value="@item.Id" data-name="@item.Ten" />
+                                        <div class="service-box">
+                                            @if (item.Ten.ToLower().Contains("điện"))
+                                            {
+                                                <i class="fas fa-bolt"></i>
+                                            }
+                                            else if (item.Ten.ToLower().Contains("nước"))
+                                            {
+                                                <i class="fas fa-tint"></i>
+                                            }
+                                            else if (item.Ten.ToLower().Contains("net") || item.Ten.ToLower().Contains("wifi"))
+                                            {
+                                                <i class="fas fa-wifi"></i>
+                                            }
+                                            else if (item.Ten.ToLower().Contains("xe"))
+                                            {
+                                                <i class="fas fa-motorcycle"></i>
+                                            }
+                                            else if (item.Ten.ToLower().Contains("rác") || item.Ten.ToLower().Contains("vệ sinh"))
+                                            {
+                                                <i class="fas fa-trash"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-star"></i>
+                                            }
+
+                                            <h6>@item.Ten</h6>
+                                            <span class="small text-muted mt-1">@item.DonGia.ToString("N0")đ</span>
+                                        </div>
+                                    </label>
+                                }
+                            }
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="custom-label">Ghi chú / Nội quy</label>
+                            <textarea asp-for="GhiChu" class="custom-input" rows="4" placeholder="Nhập các ghi chú thêm..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-area fade-in-up delay-300 mb-5">
+                    <a asp-action="Index" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                    </a>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-plus-circle"></i> Thêm Nhà Trọ
+                    </button>
+                </div>
+
+            </div> <div class="right-col">
+                <div class="preview-sticky fade-in-up delay-200">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="text-primary m-0 fw-bold"><i class="fas fa-eye me-2"></i>Live Preview</h5>
+                        <span class="badge bg-white text-primary border rounded-pill px-3">Xem trước</span>
+                    </div>
+
+                    <div class="preview-container">
+                        <div class="preview-image-placeholder">
+                            <i class="fas fa-home"></i>
+                            <div class="preview-tag">Mới</div>
+                        </div>
+
+                        <div class="preview-body">
+                            <span class="preview-price" id="previewPrice">0 đ/tháng</span>
+
+                            <h3 class="preview-title" id="previewName">Tên nhà trọ của bạn sẽ hiện ở đây...</h3>
+
+                            <div class="preview-address">
+                                <i class="fas fa-map-marker-alt mt-1 text-primary"></i>
+                                <span id="previewAddress">Chưa cập nhật địa chỉ</span>
+                            </div>
+
+                            <div class="preview-features">
+                                <div>
+                                    <i class="fas fa-layer-group text-primary me-1"></i> <span id="previewFloor">Trệt</span>
+                                </div>
+                            </div>
+
+                            <div id="previewServices" class="mt-3 d-flex flex-wrap gap-2">
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-light border-top text-center">
+                            <button type="button" id="btnShowContact" class="btn btn-sm btn-dark w-100 rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2" style="background: var(--main-gradient); border:none;">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>Liên hệ xem phòng</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 1. LOGIC ĐỊA CHÍ (PROVINCES API) ---
+            const citis = document.getElementById("city");
+            const districts = document.getElementById("district");
+            const wards = document.getElementById("ward");
+
+            // Load Tỉnh
+            axios.get("https://provinces.open-api.vn/api/?depth=1").then(res => {
+                res.data.forEach(item => {
+                    let option = new Option(item.name, item.name);
+                    option.dataset.code = item.code;
+                    citis.add(option);
+                });
+            });
+
+            // Chọn Tỉnh -> Load Huyện
+            citis.onchange = function () {
+                districts.length = 1; wards.length = 1;
+                districts.disabled = true; wards.disabled = true;
+                const code = this.options[this.selectedIndex].dataset.code;
+                if (code) {
+                    districts.options[0].text = "Đang tải...";
+                    axios.get(`https://provinces.open-api.vn/api/p/${code}?depth=2`).then(res => {
+                        districts.options[0].text = "Chọn Quận/Huyện";
+                        districts.disabled = false;
+                        res.data.districts.forEach(item => {
+                            let option = new Option(item.name, item.name);
+                            option.dataset.code = item.code;
+                            districts.add(option);
+                        });
+                        updatePreviewAddress();
+                    });
+                }
+                updatePreviewAddress();
+            };
+
+            // Chọn Huyện -> Load Xã
+            districts.onchange = function () {
+                wards.length = 1; wards.disabled = true;
+                const code = this.options[this.selectedIndex].dataset.code;
+                if (code) {
+                    wards.options[0].text = "Đang tải...";
+                    axios.get(`https://provinces.open-api.vn/api/d/${code}?depth=2`).then(res => {
+                        wards.options[0].text = "Chọn Phường/Xã";
+                        wards.disabled = false;
+                        res.data.wards.forEach(item => {
+                            let option = new Option(item.name, item.name);
+                            wards.add(option);
+                        });
+                        updatePreviewAddress();
+                    });
+                }
+                updatePreviewAddress();
+            };
+
+            wards.onchange = function() { updatePreviewAddress(); };
+
+            // --- 2. LOGIC LIVE PREVIEW ---
+
+            // Elements
+            const inpName = document.getElementById('inputName');
+            const inpPrice = document.getElementById('inputPrice');
+            const inpAddress = document.getElementById('inputAddress');
+            const inpFloor = document.getElementById('inputFloor');
+
+            // Preview Elements
+            const prvName = document.getElementById('previewName');
+            const prvPrice = document.getElementById('previewPrice');
+            const prvAddress = document.getElementById('previewAddress');
+            const prvFloor = document.getElementById('previewFloor');
+            const prvServices = document.getElementById('previewServices');
+
+            // Format tiền tệ
+            const formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+
+            // Event Listeners
+            inpName.addEventListener('input', function() {
+                prvName.textContent = this.value || "Tên nhà trọ...";
+            });
+
+            inpPrice.addEventListener('input', function() {
+                let val = this.value;
+                if(val) prvPrice.textContent = formatter.format(val) + "/tháng";
+                else prvPrice.textContent = "0 đ/tháng";
+            });
+
+            inpFloor.addEventListener('change', function() {
+                let txt = this.options[this.selectedIndex].text;
+                prvFloor.textContent = txt.replace("🏢 ", "").replace("🏠 ", "");
+            });
+
+            // Xử lý địa chỉ
+            inpAddress.addEventListener('input', updatePreviewAddress);
+
+            function updatePreviewAddress() {
+                let parts = [];
+                if(inpAddress.value) parts.push(inpAddress.value);
+                if(wards.value && wards.value !== "") parts.push(wards.value);
+                if(districts.value && districts.value !== "") parts.push(districts.value);
+                if(citis.value && citis.value !== "") parts.push(citis.value);
+
+                prvAddress.textContent = parts.length > 0 ? parts.join(", ") : "Chưa cập nhật địa chỉ";
+            }
+
+            // Xử lý Services Tags
+            const serviceInputs = document.querySelectorAll('.service-item-input');
+            serviceInputs.forEach(chk => {
+                chk.addEventListener('change', updateServiceTags);
+            });
+
+            function updateServiceTags() {
+                prvServices.innerHTML = '';
+                serviceInputs.forEach(chk => {
+                    if(chk.checked) {
+                        let span = document.createElement('span');
+                        span.className = 'badge bg-light text-primary border fw-normal';
+                        span.textContent = chk.dataset.name;
+                        prvServices.appendChild(span);
+                    }
+                });
+            }
+
+            // --- 3. INPUT FOCUS EFFECT ---
+            const allInputs = document.querySelectorAll('.custom-input, .custom-select');
+            allInputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.closest('.input-wrapper')?.querySelector('.input-icon-left')?.classList.add('text-primary');
+                });
+                input.addEventListener('blur', () => {
+                    input.closest('.input-wrapper')?.querySelector('.input-icon-left')?.classList.remove('text-primary');
+                });
+            });
+
+        });
+
+        document.getElementById('btnShowContact').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Thông tin liên hệ',
+                html: `
+                    <div class="text-center p-3">
+                        <p class="mb-2 text-muted">Vui lòng gọi trực tiếp cho chủ trọ:</p>
+                        <h2 class="fw-bold text-primary" style="font-family: 'Poppins';">0987.654.321</h2>
+                        <hr>
+                        <p class="small text-muted italic">Lưu ý: Nói rằng bạn thấy tin trên hệ thống của chúng tôi để được giá tốt nhất.</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Đã hiểu',
+                confirmButtonColor: '#00b894',
+                background: '#ffffff',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
+        });
+    </script>
+}

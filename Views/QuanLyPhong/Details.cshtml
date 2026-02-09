@@ -1,0 +1,270 @@
+﻿@model do_an_tot_nghiep.Models.PhongTro
+
+@{
+    ViewData["Title"] = "Chi tiết phòng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<style>
+    :root {
+        --theme-gradient: var(--brand-gradient);
+        --glass-bg: rgba(255, 255, 255, 0.95);
+        --text-dark: #1e293b;
+        --accent-purple: var(--brand-600);
+    }
+
+    body {
+        background: #f8fafc;
+    }
+
+    /* Header Styling */
+    .page-header {
+        margin-bottom: 2rem;
+        border-left: 5px solid;
+        border-image: var(--theme-gradient) 1;
+        padding-left: 1.5rem;
+    }
+
+    .title-luxury {
+        font-weight: 800;
+        font-size: 2.5rem;
+        background: var(--theme-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -1px;
+    }
+
+    /* Main Container */
+    .glass-card {
+        background: var(--glass-bg);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    /* Image Section */
+    .image-container {
+        position: relative;
+        height: 100%;
+        min-height: 450px;
+        overflow: hidden;
+    }
+
+    .room-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .image-container:hover .room-image {
+        transform: scale(1.08);
+    }
+
+    .status-overlay {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.8);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Info Grid */
+    .info-grid-item {
+        padding: 1.5rem;
+        border-radius: 20px;
+        background: #fcfaff;
+        border: 1px solid #f1e9ff;
+        transition: all 0.3s ease;
+    }
+
+        .info-grid-item:hover {
+            background: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(106, 17, 203, 0.05);
+        }
+
+    .label-luxury {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .value-luxury {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .price-tag {
+        background: var(--theme-gradient);
+        color: white;
+        padding: 2rem;
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    .price-amount {
+        font-size: 2.2rem;
+        font-weight: 800;
+        display: block;
+    }
+
+    /* Service Tags */
+    .service-pill {
+        background: white;
+        border: 1.5px solid #e2e8f0;
+        padding: 10px 20px;
+        border-radius: 12px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .service-pill i {
+            color: var(--accent-purple);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .service-pill:hover {
+            border-color: var(--accent-purple);
+            background: var(--theme-light);
+        }
+
+    /* Back Button */
+    .btn-luxury-back {
+        background: white;
+        color: var(--text-dark);
+        border: 2px solid #e2e8f0;
+        padding: 12px 35px;
+        border-radius: 15px;
+        font-weight: 700;
+        transition: 0.4s;
+    }
+
+        .btn-luxury-back:hover {
+            background: var(--text-dark);
+            color: white;
+            border-color: var(--text-dark);
+        }
+</style>
+
+<div class="container py-5">
+    <div class="page-header">
+        <h1 class="title-luxury">@Model.TenPhong</h1>
+        <p class="text-muted"><i class="bi bi-geo-alt-fill me-2"></i>@(Model.NhaTro?.TenNhaTro)</p>
+    </div>
+
+    <div class="glass-card shadow-lg">
+        <div class="row g-0">
+            <div class="col-lg-5">
+                <div class="image-container">
+                    @if (!string.IsNullOrEmpty(Model.AnhPhong))
+                    {
+                        <img src="@Model.AnhPhong" class="room-image" alt="Luxury Room" />
+                    }
+                    else
+                    {
+                        <div class="h-100 d-flex align-items-center justify-content-center bg-light">
+                            <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+                        </div>
+                    }
+                    <div class="status-overlay">
+                        <span class="@(ViewBag.TrangThaiPhong == "Phòng trống" ? "text-success" : "text-danger")">
+                            ● @ViewBag.TrangThaiPhong
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 p-4 p-md-5">
+                <div class="row g-4">
+                    <div class="col-12 mb-2">
+                        <div class="price-tag shadow-sm">
+                            <span class="text-white-50 text-uppercase small" style="letter-spacing: 2px">Giá thuê hàng tháng</span>
+                            <span class="price-amount">@Model.GiaPhong.ToString("N0") <small style="font-size: 1.2rem">VNĐ</small></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-6">
+                        <div class="info-grid-item">
+                            <span class="label-luxury">Diện tích</span>
+                            <span class="value-luxury">@Model.DienTich m²</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <div class="info-grid-item">
+                            <span class="label-luxury">Tầng cao</span>
+                            <span class="value-luxury">@Model.Tang</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="info-grid-item">
+                            <span class="label-luxury">Sức chứa</span>
+                            <span class="value-luxury">@Model.SoLuongNguoi Người</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <div class="d-flex align-items-center p-3 border-start border-4 border-info bg-light rounded-3">
+                            <div class="me-3">
+                                <i class="bi bi-shield-check text-info" style="font-size: 2rem;"></i>
+                            </div>
+                            <div>
+                                <span class="label-luxury m-0">Tiền cọc đảm bảo</span>
+                                <span class="fw-bold text-dark">@Model.TienCoc.ToString("N0") VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <h5 class="fw-bold mb-3">Nội thất & Tiện ích</h5>
+                        <p class="text-muted border-bottom pb-3">@(string.IsNullOrEmpty(Model.NoiThat) ? "Đang cập nhật danh sách nội thất..." : Model.NoiThat)</p>
+
+                        <div class="d-flex flex-wrap mt-3">
+                            @if (ViewBag.DichVuPhong != null)
+                            {
+                                foreach (var dv in ViewBag.DichVuPhong)
+                                {
+                                    <div class="service-pill">
+                                        <i class="bi bi-patch-check-fill"></i> @dv
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <div class="p-4 rounded-4" style="background: #f1f5f9; border-radius: 15px;">
+                            <h6 class="fw-bold"><i class="bi bi-info-circle me-2"></i>Lưu ý từ chủ nhà</h6>
+                            <small class="text-secondary">@(Model.GhiChu ?? "Không có yêu cầu đặc biệt.")</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 d-flex justify-content-between align-items-center">
+        <a asp-action="Index" asp-route-nhaId="@Model.NhaTroId" class="btn btn-luxury-back">
+            <i class="bi bi-chevron-left me-2"></i> Trở về
+        </a>
+
+        <div class="d-none d-md-block">
+            <span class="text-muted small">Cập nhật lần cuối: @DateTime.Now.ToString("dd/MM/yyyy")</span>
+        </div>
+    </div>
+</div>

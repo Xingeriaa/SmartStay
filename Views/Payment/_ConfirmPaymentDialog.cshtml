@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="modal fade" id="confirmPaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="confirmPaymentForm">
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận thanh toán</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="TransactionId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Người xác nhận (UserId)</label>
+                        <input type="number" class="form-control" id="ConfirmedBy" />
+                    </div>
+
+                    <div class="text-danger" id="confirmError"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" id="btnConfirm">
+                        Xác nhận
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const confirmToken = $('#confirmPaymentForm input[name="__RequestVerificationToken"]').val();
+    let confirming = false;
+
+    function openConfirmDialog(transactionId) {
+        $('#TransactionId').val(transactionId);
+        $('#confirmError').text('');
+        new bootstrap.Modal('#confirmPaymentModal').show();
+    }
+
+    $('#confirmPaymentForm').submit(function (e) {
+        e.preventDefault();
+        if (confirming) return;
+
+        confirming = true;
+        $('#btnConfirm').prop('disabled', true).text('Đang xử lý...');
+
+        const id = $('#TransactionId').val();
+
+        $.ajax({
+            url: `/api/payments/${id}/confirm`,
+            method: 'POST',
+            headers: { 'RequestVerificationToken': confirmToken },
+            contentType: 'application/json',
+            data: JSON.stringify({
+                ConfirmedBy: $('#ConfirmedBy').val()
+            }),
+            success: function () {
+                location.reload();
+            },
+            error: function (xhr) {
+                if (xhr.status === 403) {
+                    $('#confirmError').text('Bạn không có quyền xác nhận.');
+                } else if (xhr.status === 404) {
+                    $('#confirmError').text('Giao dịch không tồn tại.');
+                } else {
+                    $('#confirmError').text('Xác nhận thất bại.');
+                }
+            },
+            complete: function () {
+                confirming = false;
+                $('#btnConfirm').prop('disabled', false).text('Xác nhận');
+            }
+        });
+    });
+</script>

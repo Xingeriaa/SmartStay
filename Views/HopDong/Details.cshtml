@@ -1,0 +1,441 @@
+@model HopDong
+@{
+    ViewData["Title"] = "Chi tiết hợp đồng";
+}
+
+<style>
+    /* --- CORE THEME: Monochromatic Purple --- */
+    :root {
+        --theme-primary: var(--brand-600); /* Màu tím chủ đạo */
+        --theme-secondary: var(--accent-500); /* Màu xanh tím phụ trợ */
+        --theme-gradient: var(--brand-gradient);
+        --theme-surface: #ffffff;
+        --theme-bg-body: #f3f4f6;
+        /* Màu trong suốt để tạo chiều sâu (Glassmorphism) */
+        --theme-primary-5: rgba(106, 17, 203, 0.05);
+        --theme-primary-10: rgba(106, 17, 203, 0.1);
+        --theme-primary-20: rgba(106, 17, 203, 0.2);
+        --shadow-soft: 0 10px 40px -10px rgba(106, 17, 203, 0.15);
+        --shadow-hover: 0 20px 50px -10px rgba(106, 17, 203, 0.25);
+        --border-light: rgba(106, 17, 203, 0.1);
+    }
+
+    /* --- GLOBAL STYLES --- */
+    body {
+        background-color: var(--theme-bg-body);
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .text-theme {
+        color: var(--theme-primary) !important;
+    }
+
+    .bg-theme-soft {
+        background-color: var(--theme-primary-5) !important;
+    }
+
+    /* Text Gradient Effect */
+    .text-gradient {
+        background: var(--theme-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: inline-block;
+    }
+
+    /* --- ANIMATIONS --- */
+    @@keyframes fadeInUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .animate-fade-in {
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+
+    /* --- CARD COMPONENT --- */
+    .card-modern {
+        background: var(--theme-surface);
+        border: 1px solid var(--theme-border-light);
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+        transition: all 0.4s ease;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+    }
+
+        .card-modern:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--theme-primary-20);
+        }
+
+        /* Dải màu trang trí trên đầu card */
+        .card-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--theme-gradient);
+            opacity: 0.8;
+        }
+
+    .card-header-modern {
+        padding: 1.5rem;
+        background: linear-gradient(to bottom, #fff, rgba(255,255,255,0));
+        border-bottom: 1px dashed var(--border-light);
+    }
+
+    /* --- INFO BOX (Icon + Text) --- */
+    .info-box {
+        display: flex;
+        align-items: flex-start;
+        padding: 1rem;
+        border-radius: 16px;
+        transition: background 0.3s;
+        border: 1px solid transparent;
+    }
+
+        .info-box:hover {
+            background: var(--theme-primary-5);
+            border-color: var(--theme-primary-10);
+        }
+
+    .info-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: var(--theme-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 12px rgba(106, 17, 203, 0.25);
+        flex-shrink: 0;
+        margin-right: 1rem;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #8898aa;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    /* --- BADGES --- */
+    .badge-theme {
+        background-color: var(--theme-primary-10);
+        color: var(--theme-primary);
+        padding: 0.5em 1em;
+        border-radius: 30px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        border: 1px solid var(--theme-primary-20);
+    }
+
+    /* --- BUTTONS --- */
+    .btn-modern-outline {
+        color: var(--theme-primary);
+        background: transparent;
+        border: 2px solid var(--theme-primary-10);
+        border-radius: 12px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+        .btn-modern-outline::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: var(--theme-gradient);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .btn-modern-outline:hover {
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(106, 17, 203, 0.3);
+        }
+
+            .btn-modern-outline:hover::before {
+                width: 100%;
+            }
+
+    /* Back button style */
+    .btn-back {
+        color: #6c757d;
+        background: #e9ecef;
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .btn-back:hover {
+            background: #dee2e6;
+            color: #343a40;
+        }
+
+    /* --- LIST GROUP --- */
+    .list-group-custom .list-group-item {
+        border: none;
+        padding: 1rem 0;
+        border-bottom: 1px dashed var(--border-light);
+        transition: padding-left 0.3s;
+    }
+
+        .list-group-custom .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-group-custom .list-group-item:hover {
+            padding-left: 10px;
+            background: linear-gradient(90deg, var(--theme-primary-5), transparent);
+        }
+</style>
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 animate-fade-in">
+    <div class="mb-3 mb-md-0">
+        <h2 class="fw-bold mb-1 text-gradient">Hợp Đồng #@Model.Id</h2>
+        <div class="text-muted small">
+            <i class="fa fa-clock me-1"></i> Cập nhật lần cuối: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+        </div>
+    </div>
+    <div>
+        <span class="badge badge-theme">
+            <i class="fa fa-circle me-1" style="font-size: 8px; vertical-align: middle;"></i> @Model.TrangThai
+        </span>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-8 animate-fade-in delay-100">
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <span class="text-theme me-2"><i class="fa fa-file-contract"></i></span>
+                    Thông tin chi tiết
+                </h5>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h6 class="text-muted text-uppercase fw-bold small mb-3 ps-1 border-start border-4 border-primary">
+                        &nbsp;Vị Trí & Phòng
+                    </h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <div class="info-icon-wrapper"><i class="fa fa-building"></i></div>
+                                <div>
+                                    <div class="info-label">Nhà trọ</div>
+                                    <div class="info-value">@(Model.PhongTro?.NhaTro?.TenNhaTro ?? "---")</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <div class="info-icon-wrapper"><i class="fa fa-door-open"></i></div>
+                                <div>
+                                    <div class="info-label">Tên phòng</div>
+                                    <div class="info-value">@(Model.PhongTro?.TenPhong ?? "---")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="text-muted opacity-25 my-4">
+
+                <div class="mb-4">
+                    <h6 class="text-muted text-uppercase fw-bold small mb-3 ps-1 border-start border-4 border-primary">
+                        &nbsp;Thời Gian Hiệu Lực
+                    </h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <div class="info-icon-wrapper"><i class="fa fa-calendar-alt"></i></div>
+                                <div>
+                                    <div class="info-label">Ngày bắt đầu</div>
+                                    <div class="info-value">@Model.NgayBatDau.ToString("dd/MM/yyyy")</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <div class="info-icon-wrapper"><i class="fa fa-calendar-check"></i></div>
+                                <div>
+                                    <div class="info-label">Ngày kết thúc</div>
+                                    <div class="info-value">@(Model.NgayKetThuc.HasValue? Model.NgayKetThuc.Value.ToString("dd/MM/yyyy") : "--/--/----")</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <div class="info-icon-wrapper"><i class="fa fa-handshake-slash"></i></div>
+                                <div>
+                                    <div class="info-label">Ngày thanh lý</div>
+                                    <div class="info-value">@(Model.NgayThanhLy.HasValue? Model.NgayThanhLy.Value.ToString("dd/MM/yyyy") : "Chưa thanh lý")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="text-muted opacity-25 my-4">
+
+                <div>
+                    <h6 class="text-muted text-uppercase fw-bold small mb-3 ps-1 border-start border-4 border-primary">
+                        &nbsp;Thông Tin Tài Chính
+                    </h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="info-box bg-theme-soft border border-primary border-opacity-25">
+                                <div class="info-icon-wrapper" style="box-shadow: none;"><i class="fa fa-tag"></i></div>
+                                <div>
+                                    <div class="info-label text-theme">Giá thuê / tháng</div>
+                                    <div class="info-value text-theme fs-5">@Model.GiaThue.ToString("N0") <small>₫</small></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <div class="info-icon-wrapper"><i class="fa fa-shield-alt"></i></div>
+                                <div>
+                                    <div class="info-label">Tiền cọc</div>
+                                    <div class="info-value">@Model.TienCoc.ToString("N0") <small>₫</small></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <div class="info-icon-wrapper"><i class="fa fa-undo"></i></div>
+                                <div>
+                                    <div class="info-label">Hoàn trả</div>
+                                    <div class="info-value">@(Model.SoTienHoanTra.HasValue? Model.SoTienHoanTra.Value.ToString("N0") + " ₫" : "-")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 animate-fade-in delay-200">
+        <div class="card-modern mb-4">
+            <div class="card-header-modern d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <span class="text-theme me-2"><i class="fa fa-users"></i></span>
+                    Cư dân
+                </h5>
+                <span class="badge bg-light text-dark border">@((Model.HopDongKhachThues?.Count() ?? 0))</span>
+            </div>
+            <div class="card-body px-4 pt-2">
+                <ul class="list-group list-group-custom">
+                    @if (Model.HopDongKhachThues != null && Model.HopDongKhachThues.Any())
+                    {
+                        foreach (var k in Model.HopDongKhachThues.OrderBy(x => x.VaiTro))
+                        {
+                            <li class="list-group-item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                                         style="width: 35px; height: 35px; background: #b3c7f9; color: var(--theme-primary) !important;">
+                                        @(k.KhachThue?.HoTen?.FirstOrDefault().ToString().ToUpper() ?? "?")
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="fw-bold text-dark" style="font-size: 0.95rem;">@k.KhachThue?.HoTen</div>
+                                        <div class="text-muted" style="font-size: 0.8rem;">
+                                            @k.VaiTro
+                                            @if (k.VaiTro == "Đại diện")
+                                            {
+                                                <i class="fa fa-check-circle text-success ms-1"></i>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item text-center py-4 text-muted fst-italic">
+                            Chưa có cư dân nào trong hợp đồng
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="card-modern">
+            <div class="card-body p-4">
+                <h6 class="text-muted text-uppercase fw-bold small mb-3">Thao tác quản lý</h6>
+                <div class="d-grid gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-modern-outline">
+                        <i class="fa fa-pen me-2"></i> Chỉnh sửa
+                    </a>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a asp-action="Extend" asp-route-id="@Model.Id" class="btn btn-modern-outline w-100 px-1">
+                                <i class="fa fa-clock me-1"></i> Gia hạn
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a asp-action="Terminate" asp-route-id="@Model.Id" class="btn btn-modern-outline w-100 px-1">
+                                <i class="fa fa-times me-1"></i> Thanh lý
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="border-top my-2 opacity-25"></div>
+
+                    <a asp-action="Index" class="btn btn-back text-center">
+                        <i class="fa fa-arrow-left me-2"></i> Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

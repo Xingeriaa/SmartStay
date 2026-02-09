@@ -1,0 +1,34 @@
+﻿@model do_an_tot_nghiep.Models.User
+@{
+    ViewData["Title"] = "Cập nhật người dùng";
+}
+
+<h2>Cập nhật người dùng</h2>
+
+<form asp-action="Edit"
+      asp-route-id="@Model.Id"
+      method="post"
+      id="userForm">
+
+    @Html.AntiForgeryToken()
+
+    <partial name="~/Views/Shared/_UserForm.cshtml" model="Model" />
+
+    <button type="submit" class="btn btn-primary" id="btnSubmit">
+        <span class="btn-text">Cập nhật</span>
+        <span class="spinner-border spinner-border-sm d-none"></span>
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $('#userForm').on('submit', function () {
+            $('#btnSubmit').prop('disabled', true);
+            $('#btnSubmit .btn-text').text('Đang xử lý...');
+            $('#btnSubmit .spinner-border').removeClass('d-none');
+        });
+    </script>
+}

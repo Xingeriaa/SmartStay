@@ -1,0 +1,5633 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "SmartStay API",
+    "description": "Tài liệu API quản lý nhà trọ.",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/audit-logs": {
+      "get": {
+        "tags": [
+          "AuditLogsApi"
+        ],
+        "summary": "Lấy danh sách nhật ký, hỗ trợ lọc theo userId hoặc entityName.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "entityName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditLog"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditLog"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditLog"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AuditLogsApi"
+        ],
+        "summary": "Ghi nhận nhật ký (dùng khi backend cần ghi log thủ công).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditLog"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditLog"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditLog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLog"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLog"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract-extensions": {
+      "get": {
+        "tags": [
+          "ContractExtensionsApi"
+        ],
+        "summary": "Danh sách gia hạn (lọc theo contractId).",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContractExtension"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContractExtension"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContractExtension"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ContractExtensionsApi"
+        ],
+        "summary": "Tạo gia hạn mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractExtension"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractExtension"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractExtension"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractExtension"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractExtension"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractExtension"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract-extensions/{id}": {
+      "delete": {
+        "tags": [
+          "ContractExtensionsApi"
+        ],
+        "summary": "Xóa gia hạn.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/contract-services": {
+      "get": {
+        "tags": [
+          "ContractServicesApi"
+        ],
+        "summary": "Danh sách dịch vụ theo hợp đồng.",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContractService"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContractService"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContractService"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ContractServicesApi"
+        ],
+        "summary": "Thêm dịch vụ vào hợp đồng.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractService"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractService"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractService"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractService"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractService"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractService"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contract-services/{id}": {
+      "put": {
+        "tags": [
+          "ContractServicesApi"
+        ],
+        "summary": "Cập nhật dịch vụ của hợp đồng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractService"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractService"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractService"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ContractServicesApi"
+        ],
+        "summary": "Xóa dịch vụ khỏi hợp đồng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/dichvu": {
+      "get": {
+        "tags": [
+          "DichVuApi"
+        ],
+        "summary": "Lấy danh sách dịch vụ (kèm đơn giá hiện tại).",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DichVu"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DichVu"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DichVu"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DichVuApi"
+        ],
+        "summary": "Tạo dịch vụ mới (nếu có DonGia sẽ tạo lịch sử giá).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DichVu"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DichVu"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DichVu"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DichVu"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DichVu"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DichVu"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dichvu/{id}": {
+      "get": {
+        "tags": [
+          "DichVuApi"
+        ],
+        "summary": "Lấy dịch vụ theo id (kèm đơn giá hiện tại).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DichVu"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DichVu"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DichVu"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DichVuApi"
+        ],
+        "summary": "Cập nhật dịch vụ và cập nhật lịch sử giá nếu đổi đơn giá.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DichVu"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DichVu"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DichVu"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DichVuApi"
+        ],
+        "summary": "Xóa dịch vụ và toàn bộ lịch sử giá.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/hopdong": {
+      "get": {
+        "tags": [
+          "HopDongApi"
+        ],
+        "summary": "Danh sách hợp đồng.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HopDong"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HopDong"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HopDong"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HopDongApi"
+        ],
+        "summary": "Tạo hợp đồng mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HopDong"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HopDong"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HopDong"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HopDong"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HopDong"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HopDong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hopdong/{id}": {
+      "get": {
+        "tags": [
+          "HopDongApi"
+        ],
+        "summary": "Lấy hợp đồng theo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HopDong"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HopDong"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HopDong"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HopDongApi"
+        ],
+        "summary": "Cập nhật hợp đồng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HopDong"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HopDong"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HopDong"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HopDongApi"
+        ],
+        "summary": "Xóa hợp đồng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/invoices": {
+      "get": {
+        "tags": [
+          "InvoicesApi"
+        ],
+        "summary": "Danh sách hóa đơn (lọc theo contractId, status, monthYear).",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "monthYear",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Invoice"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Invoice"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Invoice"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "InvoicesApi"
+        ],
+        "summary": "Tạo hóa đơn mới (kèm chi tiết).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoiceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoiceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoiceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/invoices/{id}": {
+      "get": {
+        "tags": [
+          "InvoicesApi"
+        ],
+        "summary": "Lấy hóa đơn theo id (kèm chi tiết).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "InvoicesApi"
+        ],
+        "summary": "Xóa hóa đơn.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/invoices/{id}/status": {
+      "put": {
+        "tags": [
+          "InvoicesApi"
+        ],
+        "summary": "Cập nhật trạng thái hóa đơn (Unpaid/Paid/Overdue).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInvoiceStatusRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInvoiceStatusRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInvoiceStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/khachthue": {
+      "get": {
+        "tags": [
+          "KhachThueApi"
+        ],
+        "summary": "Danh sách khách thuê.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KhachThue"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KhachThue"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KhachThue"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "KhachThueApi"
+        ],
+        "summary": "Tạo khách thuê mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhachThue"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhachThue"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhachThue"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhachThue"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhachThue"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhachThue"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/khachthue/{id}": {
+      "get": {
+        "tags": [
+          "KhachThueApi"
+        ],
+        "summary": "Lấy khách thuê theo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhachThue"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhachThue"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhachThue"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "KhachThueApi"
+        ],
+        "summary": "Cập nhật khách thuê.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhachThue"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhachThue"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhachThue"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "KhachThueApi"
+        ],
+        "summary": "Xóa khách thuê.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/liquidations": {
+      "get": {
+        "tags": [
+          "LiquidationsApi"
+        ],
+        "summary": "Danh sách thanh lý (lọc theo contractId).",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Liquidation"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Liquidation"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Liquidation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "LiquidationsApi"
+        ],
+        "summary": "Tạo thanh lý mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Liquidation"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Liquidation"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Liquidation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Liquidation"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Liquidation"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Liquidation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/liquidations/{id}": {
+      "delete": {
+        "tags": [
+          "LiquidationsApi"
+        ],
+        "summary": "Xóa thanh lý.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/meter-readings": {
+      "get": {
+        "tags": [
+          "MeterReadingsApi"
+        ],
+        "summary": "Danh sách chỉ số (lọc theo roomId, monthYear).",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "monthYear",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MeterReading"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MeterReading"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MeterReading"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "MeterReadingsApi"
+        ],
+        "summary": "Tạo chỉ số mới. Mỗi phòng mỗi tháng chỉ có 1 bản ghi.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeterReading"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeterReading"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeterReading"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterReading"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterReading"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterReading"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/meter-readings/{id}": {
+      "get": {
+        "tags": [
+          "MeterReadingsApi"
+        ],
+        "summary": "Lấy chỉ số theo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterReading"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterReading"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterReading"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "MeterReadingsApi"
+        ],
+        "summary": "Cập nhật chỉ số.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeterReading"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeterReading"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeterReading"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "MeterReadingsApi"
+        ],
+        "summary": "Xóa chỉ số.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/nhatro": {
+      "get": {
+        "tags": [
+          "NhaTroApi"
+        ],
+        "summary": "Danh sách nhà trọ.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NhaTro"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NhaTro"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NhaTro"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "NhaTroApi"
+        ],
+        "summary": "Tạo nhà trọ mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhaTro"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhaTro"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhaTro"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/NhaTro"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NhaTro"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NhaTro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/nhatro/{id}": {
+      "get": {
+        "tags": [
+          "NhaTroApi"
+        ],
+        "summary": "Lấy nhà trọ theo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/NhaTro"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NhaTro"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NhaTro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "NhaTroApi"
+        ],
+        "summary": "Cập nhật nhà trọ.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhaTro"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhaTro"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhaTro"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "NhaTroApi"
+        ],
+        "summary": "Xóa nhà trọ.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "tags": [
+          "NotificationsApi"
+        ],
+        "summary": "Danh sách thông báo (lọc theo userId).",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Notification"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Notification"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Notification"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "NotificationsApi"
+        ],
+        "summary": "Tạo thông báo mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Notification"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Notification"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Notification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/{id}/read": {
+      "post": {
+        "tags": [
+          "NotificationsApi"
+        ],
+        "summary": "Đánh dấu đã đọc.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/notifications/{id}": {
+      "delete": {
+        "tags": [
+          "NotificationsApi"
+        ],
+        "summary": "Xóa thông báo.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/payments": {
+      "get": {
+        "tags": [
+          "PaymentTransactionsApi"
+        ],
+        "summary": "Danh sách giao dịch (lọc theo invoiceId).",
+        "parameters": [
+          {
+            "name": "invoiceId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentTransaction"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentTransaction"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentTransaction"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "PaymentTransactionsApi"
+        ],
+        "summary": "Tạo giao dịch thanh toán.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentTransaction"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentTransaction"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentTransaction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentTransaction"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentTransaction"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentTransaction"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/{id}/confirm": {
+      "post": {
+        "tags": [
+          "PaymentTransactionsApi"
+        ],
+        "summary": "Xác nhận giao dịch (ghi nhận người xác nhận).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmPaymentRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmPaymentRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmPaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/payments/{id}": {
+      "delete": {
+        "tags": [
+          "PaymentTransactionsApi"
+        ],
+        "summary": "Xóa giao dịch.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/phongtro": {
+      "get": {
+        "tags": [
+          "PhongTroApi"
+        ],
+        "summary": "Danh sách phòng.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhongTro"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhongTro"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhongTro"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "PhongTroApi"
+        ],
+        "summary": "Tạo phòng mới.",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "TenPhong",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "GiaPhong",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Tang",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "DienTich",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "SoLuongNguoi",
+            "in": "query",
+            "schema": {
+              "maximum": 2,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "TienCoc",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "DoiTuong",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DichVu",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "AnhPhong",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NoiThat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "GhiChu",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTroId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.Id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.TenNhaTro",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.LoaiNha",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.GiaThue",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "NhaTro.NgayThuTien",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.TinhThanh",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.QuanHuyen",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.PhuongXa",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.DiaChiChiTiet",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.GhiChu",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.DanhSachDichVu",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.ManagerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.OperationDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NhaTro.IsDeleted",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "NhaTro.CreatedAt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NhaTro.Description",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HopDongs",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/HopDong"
+              }
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IsDeleted",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "CreatedAt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ImageFile": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "ImageFile": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhongTro"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhongTro"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhongTro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/phongtro/{id}": {
+      "get": {
+        "tags": [
+          "PhongTroApi"
+        ],
+        "summary": "Lấy phòng theo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhongTro"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhongTro"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhongTro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "PhongTroApi"
+        ],
+        "summary": "Cập nhật phòng.",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "TenPhong",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "GiaPhong",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Tang",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "DienTich",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "SoLuongNguoi",
+            "in": "query",
+            "schema": {
+              "maximum": 2,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "TienCoc",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "DoiTuong",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DichVu",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "AnhPhong",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NoiThat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "GhiChu",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTroId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.Id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.TenNhaTro",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.LoaiNha",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.GiaThue",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "NhaTro.NgayThuTien",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.TinhThanh",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.QuanHuyen",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.PhuongXa",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.DiaChiChiTiet",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.GhiChu",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.DanhSachDichVu",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.ManagerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.OperationDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NhaTro.IsDeleted",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "NhaTro.CreatedAt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NhaTro.Description",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HopDongs",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/HopDong"
+              }
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IsDeleted",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "CreatedAt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ImageFile": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "ImageFile": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "PhongTroApi"
+        ],
+        "summary": "Xóa phòng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/reports/overview": {
+      "get": {
+        "tags": [
+          "ReportsApi"
+        ],
+        "summary": "Dashboard tổng quan: số tòa nhà, phòng, cư dân, hợp đồng, hóa đơn chưa thanh toán.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewReport"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewReport"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/revenue": {
+      "get": {
+        "tags": [
+          "ReportsApi"
+        ],
+        "summary": "Thống kê doanh thu theo tháng (MonthYear dạng YYYY-MM).",
+        "parameters": [
+          {
+            "name": "monthYear",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevenueReport"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevenueReport"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevenueReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/arrears": {
+      "get": {
+        "tags": [
+          "ReportsApi"
+        ],
+        "summary": "Thống kê công nợ (tổng tiền hóa đơn chưa thanh toán).",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrearsReport"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrearsReport"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrearsReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/vacancy": {
+      "get": {
+        "tags": [
+          "ReportsApi"
+        ],
+        "summary": "Thống kê tỷ lệ phòng trống.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacancyReport"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacancyReport"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacancyReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/room-assets": {
+      "get": {
+        "tags": [
+          "RoomAssetsApi"
+        ],
+        "summary": "Danh sách thiết bị theo phòng (roomId có thể bỏ trống).",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoomAsset"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoomAsset"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoomAsset"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "RoomAssetsApi"
+        ],
+        "summary": "Tạo thiết bị mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomAsset"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomAsset"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomAsset"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomAsset"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomAsset"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomAsset"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/room-assets/{id}": {
+      "get": {
+        "tags": [
+          "RoomAssetsApi"
+        ],
+        "summary": "Lấy thiết bị theo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomAsset"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomAsset"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomAsset"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "RoomAssetsApi"
+        ],
+        "summary": "Cập nhật thiết bị.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomAsset"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomAsset"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomAsset"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "RoomAssetsApi"
+        ],
+        "summary": "Xóa thiết bị.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/system-configs": {
+      "get": {
+        "tags": [
+          "SystemConfigsApi"
+        ],
+        "summary": "Lấy toàn bộ cấu hình hệ thống.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SystemConfig"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SystemConfig"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SystemConfig"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system-configs/{key}": {
+      "get": {
+        "tags": [
+          "SystemConfigsApi"
+        ],
+        "summary": "Lấy cấu hình theo khóa.",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfig"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfig"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfig"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "SystemConfigsApi"
+        ],
+        "summary": "Tạo hoặc cập nhật cấu hình theo khóa (upsert).",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemConfig"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemConfig"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfig"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfig"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfig"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SystemConfigsApi"
+        ],
+        "summary": "Xóa cấu hình theo khóa.",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/system-tasks/generate-invoices": {
+      "post": {
+        "tags": [
+          "SystemTasksApi"
+        ],
+        "summary": "Sinh hóa đơn nháp theo tháng cho các hợp đồng đang hiệu lực.\r\nmonthYear dạng YYYY-MM, dueDate dạng YYYY-MM-DD.",
+        "parameters": [
+          {
+            "name": "monthYear",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dueDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateInvoicesResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateInvoicesResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateInvoicesResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system-tasks/contracts-expiring": {
+      "get": {
+        "tags": [
+          "SystemTasksApi"
+        ],
+        "summary": "Danh sách hợp đồng sắp hết hạn trong N ngày.",
+        "parameters": [
+          {
+            "name": "withinDays",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HopDong"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HopDong"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HopDong"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system-tasks/send-payment-reminders": {
+      "post": {
+        "tags": [
+          "SystemTasksApi"
+        ],
+        "summary": "Gửi thông báo nhắc tiền cho hóa đơn chưa thanh toán (có thể lọc theo monthYear).",
+        "parameters": [
+          {
+            "name": "monthYear",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendRemindersResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendRemindersResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendRemindersResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tickets": {
+      "get": {
+        "tags": [
+          "TicketsApi"
+        ],
+        "summary": "Danh sách ticket (lọc theo status, createdBy, assignedTo).",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdBy",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "assignedTo",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ticket"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ticket"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ticket"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "TicketsApi"
+        ],
+        "summary": "Tạo ticket mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ticket"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ticket"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ticket"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}": {
+      "get": {
+        "tags": [
+          "TicketsApi"
+        ],
+        "summary": "Lấy ticket theo id (kèm ảnh).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "TicketsApi"
+        ],
+        "summary": "Cập nhật ticket.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ticket"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ticket"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ticket"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "TicketsApi"
+        ],
+        "summary": "Xóa ticket.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/assign": {
+      "post": {
+        "tags": [
+          "TicketsApi"
+        ],
+        "summary": "Gán người xử lý ticket.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTicketRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTicketRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTicketRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/status": {
+      "post": {
+        "tags": [
+          "TicketsApi"
+        ],
+        "summary": "Cập nhật trạng thái ticket.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTicketStatusRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTicketStatusRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTicketStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/images": {
+      "post": {
+        "tags": [
+          "TicketsApi"
+        ],
+        "summary": "Thêm ảnh cho ticket.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketImage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketImage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketImage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketImage"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketImage"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketImage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permissions": {
+      "get": {
+        "tags": [
+          "UserPermissionsApi"
+        ],
+        "summary": "Danh sách quyền, có thể lọc theo UserId.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserPermission"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserPermission"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserPermission"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "UserPermissionsApi"
+        ],
+        "summary": "Tạo quyền mới.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPermission"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPermission"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPermission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPermission"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPermission"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPermission"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permissions/{id}": {
+      "get": {
+        "tags": [
+          "UserPermissionsApi"
+        ],
+        "summary": "Lấy quyền theo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPermission"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPermission"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPermission"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "UserPermissionsApi"
+        ],
+        "summary": "Cập nhật quyền.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPermission"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPermission"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPermission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "UserPermissionsApi"
+        ],
+        "summary": "Xóa quyền.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Danh sách người dùng (kèm vai trò).",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Tạo người dùng mới (có thể truyền RoleName để tự tạo role).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Lấy người dùng theo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Cập nhật người dùng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Xóa người dùng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/profile": {
+      "put": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Cập nhật hồ sơ người dùng (username/email/role).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserProfileRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserProfileRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/lock": {
+      "post": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Khóa tài khoản người dùng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/unlock": {
+      "post": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Mở khóa tài khoản người dùng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/reset-password": {
+      "post": {
+        "tags": [
+          "UsersApi"
+        ],
+        "summary": "Reset mật khẩu người dùng.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArrearsReport": {
+        "type": "object",
+        "properties": {
+          "totalArrears": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AssignTicketRequest": {
+        "type": "object",
+        "properties": {
+          "assignedTo": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuditLog": {
+        "required": [
+          "action",
+          "entityName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "action": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "entityName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "entityId": {
+            "type": "string",
+            "nullable": true
+          },
+          "oldValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "newValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "ipAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "userAgent": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ConfirmPaymentRequest": {
+        "type": "object",
+        "properties": {
+          "confirmedBy": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ContractExtension": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "oldEndDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "newEndDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "newRentPriceSnapshot": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ContractService": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "serviceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPriceSnapshot": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateInvoiceRequest": {
+        "type": "object",
+        "properties": {
+          "invoiceCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "period": {
+            "type": "string",
+            "nullable": true
+          },
+          "monthYear": {
+            "type": "string",
+            "nullable": true
+          },
+          "taxAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceDetailItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DichVu": {
+        "required": [
+          "loaiDichVu",
+          "ten"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ten": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "loaiDichVu": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "donGia": {
+            "type": "number",
+            "format": "double"
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
+          },
+          "priceHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServicePriceHistory"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenerateInvoicesResult": {
+        "type": "object",
+        "properties": {
+          "monthYear": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdInvoices": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalContracts": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HopDong": {
+        "required": [
+          "contractCode",
+          "giaThue",
+          "ngayBatDau",
+          "ngayKetThuc",
+          "phongTroId",
+          "signatureDate",
+          "tienCoc",
+          "trangThai"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractCode": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "phongTroId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "phongTro": {
+            "$ref": "#/components/schemas/PhongTro"
+          },
+          "ngayBatDau": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ngayKetThuc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "signatureDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "paymentCycle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "giaThue": {
+            "type": "number",
+            "format": "double"
+          },
+          "tienCoc": {
+            "type": "number",
+            "format": "double"
+          },
+          "depositStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "trangThai": {
+            "$ref": "#/components/schemas/TrangThaiHopDong"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ngayThanhLy": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "tongTienQuyetToan": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "soTienHoanTra": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ghiChuThanhLy": {
+            "type": "string",
+            "nullable": true
+          },
+          "liquidation": {
+            "$ref": "#/components/schemas/Liquidation"
+          },
+          "hopDongKhachThues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HopDongKhachThue"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HopDongKhachThue": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hopDongId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "khachThueId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isRepresentative": {
+            "type": "boolean"
+          },
+          "vaiTro": {
+            "type": "string",
+            "nullable": true
+          },
+          "hopDong": {
+            "$ref": "#/components/schemas/HopDong"
+          },
+          "khachThue": {
+            "$ref": "#/components/schemas/KhachThue"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Invoice": {
+        "required": [
+          "invoiceCode",
+          "monthYear",
+          "period"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "invoiceCode": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "contractId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "period": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "monthYear": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "subTotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "taxAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceDetail"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvoiceDetail": {
+        "required": [
+          "description"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "invoiceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double"
+          },
+          "unitPriceSnapshot": {
+            "type": "number",
+            "format": "double"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvoiceDetailItem": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double"
+          },
+          "unitPriceSnapshot": {
+            "type": "number",
+            "format": "double"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "KhachThue": {
+        "required": [
+          "hoTen",
+          "soCCCD",
+          "soDienThoai1"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "hoTen": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "diaChiThuongTru": {
+            "type": "string",
+            "nullable": true
+          },
+          "soDienThoai1": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "soDienThoai2": {
+            "type": "string",
+            "nullable": true
+          },
+          "soCCCD": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "noiCap": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true
+          },
+          "ngaySinh": {
+            "type": "string",
+            "format": "date"
+          },
+          "noiSinh": {
+            "type": "string",
+            "nullable": true
+          },
+          "soTienCoc": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "hinhAnh": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hopDongKhachThues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HopDongKhachThue"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Liquidation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contractId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contract": {
+            "$ref": "#/components/schemas/HopDong"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "finalInvoiceAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "depositUsed": {
+            "type": "number",
+            "format": "double"
+          },
+          "refundAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "additionalCharge": {
+            "type": "number",
+            "format": "double"
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MeterReading": {
+        "required": [
+          "monthYear"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roomId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "monthYear": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "readingDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "electricityIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "waterIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "imageProof": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordedBy": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NhaTro": {
+        "required": [
+          "diaChiChiTiet",
+          "tenNhaTro"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tenNhaTro": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "loaiNha": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "giaThue": {
+            "type": "number",
+            "format": "double"
+          },
+          "ngayThuTien": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tinhThanh": {
+            "type": "string",
+            "nullable": true
+          },
+          "quanHuyen": {
+            "type": "string",
+            "nullable": true
+          },
+          "phuongXa": {
+            "type": "string",
+            "nullable": true
+          },
+          "diaChiChiTiet": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
+          },
+          "danhSachDichVu": {
+            "type": "string",
+            "nullable": true
+          },
+          "managerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "operationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Notification": {
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "isRead": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OverviewReport": {
+        "type": "object",
+        "properties": {
+          "buildings": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rooms": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tenants": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contracts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaidInvoices": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentTransaction": {
+        "required": [
+          "paymentMethod"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "invoiceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "paymentMethod": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "evidenceImage": {
+            "type": "string",
+            "nullable": true
+          },
+          "paidAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "confirmedBy": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhongTro": {
+        "required": [
+          "tenPhong"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tenPhong": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "giaPhong": {
+            "type": "number",
+            "format": "double"
+          },
+          "tang": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dienTich": {
+            "type": "number",
+            "format": "double"
+          },
+          "soLuongNguoi": {
+            "maximum": 2,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "tienCoc": {
+            "type": "number",
+            "format": "double"
+          },
+          "doiTuong": {
+            "type": "string",
+            "nullable": true
+          },
+          "dichVu": {
+            "type": "string",
+            "nullable": true
+          },
+          "anhPhong": {
+            "type": "string",
+            "nullable": true
+          },
+          "noiThat": {
+            "type": "string",
+            "nullable": true
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
+          },
+          "nhaTroId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nhaTro": {
+            "$ref": "#/components/schemas/NhaTro"
+          },
+          "hopDongs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HopDong"
+            },
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "imageFile": {
+            "type": "string",
+            "format": "binary",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RevenueReport": {
+        "type": "object",
+        "properties": {
+          "monthYear": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalRevenue": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Role": {
+        "required": [
+          "roleName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roleName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 255,
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoomAsset": {
+        "required": [
+          "assetName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roomId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "assetName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "serialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "purchaseDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "warrantyExpiry": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendRemindersResult": {
+        "type": "object",
+        "properties": {
+          "monthYear": {
+            "type": "string",
+            "nullable": true
+          },
+          "notificationsCreated": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ServicePriceHistory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "serviceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "effectiveTo": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SystemConfig": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ticket": {
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdBy": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roomId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "title": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "priority": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "assignedTo": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TicketImage"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TicketImage": {
+        "required": [
+          "imageUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ticketId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "imageUrl": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrangThaiHopDong": {
+        "enum": [
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "UpdateInvoiceStatusRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTicketStatusRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateUserProfileRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "User": {
+        "required": [
+          "fullName",
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "username": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "password": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "fullName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "roleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "refreshToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "roleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isLocked": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserPermission": {
+        "required": [
+          "permissionKey"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "permissionKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "buildingId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roomId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isAllowed": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VacancyReport": {
+        "type": "object",
+        "properties": {
+          "totalRooms": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "vacantRooms": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "AuditLogsApi",
+      "description": "Tra cứu nhật ký hoạt động (Audit Log)."
+    },
+    {
+      "name": "ContractExtensionsApi",
+      "description": "Gia hạn hợp đồng."
+    },
+    {
+      "name": "ContractServicesApi",
+      "description": "Quản lý dịch vụ gắn với hợp đồng."
+    },
+    {
+      "name": "DichVuApi",
+      "description": "Quản lý danh mục dịch vụ và giá hiện hành."
+    },
+    {
+      "name": "HopDongApi",
+      "description": "Quản lý hợp đồng thuê phòng."
+    },
+    {
+      "name": "InvoicesApi",
+      "description": "Quản lý hóa đơn và chi tiết hóa đơn."
+    },
+    {
+      "name": "KhachThueApi",
+      "description": "Quản lý cư dân/khách thuê."
+    },
+    {
+      "name": "LiquidationsApi",
+      "description": "Thanh lý hợp đồng và quyết toán."
+    },
+    {
+      "name": "MeterReadingsApi",
+      "description": "Quản lý chỉ số điện nước theo phòng/tháng."
+    },
+    {
+      "name": "NhaTroApi",
+      "description": "Quản lý tòa nhà/nhà trọ."
+    },
+    {
+      "name": "NotificationsApi",
+      "description": "Quản lý thông báo và trạng thái đã đọc."
+    },
+    {
+      "name": "PaymentTransactionsApi",
+      "description": "Quản lý giao dịch thanh toán và xác nhận thanh toán."
+    },
+    {
+      "name": "PhongTroApi",
+      "description": "Quản lý phòng trọ."
+    },
+    {
+      "name": "RoomAssetsApi",
+      "description": "Quản lý trang thiết bị trong phòng."
+    },
+    {
+      "name": "SystemConfigsApi",
+      "description": "Quản lý cấu hình hệ thống (ngày chốt sổ, hạn đóng tiền, giá mặc định...)"
+    },
+    {
+      "name": "SystemTasksApi",
+      "description": "Tác vụ hệ thống theo thời gian (lập hóa đơn định kỳ, cảnh báo hợp đồng)."
+    },
+    {
+      "name": "TicketsApi",
+      "description": "Xử lý yêu cầu hỗ trợ (ticket) của cư dân."
+    },
+    {
+      "name": "UserPermissionsApi",
+      "description": "Quản lý phân quyền theo tòa nhà/phòng/chức năng (RBAC mở rộng)."
+    },
+    {
+      "name": "UsersApi",
+      "description": "Quản lý người dùng và tài khoản hệ thống."
+    }
+  ]
+}

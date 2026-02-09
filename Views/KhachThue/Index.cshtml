@@ -1,0 +1,286 @@
+﻿@model IEnumerable<do_an_tot_nghiep.Models.KhachThue>
+@{
+    ViewData["Title"] = "Quản Lý Khách Thuê";
+    var customers = Model?.ToList() ?? new List<do_an_tot_nghiep.Models.KhachThue>();
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<div class="container-fluid py-5 animate__animated animate__fadeIn">
+
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="card stat-card bg-brand-gradient p-4 text-white">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape me-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 opacity-75 fw-medium">Tổng Khách Thuê</p>
+                        <h2 class="mb-0 fw-bold">@customers.Count</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card bg-brand-gradient p-4 text-white">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape me-3">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 opacity-75 fw-medium">Tổng Tiền Cọc</p>
+                        <h2 class="mb-0 fw-bold">@(customers.Count > 0 ? customers.Sum(x => x.SoTienCoc ?? 0).ToString("N0") : "0") <small style="font-size: 14px">đ</small></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card bg-brand-gradient p-4 text-white">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape me-3">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 opacity-75 fw-medium">Quê Quán</p>
+                        <h2 class="mb-0 fw-bold">@customers.Select(x => x.NoiSinh).Distinct().Count() <small style="font-size: 16px; font-weight: 400">tỉnh/thành</small></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card main-card">
+        <div class="card-header-custom">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h3 class="fw-bold text-dark mb-1">Danh Sách Khách Thuê</h3>
+                    <p class="text-muted mb-0">Quản lý thông tin, hợp đồng và hồ sơ khách hàng</p>
+                </div>
+                <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
+                    <button type="button" class="btn btn-grad me-2" id="btnDeleteSelected">
+                        <i class="fas fa-trash-alt"></i> Xóa chọn
+                    </button>
+                    <a asp-controller="KhachThue" asp-action="Create" class="btn btn-grad">
+                        <i class="fas fa-user-plus"></i> Thêm khách mới
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-4">
+                <div class="col-md-5">
+                    <div class="search-group d-flex align-items-center">
+                        <i class="fas fa-search text-muted"></i>
+                        <input type="text" id="smartSearch" placeholder="Tìm tên, SĐT, số CCCD hoặc quê quán...">
+                    </div>
+                </div>
+                <div class="col-md-7 text-md-end d-flex justify-content-md-end align-items-center gap-3">
+                    <span class="text-muted">Hiển thị</span>
+                    <select class="form-select w-auto border-0 bg-light rounded-pill">
+                        <option>10 dòng</option>
+                        <option>25 dòng</option>
+                        <option>Tất cả</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table custom-table align-middle">
+                    <thead>
+                        <tr>
+                            <th width="50" class="text-center">
+                                <input type="checkbox" class="form-check-input shadow-none" id="selectAllMain">
+                            </th>
+                            <th>Thông tin khách</th>
+                            <th>Liên hệ</th>
+                            <th>Số CCCD</th>
+                            <th class="text-center">Tiền cọc</th>
+                            <th>Quê quán</th>
+                            <th class="text-center" width="150">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerBody">
+                        @if (customers.Count > 0)
+                        {
+                            foreach (var item in customers)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" class="form-check-input ckbItem shadow-none" value="@item.Id">
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-wrapper me-3">
+                                                @if (!string.IsNullOrEmpty(item.HinhAnh))
+                                                {
+                                                    <img src="~/images/khachthue/@item.HinhAnh" class="avatar-img" alt="Avatar" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="avatar-img bg-white d-flex align-items-center justify-content-center text-muted">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-bold text-dark">@item.HoTen</h6>
+                                                <small class="text-muted">ID: #@item.Id</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-medium text-dark"><i class="fas fa-phone-alt fa-xs me-2 text-theme"></i>@item.SoDienThoai1</span>
+                                            @if (!string.IsNullOrEmpty(item.SoDienThoai2))
+                                            {
+                                                <span class="text-muted small ms-4">@item.SoDienThoai2</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge-modern shadow-sm">
+                                            <i class="far fa-id-card me-1"></i> @item.SoCCCD
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.SoTienCoc.HasValue && item.SoTienCoc > 0)
+                                        {
+                                            <span class="fw-bolder text-theme fs-6">@item.SoTienCoc.Value.ToString("N0")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small fst-italic">Chưa cọc</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-1 text-danger opacity-50"></i> @item.NoiSinh
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="action-btn" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Chỉnh sửa">
+                                                <i class="fas fa-pen"></i>
+                                            </a>
+                                            <button onclick="confirmDelete(@item.Id, '@item.HoTen')" class="action-btn" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="icon-shape bg-light text-muted mb-3 rounded-circle">
+                                            <i class="fas fa-user-slash fa-lg"></i>
+                                        </div>
+                                        <h6 class="text-muted fw-normal">Chưa có dữ liệu khách thuê nào</h6>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-5 border-top pt-4">
+                <p class="text-muted mb-md-0">Hiển thị <b>@customers.Count</b> khách hàng</p>
+                <nav>
+                    <ul class="pagination pagination-animated mb-0">
+                        <li class="page-item disabled"><a class="page-link rounded-start-pill border-0 px-4" href="#">Trước</a></li>
+                        <li class="page-item active"><a class="page-link border-0 px-3" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link border-0 px-3" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link rounded-end-pill border-0 px-4" href="#">Tiếp</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            // Animation for rows
+            $("#customerBody tr").each(function(i) {
+                $(this).addClass("animate__animated animate__fadeInUp");
+                $(this).css("animation-delay", (i * 0.05) + "s");
+            });
+
+            // Select All Logic
+            $('#selectAllMain').click(function () {
+                $('.ckbItem').prop('checked', this.checked);
+            });
+
+            // Smart Search
+            $("#smartSearch").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#customerBody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            // Bulk Delete Action
+            $('#btnDeleteSelected').click(function () {
+                var ids = $('.ckbItem:checked').map(function() { return $(this).val(); }).get();
+
+                if (ids.length === 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Chưa chọn khách nào',
+                        text: 'Vui lòng tích vào ô trống đầu dòng!',
+                        confirmButtonColor: '#00b894'
+                    });
+                    return;
+                }
+
+                // Logic gọi Ajax xóa nhiều dòng (cần implement action DeleteSelected trong Controller)
+                Swal.fire({
+                    title: 'Xác nhận xóa?',
+                    text: "Bạn sẽ xóa " + ids.length + " khách hàng đã chọn!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#00b894',
+                    cancelButtonColor: '#0984e3',
+                    confirmButtonText: 'Đồng ý',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                         // Placeholder cho Ajax call
+                         Swal.fire('Đã gửi yêu cầu!', 'Tính năng đang được phát triển.', 'success');
+                    }
+                });
+            });
+        });
+
+        // Delete Single Item (Thay thế confirm mặc định)
+        function confirmDelete(id, name) {
+            Swal.fire({
+                title: 'Xóa khách hàng?',
+                text: "Bạn có chắc muốn xóa hồ sơ của: " + name,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#00b894',
+                cancelButtonColor: '#0984e3',
+                confirmButtonText: 'Xóa ngay',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Chuyển hướng đến Action Delete
+                    window.location.href = '/KhachThue/Delete/' + id;
+                }
+            });
+        }
+    </script>
+}

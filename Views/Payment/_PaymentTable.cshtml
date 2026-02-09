@@ -1,0 +1,61 @@
+﻿@model IEnumerable<do_an_tot_nghiep.Models.PaymentTransaction>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Số tiền</th>
+            <th>Phương thức</th>
+            <th>Thời gian</th>
+            <th>Xác nhận</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Amount.ToString("N0")</td>
+                <td>@p.PaymentMethod</td>
+                <td>@p.PaidAt</td>
+                <td>
+                    @if (!p.ConfirmedBy.HasValue)
+                    {
+                        <button class="btn btn-success btn-sm confirm-btn"
+                                data-id="@p.Id">
+                            Xác nhận
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="text-success">Đã xác nhận</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    const token = $('input[name="__RequestVerificationToken"]').val();
+
+    $('.confirm-btn').click(function () {
+        const btn = $(this);
+        const id = btn.data('id');
+
+        btn.prop('disabled', true).text('Đang xử lý...');
+
+        $.ajax({
+            url: `/api/payments/${id}/confirm`,
+            method: 'POST',
+            headers: { 'RequestVerificationToken': token },
+            success: function () {
+                location.reload();
+            },
+            error: function (xhr) {
+                if (xhr.status === 403) {
+                    alert('Không có quyền xác nhận');
+                }
+                btn.prop('disabled', false).text('Xác nhận');
+            }
+        });
+    });
+</script>

@@ -1,0 +1,1444 @@
+﻿@model do_an_tot_nghiep.Models.PhongTro
+
+@{
+    ViewData["Title"] = "Thêm phòng mới - Professional UI";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Đảm bảo Layout này tồn tại
+
+    // --- LOGIC SERVER SIDE GIỮ NGUYÊN ---
+    var nhaInfo = ViewBag.ThongTinNha as do_an_tot_nghiep.Models.NhaTro;
+    var dichVuNha = nhaInfo?.DanhSachDichVu?.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[] { };
+
+}
+
+<style>
+    /* --- 1. RESET & VARIABLES --- */
+    :root {
+        --c-primary: var(--brand-600);
+        --c-primary-light: rgba(0, 184, 148, 0.12);
+        --c-secondary: var(--accent-500);
+        --c-success: var(--brand-600);
+        --c-danger: #ff7675;
+        --c-warning: #fdcb6e;
+        --c-text-main: var(--ink-900);
+        --c-text-light: var(--ink-600);
+        --c-bg-body: var(--bg-body);
+        --c-bg-card: var(--bg-surface);
+        --c-border: var(--border-color);
+        --font-main: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+        --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+        --shadow-lg: 0 15px 35px rgba(0,0,0,0.1);
+        --shadow-hover: 0 20px 40px rgba(0, 184, 148, 0.18);
+        --radius-sm: 8px;
+        --radius-md: 16px;
+        --radius-lg: 24px;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    /* --- 2. LAYOUT --- */
+    body {
+        background-color: var(--c-bg-body);
+        font-family: var(--font-main);
+        color: var(--c-text-main);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .main-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        margin-bottom: 2.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        animation: slideDown 0.6s ease-out;
+    }
+
+    .page-title h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(to right, var(--c-primary), var(--c-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-title p {
+        color: var(--c-text-light);
+        font-size: 1rem;
+    }
+
+    /* --- 3. GRID SYSTEM (FORM LEFT - PREVIEW RIGHT) --- */
+    .create-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr; /* Form lớn hơn Preview một chút */
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    /* --- 4. CARD STYLES --- */
+    .app-card {
+        background: var(--c-bg-card);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.5);
+        animation: fadeIn 0.8s ease-out;
+    }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--c-primary), var(--c-secondary));
+        }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--c-text-main);
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--c-bg-body);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .section-title i {
+            color: var(--c-primary);
+            font-size: 1.4rem;
+            background: var(--c-primary-light);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+    /* --- 5. FORM CONTROLS --- */
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--c-text-main);
+        margin-bottom: 0.5rem;
+        display: block;
+        transition: var(--transition);
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        font-size: 1rem;
+        font-family: inherit;
+        border: 2px solid var(--c-border);
+        border-radius: var(--radius-sm);
+        background-color: #fff;
+        transition: var(--transition);
+        color: var(--c-text-main);
+    }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 4px rgba(78, 84, 200, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-control-custom:hover {
+            border-color: #b2bec3;
+        }
+
+        .form-control-custom[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+            color: #7f8c8d;
+        }
+
+    /* Custom Select Styling */
+    .select-wrapper {
+        position: relative;
+    }
+
+        .select-wrapper::after {
+            content: '\F229'; /* Bootstrap icon chevron-down */
+            font-family: 'bootstrap-icons';
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--c-text-light);
+        }
+
+    /* Number Input Spinners Removal */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* --- 6. CUSTOM RADIO CARDS (Gender, Furniture) --- */
+    .radio-group-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    .radio-card-input {
+        display: none;
+    }
+
+    .radio-card-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: var(--c-bg-body);
+        border: 2px solid transparent;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition);
+        text-align: center;
+        height: 100%;
+    }
+
+        .radio-card-label i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--c-text-light);
+            transition: var(--transition);
+        }
+
+        .radio-card-label span {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--c-text-light);
+        }
+
+    .radio-card-input:checked + .radio-card-label {
+        background: var(--c-primary-light);
+        border-color: var(--c-primary);
+        box-shadow: var(--shadow-sm);
+    }
+
+        .radio-card-input:checked + .radio-card-label i,
+        .radio-card-input:checked + .radio-card-label span {
+            color: var(--c-primary);
+        }
+
+    /* --- 7. SERVICES TAGS (Custom Checkboxes) --- */
+    .services-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+
+    .service-checkbox {
+        display: none;
+    }
+
+    .service-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.6rem 1.2rem;
+        background: #fff;
+        border: 1px solid var(--c-border);
+        border-radius: 50px;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 0.9rem;
+        font-weight: 500;
+        user-select: none;
+        color: var(--c-text-light);
+    }
+
+        .service-tag:hover {
+            background: #f1f2f6;
+            transform: translateY(-1px);
+        }
+
+        .service-tag i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+    .service-checkbox:checked + .service-tag {
+        background: var(--c-primary);
+        color: #fff;
+        border-color: var(--c-primary);
+        box-shadow: 0 4px 10px rgba(78, 84, 200, 0.3);
+    }
+
+    /* --- 8. UPLOAD AREA --- */
+    .upload-area {
+        border: 2px dashed var(--c-border);
+        border-radius: var(--radius-md);
+        padding: 3rem 1.5rem;
+        text-align: center;
+        background: #fafafa;
+        transition: var(--transition);
+        cursor: pointer;
+        position: relative;
+    }
+
+        .upload-area:hover, .upload-area.drag-over {
+            border-color: var(--c-primary);
+            background: var(--c-primary-light);
+        }
+
+    .upload-icon {
+        font-size: 3.5rem;
+        color: #b2bec3;
+        margin-bottom: 1rem;
+        transition: var(--transition);
+    }
+
+    .upload-area:hover .upload-icon {
+        color: var(--c-primary);
+        transform: scale(1.1);
+    }
+
+    .upload-text h5 {
+        font-weight: 700;
+        color: var(--c-text-main);
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-text p {
+        color: var(--c-text-light);
+        font-size: 0.9rem;
+    }
+
+    /* --- 9. LIVE PREVIEW CARD (RIGHT SIDE) --- */
+    .sticky-sidebar {
+        position: sticky;
+        top: 2rem;
+    }
+
+    .preview-phone-mockup {
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: var(--shadow-lg);
+        border: 8px solid #2d3436;
+        padding: 10px;
+        max-width: 380px;
+        margin: 0 auto;
+        animation: slideLeft 0.8s ease-out;
+    }
+
+    .preview-screen {
+        background: #f8f9fa;
+        border-radius: 20px;
+        overflow: hidden;
+        min-height: 500px;
+        position: relative;
+    }
+
+    .preview-header {
+        position: relative;
+        height: 200px;
+        background-color: #dfe6e9;
+        overflow: hidden;
+    }
+
+    .preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+    .preview-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        backdrop-filter: blur(4px);
+    }
+
+    .preview-body {
+        padding: 1.5rem;
+        background: #fff;
+        position: relative;
+        margin-top: -20px;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .preview-name {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        color: var(--c-text-main);
+    }
+
+    .preview-price {
+        font-size: 1.25rem;
+        color: var(--c-primary);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: baseline;
+    }
+
+        .preview-price small {
+            font-size: 0.85rem;
+            color: var(--c-text-light);
+            font-weight: 400;
+            margin-left: 5px;
+        }
+
+    .preview-features {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #f1f2f6;
+    }
+
+    .p-feat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--c-text-light);
+        flex: 1;
+        text-align: center;
+        background: #f8f9fa;
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+        .p-feat-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+            color: var(--c-primary);
+        }
+
+    .preview-services-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 1.5rem;
+    }
+
+    .p-srv-tag {
+        font-size: 0.7rem;
+        background: #eef2ff;
+        color: var(--c-primary);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    .preview-note-box {
+        font-size: 0.85rem;
+        color: #636e72;
+        background: #fff8e1;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 3px solid var(--c-warning);
+        font-style: italic;
+    }
+
+    /* --- 10. ACTION BUTTONS --- */
+    .action-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-custom {
+        padding: 0.9rem 2rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        text-decoration: none;
+    }
+
+    .btn-secondary-c {
+        background: #fff;
+        border: 2px solid var(--c-border);
+        color: var(--c-text-light);
+    }
+
+        .btn-secondary-c:hover {
+            background: #f1f2f6;
+            border-color: #b2bec3;
+            color: var(--c-text-main);
+        }
+
+    .btn-primary-c {
+        background: linear-gradient(135deg, var(--c-primary), var(--c-secondary));
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(78, 84, 200, 0.4);
+    }
+
+        .btn-primary-c:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(78, 84, 200, 0.5);
+        }
+
+    /* --- ANIMATIONS KEYFRAMES --- */
+    @@keyframes slideDown {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+    @@keyframes slideLeft {
+        from
+
+    {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    }
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+    }
+
+    /* Responsive */
+    @@media (max-width: 992px) {
+        .create-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .sticky-sidebar {
+        position: static;
+        margin-top: 2rem;
+    }
+
+    .preview-phone-mockup {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    }
+    /* CSS NÂNG CAO - MODERN SERVICE SELECTOR */
+    .service-brand-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--c-primary);
+        color: #fff;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
+    }
+
+    .service-dynamic-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .modern-service-card {
+        width: 100%;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .hidden-service-input {
+        display: none;
+    }
+
+    .card-visual-layer {
+        background: #fff;
+        border: 2px solid #f1f5f9;
+        border-radius: 20px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .modern-service-card:hover .card-visual-layer {
+        border-color: var(--c-primary);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    .icon-section {
+        width: 50px;
+        height: 50px;
+        background: #f8fafc;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #94a3b8;
+        transition: all 0.3s ease;
+    }
+
+    .s-title {
+        font-weight: 800;
+        color: #1e293b;
+        font-size: 0.95rem;
+    }
+
+    .s-meta {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--c-primary);
+    }
+
+        .s-meta .unit {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+    .check-box-custom {
+        margin-left: auto;
+        width: 24px;
+        height: 24px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    /* Khi được chọn */
+    .hidden-service-input:checked + .card-visual-layer {
+        background: #fcfdff;
+        border-color: var(--c-primary);
+    }
+
+        .hidden-service-input:checked + .card-visual-layer .icon-section {
+            background: var(--c-primary);
+            color: #fff;
+            transform: rotateY(360deg);
+        }
+
+        .hidden-service-input:checked + .card-visual-layer .check-box-custom {
+            background: var(--c-primary);
+            border-color: var(--c-primary);
+        }
+
+    .active-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, rgba(78, 84, 200, 0.08), transparent);
+        opacity: 0;
+        transition: 0.4s;
+    }
+
+    .hidden-service-input:checked + .card-visual-layer .active-glow {
+        opacity: 1;
+    }
+
+    .bg-soft-primary {
+        background-color: rgba(78, 84, 200, 0.1);
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<div class="main-wrapper">
+
+    <div class="page-header">
+        <div class="page-title">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1" style="background: none; padding: 0;">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Quản lý nhà</a></li>
+                    <li class="breadcrumb-item active text-primary" aria-current="page">Thêm phòng</li>
+                </ol>
+            </nav>
+            <h1>Thêm Phòng Mới</h1>
+        </div>
+        <div class="d-none d-md-block">
+            <span class="badge bg-primary fs-6 p-2 rounded-pill px-3">
+                <i class="bi bi-clock-history me-1"></i> @DateTime.Now.ToString("dd/MM/yyyy")
+            </span>
+        </div>
+    </div>
+
+    <div class="create-grid">
+
+        <div class="left-column">
+            <form asp-action="Create" enctype="multipart/form-data" id="createRoomForm">
+                <input type="hidden" asp-for="NhaTroId" />
+
+                <div class="app-card mb-4">
+                    <div class="section-title">
+                        <i class="bi bi-info-circle"></i> Thông tin cơ bản
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Tên phòng / Số phòng <span class="text-danger">*</span></label>
+                                <input asp-for="TenPhong" class="form-control-custom" id="inputName" placeholder="Ví dụ: Phòng 101, P.VIP-01" required oninput="updatePreview()" />
+                                <span asp-validation-for="TenPhong" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group select-wrapper">
+                                <label class="form-label">Tầng <span class="text-danger">*</span></label>
+                                <select asp-for="Tang" class="form-control-custom" id="inputFloor" onchange="updatePreview()">
+                                    @for (int i = 1; i <= (nhaInfo?.LoaiNha > 0 ? nhaInfo.LoaiNha : 8); i++)
+                                    {
+                                        <option value="@i">Tầng @i</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Diện tích (m²)</label>
+                                <input asp-for="DienTich" type="number" class="form-control-custom" id="inputArea" placeholder="25" oninput="updatePreview()" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Số người tối đa</label>
+                                <div class="input-group">
+                                    <input asp-for="SoLuongNguoi" type="number" class="form-control-custom" id="inputCapacity" value="2" min="1" max="10" oninput="updatePreview()" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="app-card mb-4">
+                    <div class="section-title">
+                        <i class="bi bi-cash-coin"></i> Chi phí & Đặt cọc
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Giá thuê (VNĐ/tháng)</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control-custom" value="@nhaInfo?.GiaThue.ToString("N0")" readonly style="background-color: #f1f2f6; font-weight: 700; color: var(--c-primary);" />
+                                    <input type="hidden" asp-for="GiaPhong" id="inputPrice" value="@nhaInfo?.GiaThue" />
+                                    <i class="bi bi-lock-fill position-absolute" style="right: 15px; top: 12px; color: #999;"></i>
+                                </div>
+                                <small class="text-muted fst-italic mt-1 d-block"><i class="bi bi-exclamation-circle"></i> Giá cố định theo tòa nhà.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Tiền cọc (VNĐ)</label>
+                                <input type="text" class="form-control-custom currency-input" id="displayDeposit" placeholder="0" oninput="formatCurrency(this); updatePreview();" />
+                                <input type="hidden" asp-for="TienCoc" id="realDeposit" />
+                                <small class="text-muted mt-1 d-block">Số tiền khách cần cọc trước khi vào.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="app-card mb-4">
+                    <div class="section-title">
+                        <i class="bi bi-stars"></i> Đặc điểm & Nội thất
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <label class="form-label mb-3">Đối tượng ưu tiên</label>
+                            <div class="radio-group-container">
+                                <label>
+                                    <input type="radio" asp-for="DoiTuong" value="Nam" class="radio-card-input" onchange="updatePreview()">
+                                    <div class="radio-card-label">
+                                        <i class="bi bi-gender-male"></i>
+                                        <span>Nam</span>
+                                    </div>
+                                </label>
+                                <label>
+                                    <input type="radio" asp-for="DoiTuong" value="Nữ" class="radio-card-input" onchange="updatePreview()">
+                                    <div class="radio-card-label">
+                                        <i class="bi bi-gender-female"></i>
+                                        <span>Nữ</span>
+                                    </div>
+                                </label>
+                                <label>
+                                    <input type="radio" asp-for="DoiTuong" value="" class="radio-card-input" checked onchange="updatePreview()">
+                                    <div class="radio-card-label">
+                                        <i class="bi bi-people"></i>
+                                        <span>Tất cả</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label mb-3">Tình trạng nội thất</label>
+                            <div class="radio-group-container">
+                                <label>
+                                    <input type="radio" asp-for="NoiThat" value="Trống" class="radio-card-input" onchange="updatePreview()">
+                                    <div class="radio-card-label">
+                                        <i class="bi bi-box"></i>
+                                        <span>Phòng trống</span>
+                                    </div>
+                                </label>
+                                <label>
+                                    <input type="radio" asp-for="NoiThat" value="Cơ bản" class="radio-card-input" onchange="updatePreview()">
+                                    <div class="radio-card-label">
+                                        <i class="bi bi-lamp"></i>
+                                        <span>Cơ bản</span>
+                                    </div>
+                                </label>
+                                <label>
+                                    <input type="radio" asp-for="NoiThat" value="Đầy đủ" class="radio-card-input" checked onchange="updatePreview()">
+                                    <div class="radio-card-label">
+                                        <i class="bi bi-house-heart"></i>
+                                        <span>Full nội thất</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="app-card mb-4 shadow-lg border-0 animate-fade-in" style="animation-delay: 0.4s; border-radius: 20px;">
+                        <div class="section-title d-flex justify-content-between align-items-center p-4 border-bottom bg-white" style="border-radius: 20px 20px 0 0;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="service-brand-icon">
+                                    <i class="bi bi-cpu-fill"></i>
+                                </div>
+                                <div>
+                                    <h5 class="m-0 fw-bold text-dark">Dịch Vụ Theo Tòa Nhà</h5>
+                                    <p class="m-0 text-muted small">Chỉ hiển thị các dịch vụ khả dụng tại: <strong>@nhaInfo?.TenNhaTro</strong></p>
+                                </div>
+                            </div>
+                            <div id="selection-status-area">
+                                <span class="badge bg-soft-primary text-primary rounded-pill px-3 py-2" id="selectedCountBadge">
+                                    <i class="bi bi-check2-all me-1"></i> Đã chọn: 0
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-light-subtle">
+                            <div class="service-dynamic-grid">
+                                @if (ViewBag.DichVuHienThi != null && ((List<do_an_tot_nghiep.Models.DichVu>)ViewBag.DichVuHienThi).Any())
+                                {
+                                    var services = (List<do_an_tot_nghiep.Models.DichVu>)ViewBag.DichVuHienThi;
+                                    foreach (var item in services)
+                                    {
+                                        <div class="service-card-wrapper">
+                                            <label class="modern-service-card" for="chk_@item.Id">
+                                                <input type="checkbox"
+                                                       name="selectedDichVu"
+                                                       id="chk_@item.Id"
+                                                       value="@item.Ten"
+                                                       class="hidden-service-input"
+                                                       onchange="animateServiceCard(this, '@item.Id')">
+
+                                                <div class="card-visual-layer">
+                                                    <div class="active-glow"></div>
+
+                                                    <div class="icon-section">
+                                                        @{
+                                                            // MAPPING ICON TỰ ĐỘNG THEO TÊN DỊCH VỤ TRONG DB
+                                                            string iClass = "bi-app-indicator";
+                                                            string lowerTen = item.Ten.ToLower();
+                                                            if (lowerTen.Contains("điện")) iClass = "bi-lightning-charge-fill";
+                                                            else if (lowerTen.Contains("nước")) iClass = "bi-droplet-fill";
+                                                            else if (lowerTen.Contains("rác")) iClass = "bi-trash3-fill";
+                                                            else if (lowerTen.Contains("wifi") || lowerTen.Contains("mạng")) iClass = "bi-wifi";
+                                                            else if (lowerTen.Contains("xe")) iClass = "bi-bicycle";
+                                                            else if (lowerTen.Contains("quản lý")) iClass = "bi-person-badge-fill";
+                                                        }
+                                                        <i class="bi @iClass"></i>
+                                                    </div>
+
+                                                    <div class="content-section">
+                                                        <div class="s-title">@item.Ten</div>
+                                                        <div class="s-meta">
+                                                            <span class="price">@item.DonGia.ToString("N0")</span>
+                                                            <span class="unit">đ/@item.LoaiDichVu</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="check-box-custom">
+                                                        <i class="bi bi-check"></i>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="empty-service-state w-100 text-center py-5">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="Empty" style="width: 100px; opacity: 0.3;">
+                                        <h6 class="mt-3 fw-bold text-muted">Tòa nhà này chưa được gán dịch vụ!</h6>
+                                        <p class="small text-muted">Vui lòng quay lại phần Quản lý nhà trọ để thiết lập dịch vụ trước.</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white p-3 border-top rounded-bottom-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small"><i class="bi bi-info-circle me-1"></i> Tích chọn để hiển thị trên hợp đồng khách thuê.</span>
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="toggleSelectAll()">
+                                    <i class="bi bi-list-check me-1"></i> Chọn tất cả
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="app-card mb-4">
+                    <div class="section-title">
+                        <i class="bi bi-images"></i> Hình ảnh & Ghi chú
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="form-label">Ảnh đại diện phòng</label>
+                        <div class="upload-area" id="dropZone">
+                            <input asp-for="ImageFile" type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewFile()">
+                            <div id="uploadContent">
+                                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                                <div class="upload-text">
+                                    <h5>Kéo thả ảnh vào đây hoặc Click để chọn</h5>
+                                    <p>Hỗ trợ: JPG, PNG, WEBP (Max 5MB)</p>
+                                </div>
+                            </div>
+                            <div id="previewContainer" style="display: none; position: relative;">
+                                <img id="imgPreviewRaw" style="max-height: 250px; border-radius: 10px; max-width: 100%; box-shadow: var(--shadow-sm);" />
+                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute" style="top: -10px; right: -10px;" onclick="removeImage(event)">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Ghi chú thêm</label>
+                        <textarea asp-for="GhiChu" class="form-control-custom" rows="3" placeholder="Nhập những lưu ý đặc biệt cho phòng này..." oninput="updatePreview()"></textarea>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <a href="/QuanLyPhong/Index?nhaId=@nhaInfo?.Id" class="btn-custom btn-secondary-c">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn-custom btn-primary-c">
+                        <i class="bi bi-save"></i> Lưu thông tin phòng
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="right-column sticky-sidebar">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-muted m-0">LIVE PREVIEW</h5>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">
+                    <i class="bi bi-eye-fill me-1"></i> Xem trước
+                </span>
+            </div>
+
+            <div class="preview-phone-mockup">
+                <div class="preview-screen">
+                    <div class="preview-header">
+                        <img src="https://via.placeholder.com/400x300?text=Chưa+có+ảnh" id="previewImage" class="preview-img" alt="Room Preview">
+                        <div class="preview-badge" id="previewStatus">Đang cập nhật...</div>
+                    </div>
+
+                    <div class="preview-body">
+                        <div id="previewName" class="preview-name">Tên phòng...</div>
+                        <div class="preview-price">
+                            <span id="previewPrice">@nhaInfo?.GiaThue.ToString("N0")</span>
+                            <small> VNĐ/tháng</small>
+                        </div>
+
+                        <div class="preview-features">
+                            <div class="p-feat-item">
+                                <i class="bi bi-aspect-ratio"></i>
+                                <span id="previewArea">--</span> m²
+                            </div>
+                            <div class="p-feat-item">
+                                <i class="bi bi-people"></i>
+                                <span id="previewCapacity">--</span> người
+                            </div>
+                            <div class="p-feat-item">
+                                <i class="bi bi-layers"></i>
+                                <span id="previewFloor">--</span>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold fs-6 mb-2 text-dark"><i class="bi bi-stars text-warning me-1"></i> Tiện ích & Dịch vụ</h6>
+                        <div class="preview-services-list" id="previewServices">
+                            <span class="text-muted small">Chưa chọn dịch vụ nào</span>
+                        </div>
+
+                        <hr class="my-3 opacity-25">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Cọc trước:</small>
+                            <span class="fw-bold text-dark" id="previewDeposit">0 VNĐ</span>
+                        </div>
+
+                        <div class="preview-note-box mt-3" id="previewNote" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 text-center">
+                    <div style="width: 100px; height: 5px; background: #e0e0e0; border-radius: 10px; margin: 0 auto;"></div>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center text-muted small">
+                <p>Đây là giao diện hiển thị cho người thuê khi xem chi tiết phòng.</p>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="text/javascript">
+        /**
+     * ========================================================================
+     * PRO-LEVEL ROOM MANAGEMENT ENGINE
+     * VERSION: 2.0.1
+     * DESCRIPTION: Quản lý logic nghiệp vụ, Live Preview và Validation.
+     * ========================================================================
+     */
+
+    // --- GLOBAL CONSTANTS & CONFIGURATION ---
+    const CONFIG = {
+        DEBUG: true,
+        MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+        ALLOWED_EXTENSIONS: ['jpg', 'jpeg', 'png', 'webp'],
+        CURRENCY_LOCALE: 'vi-VN',
+        CURRENCY_SYMBOL: 'VNĐ',
+        DEFAULT_IMAGE: "https://via.placeholder.com/400x300?text=Chưa+có+ảnh"
+    };
+
+    /**
+     * 1. INITIALIZATION SYSTEM
+     * Thiết lập các sự kiện khi trang đã sẵn sàng
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        log('Initializing Engine...');
+
+        // Khởi tạo Live Preview
+        updatePreview();
+
+        // Thiết lập hệ thống Drag & Drop chuyên nghiệp
+        initDragAndDropSystem();
+
+        // Thiết lập bộ lắng nghe cho các input để cập nhật Preview liên tục
+        initLiveListeners();
+
+        log('Engine is ready for operation.');
+    });
+
+    /**
+     * LOGGING SYSTEM
+     * Giúp kiểm soát luồng dữ liệu trên Console
+     */
+    function log(message, data = null) {
+        if (CONFIG.DEBUG) {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`%c[ROOM-ENGINE] %c${timestamp} - ${message}`, "color: #00b894; font-weight: bold", "color: #333", data || "");
+        }
+    }
+
+    /**
+     * DRAG AND DROP SYSTEM
+     * Quản lý việc kéo thả tệp tin ảnh
+     */
+    function initDragAndDropSystem() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        if (!dropZone || !fileInput) return;
+
+        // Click để chọn file
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Hiệu ứng khi kéo file vào vùng drop
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('drag-over', 'animate__animated', 'animate__pulse');
+            });
+        });
+
+        // Hiệu ứng khi kéo file ra khỏi vùng drop
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('drag-over', 'animate__animated', 'animate__pulse');
+            });
+        });
+
+        // Xử lý khi file được thả vào
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length) {
+                log('File dropped via Drag & Drop', files[0].name);
+                validateAndProcessFile(files[0]);
+            }
+        });
+    }
+
+    /**
+     * LIVE LISTENERS
+     * Lắng nghe mọi thay đổi trên form để cập nhật UI ngay lập tức
+     */
+    function initLiveListeners() {
+        const inputs = [
+            'inputName', 'inputFloor', 'inputArea',
+            'inputCapacity', 'displayDeposit', 'GhiChu'
+        ];
+
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                ['input', 'change', 'blur'].forEach(evt => {
+                    el.addEventListener(evt, updatePreview);
+                });
+            }
+        });
+
+        // Lắng nghe các checkbox dịch vụ, nội thất và giới tính
+        document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(el => {
+            el.addEventListener('change', updatePreview);
+        });
+    }
+
+    /**
+     * 2. FORMAT CURRENCY SYSTEM
+     * Chuyển đổi số sang định dạng tiền tệ và ngược lại
+     */
+    function formatCurrency(input) {
+        // Làm sạch dữ liệu, chỉ giữ lại số
+        let value = input.value.replace(/\D/g, '');
+
+        // Lưu giá trị số thực vào trường ẩn để gửi lên server
+        const realInput = document.getElementById('realDeposit');
+        if (realInput) realInput.value = value;
+
+        // Định dạng hiển thị VNĐ
+        if (value) {
+            input.value = new Intl.NumberFormat(CONFIG.CURRENCY_LOCALE).format(value);
+        } else {
+            input.value = '';
+        }
+
+        log('Currency formatted', { raw: value, formatted: input.value });
+    }
+
+    /**
+     * 3. IMAGE PROCESSING SYSTEM
+     * Quản lý việc kiểm tra, hiển thị và xóa ảnh
+     */
+    function validateAndProcessFile(file) {
+        const fileInput = document.getElementById('fileInput');
+
+        // Kiểm tra định dạng
+        const extension = file.name.split('.').pop().toLowerCase();
+        if (!CONFIG.ALLOWED_EXTENSIONS.includes(extension)) {
+            showToast('error', 'Định dạng file không hỗ trợ!');
+            return false;
+        }
+
+        // Kiểm tra dung lượng
+        if (file.size > CONFIG.MAX_FILE_SIZE) {
+            showToast('error', 'Dung lượng ảnh quá lớn (Max 5MB)!');
+            return false;
+        }
+
+        // Gán file cho input
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        fileInput.files = dataTransfer.files;
+
+        previewFile();
+        return true;
+    }
+
+    function previewFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        const previewRaw = document.getElementById('imgPreviewRaw');
+        const uploadContent = document.getElementById('uploadContent');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImageRight = document.getElementById('previewImage');
+
+        if (file) {
+            const reader = new FileReader();
+
+            // Hiệu ứng loading giả lập
+            log('Reading file stream...', file.name);
+
+            reader.onload = function(e) {
+                // Hiệu ứng mờ dần cho ảnh mới
+                previewImageRight.style.opacity = '0';
+
+                setTimeout(() => {
+                    previewRaw.src = e.target.result;
+                    previewImageRight.src = e.target.result;
+
+                    uploadContent.style.display = 'none';
+                    previewContainer.style.display = 'block';
+                    previewContainer.classList.add('animate__animated', 'animate__fadeIn');
+
+                    previewImageRight.style.opacity = '1';
+                    log('Image preview updated successfully.');
+                }, 200);
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeImage(event) {
+        if (event) event.stopPropagation();
+
+        log('Removing current image...');
+
+        document.getElementById('fileInput').value = "";
+        document.getElementById('uploadContent').style.display = 'block';
+        document.getElementById('previewContainer').style.display = 'none';
+        document.getElementById('previewImage').src = CONFIG.DEFAULT_IMAGE;
+
+        showToast('info', 'Đã gỡ bỏ hình ảnh.');
+    }
+
+    /**
+     * 4. LIVE PREVIEW ENGINE (THE CORE)
+     * Bộ máy chính xử lý việc đồng bộ dữ liệu lên bản xem trước
+     */
+    function updatePreview() {
+        try {
+            // --- TRÍCH XUẤT DỮ LIỆU ---
+            const data = {
+                name: document.getElementById('inputName')?.value || "Tên phòng...",
+                floor: document.getElementById('inputFloor')?.value || "1",
+                area: document.getElementById('inputArea')?.value || "--",
+                capacity: document.getElementById('inputCapacity')?.value || "--",
+                price: document.getElementById('inputPrice')?.value || "0",
+                deposit: document.getElementById('realDeposit')?.value || "0",
+                furniture: document.querySelector('input[name="NoiThat"]:checked')?.value || "Cơ bản",
+                gender: document.querySelector('input[name="DoiTuong"]:checked')?.value || "Tất cả",
+                note: document.querySelector('textarea[name="GhiChu"]')?.value || ""
+            };
+
+            // --- ĐỊNH DẠNG DỮ LIỆU ---
+            const fmtPrice = new Intl.NumberFormat(CONFIG.CURRENCY_LOCALE).format(data.price);
+            const fmtDeposit = new Intl.NumberFormat(CONFIG.CURRENCY_LOCALE).format(data.deposit);
+
+            // --- CẬP NHẬT DOM (BẢN XEM TRƯỚC BÊN PHẢI) ---
+            const DOM = {
+                name: document.getElementById('previewName'),
+                price: document.getElementById('previewPrice'),
+                area: document.getElementById('previewArea'),
+                capacity: document.getElementById('previewCapacity'),
+                floor: document.getElementById('previewFloor'),
+                deposit: document.getElementById('previewDeposit'),
+                status: document.getElementById('previewStatus'),
+                note: document.getElementById('previewNote'),
+                services: document.getElementById('previewServices')
+            };
+
+            if (DOM.name) DOM.name.innerText = data.name;
+            if (DOM.price) DOM.price.innerText = fmtPrice;
+            if (DOM.area) DOM.area.innerText = data.area;
+            if (DOM.capacity) DOM.capacity.innerText = data.capacity;
+            if (DOM.floor) DOM.floor.innerText = "Tầng " + data.floor;
+            if (DOM.deposit) DOM.deposit.innerText = fmtDeposit + " " + CONFIG.CURRENCY_SYMBOL;
+
+            // Cập nhật trạng thái Badge
+            if (DOM.status) {
+                DOM.status.innerText = `${data.furniture} • ${data.gender}`;
+            }
+
+            // Xử lý hiển thị danh sách dịch vụ
+            if (DOM.services) {
+                DOM.services.innerHTML = '';
+                // Thêm tag nội thất
+                const furnitureTag = document.createElement('span');
+                furnitureTag.className = 'p-srv-tag';
+                furnitureTag.style.cssText = "background: #eef2ff; color: #4361ee; font-weight: bold;";
+                furnitureTag.innerHTML = `<i class="bi bi-box-seam me-1"></i> ${data.furniture}`;
+                DOM.services.appendChild(furnitureTag);
+
+                // Thêm các dịch vụ được chọn
+                const checkedServices = document.querySelectorAll('input[name="selectedDichVu"]:checked');
+                checkedServices.forEach(cb => {
+                    const span = document.createElement('span');
+                    span.className = 'p-srv-tag animate__animated animate__fadeIn';
+                    span.innerText = cb.value;
+                    DOM.services.appendChild(span);
+                });
+            }
+
+            // Xử lý hiển thị ghi chú
+            if (DOM.note) {
+                if (data.note.trim() !== "") {
+                    DOM.note.style.display = 'block';
+                    DOM.note.innerText = `"${data.note}"`;
+                } else {
+                    DOM.note.style.display = 'none';
+                }
+            }
+        } catch (error) {
+            console.error("Critical error in Live Preview Engine:", error);
+        }
+    }
+
+    /**
+     * 5. VALIDATION & SUBMISSION SYSTEM
+     * Quản lý việc kiểm tra dữ liệu cuối cùng và gửi form
+     */
+    document.getElementById('createRoomForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        log('Form submission initiated...');
+
+        // Thu thập các giá trị cần validate
+        const fields = {
+            name: { el: document.getElementById('inputName'), label: 'Tên phòng' },
+            area: { el: document.getElementById('inputArea'), label: 'Diện tích' },
+            deposit: { el: document.getElementById('realDeposit'), label: 'Tiền cọc' }
+        };
+
+        // Kiểm tra trống
+        for (let key in fields) {
+            if (!fields[key].el.value) {
+                highlightError(fields[key].el);
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thông tin không hợp lệ',
+                    text: `Vui lòng không để trống trường: ${fields[key].label}`,
+                    confirmButtonColor: '#00b894'
+                });
+                return;
+            }
+        }
+
+        // Gom nhóm dịch vụ vào input ẩn
+        processServiceSelection();
+
+        // Hiệu ứng nộp bài chuyên nghiệp
+        Swal.fire({
+            title: 'Đang khởi tạo phòng...',
+            html: 'Hệ thống đang đồng bộ dữ liệu và lưu trữ hình ảnh',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Delay nhân văn để người dùng cảm thấy hệ thống đang làm việc
+        setTimeout(() => {
+            log('Submitting form now.');
+            this.submit();
+        }, 1200);
+    });
+
+    /**
+     * UTILITY FUNCTIONS
+     * Các hàm bổ trợ quy mô nhỏ
+     */
+    function processServiceSelection() {
+        const selected = [];
+        document.querySelectorAll('input[name="selectedDichVu"]:checked').forEach(el => {
+            selected.push(el.value);
+        });
+
+        const oldInput = document.querySelector('input[name="DichVu"]');
+        if (oldInput) oldInput.remove();
+
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "DichVu";
+        hiddenInput.value = selected.join(", ");
+        document.getElementById('createRoomForm').appendChild(hiddenInput);
+
+        log('Services combined', hiddenInput.value);
+    }
+
+    function showToast(icon, title) {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+        Toast.fire({ icon, title });
+    }
+
+    function highlightError(element) {
+        element.classList.add('is-invalid', 'animate__animated', 'animate__shakeX');
+        setTimeout(() => {
+            element.classList.remove('animate__shakeX');
+        }, 1000);
+    }
+</script>
+}

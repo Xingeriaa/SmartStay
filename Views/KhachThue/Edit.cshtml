@@ -1,0 +1,288 @@
+﻿@model do_an_tot_nghiep.Models.KhachThue
+
+@{
+    ViewData["Title"] = "Cập Nhật Thông Tin Khách Thuê";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+
+<style>
+    :root {
+        /* --- MÀU CHỦ ĐẠO DUY NHẤT --- */
+        --theme-gradient: var(--brand-gradient);
+        --theme-color-primary: var(--brand-600);
+        --theme-color-secondary: var(--accent-500);
+        --glass-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    body {
+        background-color: #f4f7f6;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+
+    /* Card & Layout */
+    .main-card {
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        background: white;
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        background: var(--theme-gradient);
+        padding: 2rem;
+        color: white;
+        position: relative;
+    }
+
+        .card-header-custom::after {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: white;
+            border-radius: 25px 25px 0 0;
+        }
+
+    /* Input Styles */
+    .form-label {
+        font-weight: 600;
+        color: #444;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control-modern {
+        border: 2px solid #eef2f7;
+        border-radius: 12px;
+        padding: 12px 15px;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+        background-color: #fcfcfc;
+    }
+
+        .form-control-modern:focus {
+            border-color: var(--theme-color-secondary);
+            box-shadow: 0 0 0 4px rgba(37, 117, 252, 0.1);
+            background-color: white;
+            outline: none;
+        }
+
+    /* Avatar Edit Section */
+    .profile-edit-wrapper {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        margin: -40px auto 20px; /* Đẩy lên đè vào header */
+        z-index: 10;
+    }
+
+    .profile-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid white;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        background: white;
+    }
+
+    .btn-upload-camera {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 40px;
+        height: 40px;
+        background: var(--theme-gradient);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: transform 0.2s;
+    }
+
+        .btn-upload-camera:hover {
+            transform: scale(1.1);
+        }
+
+    /* Buttons */
+    .btn-grad {
+        padding: 12px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        border: none;
+        transition: 0.3s;
+        background: var(--theme-gradient);
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+    }
+
+        .btn-grad:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.4);
+            color: white;
+        }
+
+    .btn-soft {
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 600;
+        background: #eef2f7;
+        color: #5e6e82;
+        border: none;
+        transition: 0.3s;
+    }
+
+        .btn-soft:hover {
+            background: #dfe6ed;
+            color: #2d3748;
+        }
+</style>
+
+<div class="container py-5 animate__animated animate__fadeInUp">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card main-card">
+
+                <div class="card-header-custom text-center">
+                    <h4 class="fw-bold mb-1">Cập Nhật Hồ Sơ</h4>
+                    <p class="mb-0 opacity-75 small">Chỉnh sửa thông tin khách thuê: @Model.HoTen</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5 pt-0">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="HinhAnh" /> <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 bg-soft-danger mb-4"></div>
+
+                        <div class="profile-edit-wrapper">
+                            @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                            {
+                                <img src="~/images/khachthue/@Model.HinhAnh" id="currentImage" class="profile-img" alt="Avatar" />
+                            }
+                            else
+                            {
+                                <div id="noImagePlaceholder" class="profile-img d-flex align-items-center justify-content-center bg-light text-muted">
+                                    <i class="fas fa-user fa-3x"></i>
+                                </div>
+                            }
+
+                            <img id="newImagePreview" class="profile-img" style="display: none;" alt="Preview" />
+
+                            <label for="fileInput" class="btn-upload-camera" title="Thay đổi ảnh">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" name="fHinhAnh" id="fileInput" class="d-none" accept="image/*" onchange="previewFile()" />
+                        </div>
+                        <div class="text-center mb-5">
+                            <h5 class="fw-bold text-dark">@Model.HoTen</h5>
+                            <span class="badge bg-light text-secondary border">Mã KH: #@Model.Id</span>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="HoTen" class="form-label">Họ và tên</label>
+                                    <input asp-for="HoTen" class="form-control-modern" />
+                                    <span asp-validation-for="HoTen" class="text-danger small"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="SoCCCD" class="form-label">Số CCCD/CMND</label>
+                                    <input asp-for="SoCCCD" class="form-control-modern" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="NgaySinh" class="form-label">Ngày sinh</label>
+                                    <input asp-for="NgaySinh" type="date" class="form-control-modern" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="SoDienThoai1" class="form-label">Số điện thoại 1</label>
+                                    <input asp-for="SoDienThoai1" class="form-control-modern" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">Email</label>
+                                    <input asp-for="Email" type="email" class="form-control-modern" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="NoiSinh" class="form-label">Quê quán (Nơi sinh)</label>
+                                    <input asp-for="NoiSinh" class="form-control-modern" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="NoiCap" class="form-label">Nơi cấp CCCD</label>
+                                    <input asp-for="NoiCap" class="form-control-modern" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="SoTienCoc" class="form-label">Tiền cọc (VNĐ)</label>
+                                    <input asp-for="SoTienCoc" type="number" class="form-control-modern" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="SoDienThoai2" class="form-label">Số điện thoại 2</label>
+                                    <input asp-for="SoDienThoai2" class="form-control-modern" placeholder="Không bắt buộc" />
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="DiaChiThuongTru" class="form-label">Địa chỉ thường trú</label>
+                                <textarea asp-for="DiaChiThuongTru" class="form-control-modern" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-soft">
+                                <i class="fas fa-times me-2"></i>Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-grad">
+                                <i class="fas fa-save me-2"></i>Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function previewFile() {
+            var file = document.getElementById('fileInput').files[0];
+            var reader = new FileReader();
+
+            var currentImg = document.getElementById('currentImage');
+            var placeholder = document.getElementById('noImagePlaceholder');
+            var previewImg = document.getElementById('newImagePreview');
+
+            reader.onloadend = function () {
+                // Gán nguồn ảnh mới
+                previewImg.src = reader.result;
+                previewImg.style.display = 'block';
+
+                // Ẩn ảnh cũ hoặc placeholder
+                if(currentImg) currentImg.style.display = 'none';
+                if(placeholder) placeholder.style.display = 'none';
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                // Nếu user cancel chọn file, reset về trạng thái ban đầu
+                previewImg.src = "";
+                previewImg.style.display = 'none';
+                if(currentImg) currentImg.style.display = 'block';
+                if(placeholder) placeholder.style.display = 'flex';
+            }
+        }
+    </script>
+}

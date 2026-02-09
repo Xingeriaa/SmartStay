@@ -1,0 +1,13 @@
+﻿@model IEnumerable<do_an_tot_nghiep.Models.PaymentTransaction>
+
+@{
+    ViewData["Title"] = "Giao dịch thanh toán";
+}
+
+<h2>Giao dịch thanh toán</h2>
+
+@Html.AntiForgeryToken()
+
+<div id="paymentContainer">
+    @await Html.PartialAsync("_PaymentTable", Model)
+</div>

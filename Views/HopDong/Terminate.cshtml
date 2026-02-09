@@ -1,0 +1,206 @@
+@model HopDong
+@{
+    ViewData["Title"] = "Thanh lý hợp đồng";
+}
+
+<style>
+    /* CSS Nâng cao - Theme Tím */
+    :root {
+        --theme-primary: var(--brand-600);
+        --theme-secondary: var(--accent-500);
+        --theme-gradient: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%);
+        --theme-bg-soft: #f8f9fa;
+    }
+
+    /* Animation xuất hiện nhẹ */
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .page-container {
+        animation: fadeIn 0.5s ease-out;
+        max-width: 800px; /* Giới hạn chiều rộng để form gọn đẹp */
+        margin: 0 auto;
+    }
+
+    /* Card Style */
+    .card-modern {
+        border: none;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(106, 17, 203, 0.08);
+        overflow: hidden;
+    }
+
+    .card-header-modern {
+        background: var(--theme-bg-soft);
+        padding: 2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(106, 17, 203, 0.1);
+        color: var(--theme-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin: 0 auto 1rem;
+    }
+
+    /* Input Styling */
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s;
+    }
+
+        .form-control:focus {
+            border-color: var(--theme-primary);
+            box-shadow: 0 0 0 4px rgba(106, 17, 203, 0.1);
+        }
+
+    /* Input Group Text đẹp hơn */
+    .input-group-text {
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        color: #666;
+        font-weight: 500;
+    }
+
+    /* Button Styling */
+    .btn-theme-solid {
+        background: var(--theme-gradient);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(106, 17, 203, 0.2);
+    }
+
+        .btn-theme-solid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.3);
+            color: white;
+        }
+
+    .btn-theme-ghost {
+        color: #666;
+        background: transparent;
+        border: 1px solid transparent;
+        padding: 12px 24px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .btn-theme-ghost:hover {
+            background: #f1f1f1;
+            color: #333;
+        }
+
+    /* Typography */
+    .section-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #888;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+</style>
+
+<div class="page-container mt-4">
+    <form asp-action="Terminate" method="post" class="card card-modern">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="card-header-modern">
+            <div class="header-icon">
+                <i class="fa fa-handshake-slash"></i>
+            </div>
+            <h3 class="fw-bold mb-1" style="color: #333;">Thanh Lý Hợp Đồng</h3>
+            <p class="text-muted mb-0">Hoàn tất thủ tục chấm dứt hợp đồng thuê phòng</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <div class="alert alert-light border border-primary border-opacity-25 d-flex align-items-start mb-4" role="alert" style="background: rgba(106, 17, 203, 0.03);">
+                <i class="fa fa-calculator mt-1 me-3 fs-5" style="color: var(--theme-primary)"></i>
+                <div>
+                    <strong class="d-block text-dark">Lưu ý quyết toán</strong>
+                    <span class="small text-muted">Vui lòng kiểm tra kỹ các khoản công nợ, tiền điện nước và tiền cọc trước khi xác nhận số tiền hoàn trả.</span>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <label class="section-label">Thời gian</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-calendar-check"></i></span>
+                        <div class="form-floating flex-grow-1">
+                            <input asp-for="NgayThanhLy" type="date" class="form-control border-start-0" id="ngayThanhLy" placeholder="Ngày thanh lý" />
+                            <label for="ngayThanhLy">Ngày chính thức thanh lý</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="section-label">Khoản thu</label>
+                    <div class="input-group">
+                        <div class="form-floating flex-grow-1">
+                            <input asp-for="TongTienQuyetToan" class="form-control" id="tongTien" placeholder="0" />
+                            <label for="tongTien">Tổng tiền quyết toán</label>
+                        </div>
+                        <span class="input-group-text fw-bold">VNĐ</span>
+                    </div>
+                    <div class="form-text small"><i class="fa fa-arrow-up text-danger me-1"></i>Số tiền khách cần đóng thêm</div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="section-label">Khoản trả</label>
+                    <div class="input-group">
+                        <div class="form-floating flex-grow-1">
+                            <input asp-for="SoTienHoanTra" class="form-control" id="tienHoan" placeholder="0" />
+                            <label for="tienHoan">Số tiền hoàn trả lại</label>
+                        </div>
+                        <span class="input-group-text fw-bold">VNĐ</span>
+                    </div>
+                    <div class="form-text small"><i class="fa fa-arrow-down text-success me-1"></i>Số tiền trả lại khách (Cọc...)</div>
+                </div>
+
+                <div class="col-12">
+                    <label class="section-label">Thông tin bổ sung</label>
+                    <div class="form-floating">
+                        <textarea asp-for="GhiChuThanhLy" class="form-control" id="ghiChu" style="height: 100px" placeholder="Lý do..."></textarea>
+                        <label for="ghiChu">Ghi chú / Lý do thanh lý</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end align-items-center mt-5 pt-3 border-top">
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-theme-ghost me-2">
+                    Bỏ qua
+                </a>
+                <button type="submit" class="btn btn-theme-solid">
+                    <i class="fa fa-check-circle me-2"></i>Xác nhận Thanh Lý
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

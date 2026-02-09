@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Quản Lý Nhà Trọ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/app.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header d-flex align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fa fa-home text-primary me-2"></i> SmartStay </h5>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a asp-controller="Users" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")">
+                <i class="fa fa-tools"></i> Quản lý người dùng
+            </a>
+            <a asp-controller="QuanLyNha" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "QuanLyNha" ? "active" : "")">
+                <i class="fa fa-th-large"></i> Quản lý nhà
+            </a>
+
+            <a asp-controller="QuanLyPhong" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "QuanLyPhong" ? "active" : "")">
+                <i class="fa fa-door-open"></i> Quản lý phòng
+            </a>
+            <a asp-controller="KhachThue" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "KhachThue" ? "active" : "")">
+                <i class="fa fa-users"></i> Khách thuê
+            </a>
+            <a asp-controller="RoomAssets" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "RoomAssets" ? "active" : "")">
+                <i class="fa fa-tools"></i> Quản lý thiết bị
+            </a>
+            <a asp-controller="HopDong" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "HopDong" ? "active" : "")">
+                <i class="fa fa-handshake"></i> Hợp đồng
+            </a>
+            <a asp-controller="DichVu" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "DichVu" ? "active" : "")">
+                <i class="fa fa-tools"></i> Dịch vụ
+            </a>
+            <a href="#"><i class="fa fa-boxes"></i> Tài sản</a>
+
+            <a href="#"><i class="fa fa-car"></i> Phương tiện</a>
+            <a href="#"><i class="fa fa-chart-pie"></i> Thống kê</a>
+            <a href="#"><i class="fa fa-cog"></i> Cài đặt</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header class="topbar">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-light d-lg-none me-3" onclick="toggleSidebar()">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <h5 class="fw-semibold mb-0 text-dark">@ViewData["Title"]</h5>
+            </div>
+
+            @using Microsoft.AspNetCore.Http
+            @inject IHttpContextAccessor HttpContextAccessor
+
+            <div class="d-flex align-items-center">
+                @{
+                    var userName = HttpContextAccessor.HttpContext?.Session.GetString("UserName");
+                    var hour = DateTime.Now.Hour;
+                    string greeting = hour >= 5 && hour < 11 ? "Chào buổi sáng" :
+                    hour >= 11 && hour < 13 ? "Chào buổi trưa" :
+                    hour >= 13 && hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+                    var firstLetter = !string.IsNullOrEmpty(userName) ? userName.Substring(0, 1).ToUpper() : "?";
+                }
+
+                @if (userName != null)
+                {
+                    <div class="me-3 d-none d-md-block text-end">
+                        <span class="text-muted small">@greeting,</span>
+                        <span class="fw-bold d-block text-dark">@userName</span>
+                    </div>
+                    <div class="dropdown">
+                        <div class="user-profile d-flex align-items-center" data-bs-toggle="dropdown">
+                            <div class="avatar-circle">@firstLetter</div>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+                            <li><a class="dropdown-item rounded" href="#"><i class="fa fa-user-circle me-2 text-muted"></i> Hồ sơ</a></li>
+                            <li><a class="dropdown-item rounded" href="#"><i class="fa fa-lock me-2 text-muted"></i> Đổi mật khẩu</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded text-danger" href="/Account/Logout"><i class="fa fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn btn-primary btn-sm rounded-pill px-3">Đăng nhập</a>
+                }
+            </div>
+        </header>
+
+        <main class="page-content">
+            <div class="container-fluid p-0">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+    </script>
+</body>
+</html>

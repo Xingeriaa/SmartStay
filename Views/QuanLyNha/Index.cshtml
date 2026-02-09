@@ -1,0 +1,275 @@
+﻿@model IEnumerable<do_an_tot_nghiep.Models.NhaTro>
+@{
+    ViewData["Title"] = "Quản lý hệ thống nhà";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+<div class="container-fluid px-4">
+
+    <div class="d-flex justify-content-between align-items-end page-header animate-fade-up">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom mb-1">
+                    <li class="breadcrumb-item"><a href="#"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Quản lý nhà</li>
+                </ol>
+            </nav>
+            <h1 class="page-title">Hệ Thống Nhà</h1>
+            <p class="text-secondary mb-0 fw-medium">Quản lý danh sách tài sản và trạng thái hoạt động.</p>
+        </div>
+        <div class="d-flex gap-3">
+            <button type="button" class="btn btn-custom btn-outline-danger shadow-sm" onclick="deleteSelected()">
+                <i class="fas fa-trash-alt"></i> Xóa đã chọn
+            </button>
+            <a href="/QuanLyNha/Create" class="btn btn-custom btn-gradient-primary text-decoration-none">
+                <i class="fas fa-plus-circle"></i> Thêm nhà mới
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6 animate-fade-up">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label mb-1">TỔNG TÀI SẢN</div>
+                        <div class="stat-value text-gradient">@Model.Count()</div>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-building"></i></div>
+                </div>
+                <div class="mt-3">
+                    @{
+                        var totalPercent = Model.Count() > 0 ? (Model.Count() * 100 / 100) : 0;
+                    }
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar" style="width: @totalPercent%; background: var(--primary-gradient);"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Mục tiêu: @Model.Count()/100</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-fade-up delay-1">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label mb-1">ĐÃ CHO THUÊ</div>
+                        <div class="stat-value">0%</div>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-check-circle"></i></div>
+                </div>
+                <div class="mt-3">
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Tỷ lệ lấp đầy</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-fade-up delay-2">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div style="min-width: 0;">
+                        <div class="stat-label mb-1">DOANH THU DỰ KIẾN</div>
+                        <div class="stat-value text-nowrap">
+                            @Model.Sum(x => x.GiaThue).ToString("N0")
+                            <span class="fs-6 text-muted fw-normal">VNĐ</span>
+                        </div>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-wallet"></i></div>
+                </div>
+                <div class="mt-3">
+                    <span class="badge bg-light text-primary rounded-pill border text-nowrap">Tổng giá thuê niêm yết</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-fade-up delay-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-label mb-1">CẦN XỬ LÝ</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-warning"><i class="fas fa-bell"></i></div>
+                </div>
+                <div class="mt-3">
+                    <div class="text-success fw-bold font-monospace small text-nowrap">
+                        <i class="fas fa-check-circle me-1"></i>Hệ thống ổn định
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-card animate-fade-up delay-2">
+        <div class="card-header-styled">
+            <div class="d-flex align-items-center">
+                <div class="bg-light p-2 rounded-circle me-3 text-primary">
+                    <i class="fas fa-list-ul fa-lg"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0">Danh sách bất động sản</h5>
+                    <small class="text-secondary">Quản lý chi tiết từng hạng mục</small>
+                </div>
+            </div>
+
+            <div class="toolbar-wrapper">
+                <div class="search-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="tableSearch" placeholder="Tìm kiếm mã nhà, địa chỉ...">
+                </div>
+                <select class="form-select w-auto border-secondary-subtle fw-medium" style="border-radius: var(--radius-md);">
+                    <option selected>Lọc theo trạng thái</option>
+                    <option value="1">Đang hoạt động</option>
+                    <option value="2">Tạm khóa</option>
+                </select>
+                <button class="btn btn-light border px-3" onclick="location.reload()" title="Tải lại dữ liệu">
+                    <i class="fas fa-sync-alt text-secondary"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table-styled" id="dataTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;" class="text-center">
+                            <input class="form-check-input form-check-input-custom" type="checkbox" id="checkAll">
+                        </th>
+                        <th>Tên Nhà Trọ</th>
+                        <th class="text-center">Tầng</th>
+                        <th class="text-end">Giá Thuê</th>
+                        <th class="text-center">Ngày Thu</th>
+                        <th>Dịch Vụ Tích Hợp</th>
+                        <th>Địa Chỉ</th>
+                        <th>Ghi Chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr id="row-@item.Id">
+                                <td class="text-center">
+                                    <input class="form-check-input row-checkbox" type="checkbox" value="@item.Id">
+                                </td>
+                                <td class="fw-bold text-primary">@item.TenNhaTro</td>
+                                <td class="text-center">@(item.LoaiNha == 0 ? "Trệt" : "Tầng " + item.LoaiNha)</td>
+                                <td class="text-end fw-bold text-success">@item.GiaThue.ToString("N0") <small>đ</small></td>
+                                <td class="text-center fw-bold text-danger">Ngày @item.NgayThuTien</td>
+
+                                @{
+                                    var allDichVus = ViewBag.AllDichVus as List<do_an_tot_nghiep.Models.DichVu>;
+                                }
+
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.DanhSachDichVu))
+                                    {
+                                        var dvIds = item.DanhSachDichVu.Split(',');
+                                        foreach (var idStr in dvIds)
+                                        {
+                                            if (int.TryParse(idStr, out int dvId))
+                                            {
+                                                var dvObj = allDichVus?.FirstOrDefault(d => d.Id == dvId);
+                                                if (dvObj != null)
+                                                {
+                                                    // Badge dịch vụ: chỉnh về tông tím nhạt (hoặc giữ cyan nếu muốn khác biệt)
+                                                    // Ở đây tôi dùng màu primary nhưng nhạt đi để đồng bộ tông màu
+                                                    <span class="badge border me-1 bg-soft-brand text-brand badge-xs">
+                                                        <i class="fas fa-check-circle me-1"></i>@dvObj.Ten
+                                                    </span>
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">---</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="small fw-medium">@item.DiaChiChiTiet</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">@item.PhuongXa, @item.QuanHuyen</div>
+                                </td>
+                                <td class="small text-muted text-truncate" style="max-width: 150px;" title="@item.GhiChu">
+                                    @item.GhiChu
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="text-muted fst-italic">Không có dữ liệu hiển thị. Hãy bấm "Thêm nhà mới" để bắt đầu.</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteSelected() {
+            const selectedIds = Array.from(document.querySelectorAll('tbody .row-checkbox:checked'))
+                                     .map(cb => parseInt(cb.value));
+
+            if (selectedIds.length === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Thông báo',
+                    text: 'Vui lòng chọn ít nhất một nhà trọ để xóa!',
+                    confirmButtonColor: '#00b894'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: `Xóa ${selectedIds.length} mục đã chọn?`,
+                text: "Dữ liệu này sẽ bị xóa vĩnh viễn khỏi hệ thống!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // Màu đỏ cho hành động nguy hiểm (giữ nguyên để cảnh báo)
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Đúng, xóa hết!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/QuanLyNha/DeleteSelected',
+                        type: 'POST',
+                        data: {
+                            ids: selectedIds,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: res.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#00b894'
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire('Lỗi!', res.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Lỗi!', 'Không thể thực hiện yêu cầu. Kiểm tra lại Controller.', 'error');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}
