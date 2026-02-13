@@ -23,7 +23,7 @@ namespace do_an_tot_nghiep.Models
         public int Tang { get; set; }
 
         [Column("Area", TypeName = "decimal(10,2)")]
-        public double DienTich { get; set; }
+        public decimal DienTich { get; set; }
 
         [Range(1, 2, ErrorMessage = "Chỉ cho phép tối đa 2 người/phòng")]
         [Column("MaxOccupants")]

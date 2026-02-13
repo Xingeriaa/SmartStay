@@ -13,6 +13,8 @@ namespace do_an_tot_nghiep.Models
         public int ContractId { get; set; }
         public HopDong? Contract { get; set; }
 
+        public int InvoiceId { get; set; }
+
         public string? Reason { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
@@ -27,7 +29,7 @@ namespace do_an_tot_nghiep.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal AdditionalCharge { get; set; }
 
-        public int StaffId { get; set; }
+        public int? StaffId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

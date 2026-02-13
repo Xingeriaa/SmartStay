@@ -10,10 +10,10 @@ namespace do_an_tot_nghiep.Models
     {
         [Key]
         [Column("TicketId")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int CreatedBy { get; set; }
-        public int? RoomId { get; set; }
+        public int RoomId { get; set; }
 
         [Required]
         public string Title { get; set; } = string.Empty;

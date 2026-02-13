@@ -47,8 +47,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Lấy ticket theo id (kèm ảnh).
         /// </summary>
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<Ticket>> GetById(int id)
+        [HttpGet("{id:long}")]
+        public async Task<ActionResult<Ticket>> GetById(long id)
         {
             var ticket = await _context.Tickets
                 .Include(x => x.Images)
@@ -72,8 +72,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Cập nhật ticket.
         /// </summary>
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, Ticket ticket)
+        [HttpPut("{id:long}")]
+        public async Task<IActionResult> Update(long id, Ticket ticket)
         {
             if (id != ticket.Id) return BadRequest();
 
@@ -85,8 +85,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Gán người xử lý ticket.
         /// </summary>
-        [HttpPost("{id:int}/assign")]
-        public async Task<IActionResult> Assign(int id, AssignTicketRequest request)
+        [HttpPost("{id:long}/assign")]
+        public async Task<IActionResult> Assign(long id, AssignTicketRequest request)
         {
             var ticket = await _context.Tickets.FindAsync(id);
             if (ticket == null) return NotFound();
@@ -99,8 +99,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Cập nhật trạng thái ticket.
         /// </summary>
-        [HttpPost("{id:int}/status")]
-        public async Task<IActionResult> UpdateStatus(int id, UpdateTicketStatusRequest request)
+        [HttpPost("{id:long}/status")]
+        public async Task<IActionResult> UpdateStatus(long id, UpdateTicketStatusRequest request)
         {
             var ticket = await _context.Tickets.FindAsync(id);
             if (ticket == null) return NotFound();
@@ -113,8 +113,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Xóa ticket.
         /// </summary>
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> Delete(long id)
         {
             var ticket = await _context.Tickets.FindAsync(id);
             if (ticket == null) return NotFound();
@@ -129,8 +129,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Thêm ảnh cho ticket.
         /// </summary>
-        [HttpPost("{id:int}/images")]
-        public async Task<ActionResult<TicketImage>> AddImage(int id, TicketImage image)
+        [HttpPost("{id:long}/images")]
+        public async Task<ActionResult<TicketImage>> AddImage(long id, TicketImage image)
         {
             if (id != image.TicketId) return BadRequest();
 

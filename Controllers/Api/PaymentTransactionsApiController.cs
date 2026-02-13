@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace do_an_tot_nghiep.Controllers.Api
 {
     /// <summary>
-    /// Quản lý giao dịch thanh toán và xác nhận thanh toán.
+    /// Quan ly giao dich thanh toan va xac nhan thanh toan.
     /// </summary>
     [ApiController]
     [Route("api/payments")]
@@ -19,7 +19,7 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Danh sách giao dịch (lọc theo invoiceId).
+        /// Danh sach giao dich (loc theo invoiceId).
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<List<PaymentTransaction>>> GetAll([FromQuery] int? invoiceId)
@@ -33,7 +33,7 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Tạo giao dịch thanh toán.
+        /// Tao giao dich thanh toan.
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<PaymentTransaction>> Create(PaymentTransaction transaction)
@@ -43,16 +43,21 @@ namespace do_an_tot_nghiep.Controllers.Api
                 transaction.PaidAt = DateTime.UtcNow;
             }
 
+            if (string.IsNullOrWhiteSpace(transaction.TransactionCode))
+            {
+                transaction.TransactionCode = $"TXN-{DateTime.UtcNow:yyyyMMddHHmmssfff}";
+            }
+
             _context.PaymentTransactions.Add(transaction);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetAll), new { id = transaction.Id }, transaction);
         }
 
         /// <summary>
-        /// Xác nhận giao dịch (ghi nhận người xác nhận).
+        /// Xac nhan giao dich (ghi nhan nguoi xac nhan).
         /// </summary>
-        [HttpPost("{id:int}/confirm")]
-        public async Task<IActionResult> Confirm(int id, ConfirmPaymentRequest request)
+        [HttpPost("{id:long}/confirm")]
+        public async Task<IActionResult> Confirm(long id, ConfirmPaymentRequest request)
         {
             var transaction = await _context.PaymentTransactions.FindAsync(id);
             if (transaction == null) return NotFound();
@@ -72,10 +77,10 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Xóa giao dịch.
+        /// Xoa giao dich.
         /// </summary>
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> Delete(long id)
         {
             var transaction = await _context.PaymentTransactions.FindAsync(id);
             if (transaction == null) return NotFound();

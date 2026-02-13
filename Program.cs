@@ -7,13 +7,18 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 #region SERVICES
 
 // 1. Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Missing ConnectionStrings:DefaultConnection configuration.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
+    options.UseSqlServer(connectionString)
 );
 
 // 2. Authentication (Cookie)

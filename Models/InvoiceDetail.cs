@@ -8,7 +8,7 @@ namespace do_an_tot_nghiep.Models
     {
         [Key]
         [Column("DetailId")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int InvoiceId { get; set; }
 
@@ -23,5 +23,7 @@ namespace do_an_tot_nghiep.Models
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Amount { get; set; }
+
+        public long? ReadingId { get; set; }
     }
 }

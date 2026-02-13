@@ -9,9 +9,9 @@ namespace do_an_tot_nghiep.Models
     {
         [Key]
         [Column("ImageId")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
-        public int TicketId { get; set; }
+        public long TicketId { get; set; }
 
         [Required]
         public string ImageUrl { get; set; } = string.Empty;

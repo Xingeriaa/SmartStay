@@ -7,7 +7,7 @@ namespace do_an_tot_nghiep.Models
     public class HopDongKhachThue
     {
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Column("ContractId")]
         public int HopDongId { get; set; }

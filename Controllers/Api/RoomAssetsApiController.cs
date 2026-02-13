@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace do_an_tot_nghiep.Controllers.Api
 {
     /// <summary>
-    /// Quản lý trang thiết bị trong phòng.
+    /// Quan ly trang thiet bi trong phong.
     /// </summary>
     [ApiController]
     [Route("api/room-assets")]
@@ -19,56 +19,117 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Danh sách thiết bị theo phòng (roomId có thể bỏ trống).
+        /// Danh sach thiet bi theo phong (roomId co the bo trong).
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<List<RoomAsset>>> GetAll([FromQuery] int? roomId)
         {
-            var query = _context.RoomAssets.AsNoTracking();
+            var roomAssets = _context.RoomAssets.AsNoTracking();
             if (roomId.HasValue)
             {
-                query = query.Where(x => x.RoomId == roomId.Value);
+                roomAssets = roomAssets.Where(x => x.RoomId == roomId.Value);
             }
-            return await query.ToListAsync();
+
+            var items = await (from ra in roomAssets
+                               join a in _context.Assets.AsNoTracking() on ra.AssetId equals a.Id into aj
+                               from a in aj.DefaultIfEmpty()
+                               orderby ra.Id descending
+                               select new RoomAsset
+                               {
+                                   Id = ra.Id,
+                                   RoomId = ra.RoomId,
+                                   AssetId = ra.AssetId,
+                                   AssetName = a != null ? a.AssetName : string.Empty,
+                                   SerialNumber = ra.SerialNumber,
+                                   Quantity = ra.Quantity,
+                                   Status = ra.Status,
+                                   PurchaseDate = ra.PurchaseDate,
+                                   WarrantyExpiry = ra.WarrantyExpiry,
+                                   CreatedAt = ra.CreatedAt
+                               }).ToListAsync();
+
+            return items;
         }
 
         /// <summary>
-        /// Lấy thiết bị theo id.
+        /// Lay thiet bi theo id.
         /// </summary>
         [HttpGet("{id:int}")]
         public async Task<ActionResult<RoomAsset>> GetById(int id)
         {
-            var asset = await _context.RoomAssets.FindAsync(id);
+            var asset = await (from ra in _context.RoomAssets.AsNoTracking()
+                               where ra.Id == id
+                               join a in _context.Assets.AsNoTracking() on ra.AssetId equals a.Id into aj
+                               from a in aj.DefaultIfEmpty()
+                               select new RoomAsset
+                               {
+                                   Id = ra.Id,
+                                   RoomId = ra.RoomId,
+                                   AssetId = ra.AssetId,
+                                   AssetName = a != null ? a.AssetName : string.Empty,
+                                   SerialNumber = ra.SerialNumber,
+                                   Quantity = ra.Quantity,
+                                   Status = ra.Status,
+                                   PurchaseDate = ra.PurchaseDate,
+                                   WarrantyExpiry = ra.WarrantyExpiry,
+                                   CreatedAt = ra.CreatedAt
+                               }).FirstOrDefaultAsync();
+
             if (asset == null) return NotFound();
             return asset;
         }
 
         /// <summary>
-        /// Tạo thiết bị mới.
+        /// Tao thiet bi moi.
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<RoomAsset>> Create(RoomAsset asset)
         {
+            var resolvedAssetId = await ResolveAssetIdAsync(asset.AssetId, asset.AssetName);
+            if (resolvedAssetId == null)
+            {
+                return BadRequest("AssetId hoac AssetName la bat buoc.");
+            }
+
+            asset.AssetId = resolvedAssetId.Value;
             _context.RoomAssets.Add(asset);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = asset.Id }, asset);
+
+            var created = await GetById(asset.Id);
+            return CreatedAtAction(nameof(GetById), new { id = asset.Id }, created.Value);
         }
 
         /// <summary>
-        /// Cập nhật thiết bị.
+        /// Cap nhat thiet bi.
         /// </summary>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, RoomAsset asset)
         {
             if (id != asset.Id) return BadRequest();
 
-            _context.Entry(asset).State = EntityState.Modified;
+            var existing = await _context.RoomAssets.FindAsync(id);
+            if (existing == null) return NotFound();
+
+            var resolvedAssetId = await ResolveAssetIdAsync(asset.AssetId, asset.AssetName);
+            if (resolvedAssetId == null)
+            {
+                return BadRequest("AssetId hoac AssetName la bat buoc.");
+            }
+
+            existing.RoomId = asset.RoomId;
+            existing.AssetId = resolvedAssetId.Value;
+            existing.SerialNumber = asset.SerialNumber;
+            existing.Quantity = asset.Quantity;
+            existing.Status = asset.Status;
+            existing.PurchaseDate = asset.PurchaseDate;
+            existing.WarrantyExpiry = asset.WarrantyExpiry;
+
             await _context.SaveChangesAsync();
             return NoContent();
         }
 
         /// <summary>
-        /// Xóa thiết bị.
+        /// Xoa thiet bi.
         /// </summary>
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
@@ -79,6 +140,37 @@ namespace do_an_tot_nghiep.Controllers.Api
             _context.RoomAssets.Remove(asset);
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        private async Task<int?> ResolveAssetIdAsync(int assetId, string? assetName)
+        {
+            if (assetId > 0)
+            {
+                var exists = await _context.Assets.AnyAsync(x => x.Id == assetId);
+                return exists ? assetId : null;
+            }
+
+            if (string.IsNullOrWhiteSpace(assetName))
+            {
+                return null;
+            }
+
+            var normalized = assetName.Trim();
+            var existing = await _context.Assets.FirstOrDefaultAsync(x => x.AssetName == normalized);
+            if (existing != null)
+            {
+                return existing.Id;
+            }
+
+            var newAsset = new Asset
+            {
+                AssetName = normalized,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Assets.Add(newAsset);
+            await _context.SaveChangesAsync();
+            return newAsset.Id;
         }
     }
 }

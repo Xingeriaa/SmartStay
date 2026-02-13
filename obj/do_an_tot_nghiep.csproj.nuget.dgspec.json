@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\let me play\\Downloads\\smartstay\\do_an_tot_nghiep\\do_an_tot_nghiep.csproj": {}
+    "C:\\Users\\let me play\\Downloads\\SmartStay\\do_an_tot_nghiep.csproj": {}
   },
   "projects": {
-    "C:\\Users\\let me play\\Downloads\\smartstay\\do_an_tot_nghiep\\do_an_tot_nghiep.csproj": {
+    "C:\\Users\\let me play\\Downloads\\SmartStay\\do_an_tot_nghiep.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\let me play\\Downloads\\smartstay\\do_an_tot_nghiep\\do_an_tot_nghiep.csproj",
+        "projectUniqueName": "C:\\Users\\let me play\\Downloads\\SmartStay\\do_an_tot_nghiep.csproj",
         "projectName": "do_an_tot_nghiep",
-        "projectPath": "C:\\Users\\let me play\\Downloads\\smartstay\\do_an_tot_nghiep\\do_an_tot_nghiep.csproj",
+        "projectPath": "C:\\Users\\let me play\\Downloads\\SmartStay\\do_an_tot_nghiep.csproj",
         "packagesPath": "C:\\Users\\let me play\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\let me play\\Downloads\\smartstay\\do_an_tot_nghiep\\obj\\",
+        "outputPath": "C:\\Users\\let me play\\Downloads\\SmartStay\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\let me play\\AppData\\Roaming\\NuGet\\NuGet.Config"

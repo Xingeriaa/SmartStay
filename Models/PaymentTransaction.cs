@@ -9,7 +9,7 @@ namespace do_an_tot_nghiep.Models
     {
         [Key]
         [Column("TransactionId")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int InvoiceId { get; set; }
 
@@ -20,7 +20,10 @@ namespace do_an_tot_nghiep.Models
         public string PaymentMethod { get; set; } = string.Empty;
 
         public string? BankName { get; set; }
-        public string? TransactionCode { get; set; }
+
+        [Required]
+        public string TransactionCode { get; set; } = string.Empty;
+
         public string? EvidenceImage { get; set; }
 
         public DateTime PaidAt { get; set; }

@@ -46,8 +46,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Đánh dấu đã đọc.
         /// </summary>
-        [HttpPost("{id:int}/read")]
-        public async Task<IActionResult> MarkRead(int id)
+        [HttpPost("{id:long}/read")]
+        public async Task<IActionResult> MarkRead(long id)
         {
             var notification = await _context.Notifications.FindAsync(id);
             if (notification == null) return NotFound();
@@ -60,8 +60,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Xóa thông báo.
         /// </summary>
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> Delete(long id)
         {
             var notification = await _context.Notifications.FindAsync(id);
             if (notification == null) return NotFound();

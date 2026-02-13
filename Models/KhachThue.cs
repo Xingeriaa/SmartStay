@@ -51,6 +51,9 @@ namespace do_an_tot_nghiep.Models
         public string? HinhAnh { get; set; }
 
         public string? Gender { get; set; }
+
+        public string Status { get; set; } = "Active";
+
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

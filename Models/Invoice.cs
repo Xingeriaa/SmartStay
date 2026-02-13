@@ -18,10 +18,10 @@ namespace do_an_tot_nghiep.Models
         public int ContractId { get; set; }
 
         [Required]
-        public string Period { get; set; } = string.Empty;
+        public string? Period { get; set; }
 
         [Required]
-        public string MonthYear { get; set; } = string.Empty;
+        public string? MonthYear { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal SubTotal { get; set; }
@@ -32,7 +32,7 @@ namespace do_an_tot_nghiep.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public DateTime? PaymentDate { get; set; }
 
         public string Status { get; set; } = "Unpaid";

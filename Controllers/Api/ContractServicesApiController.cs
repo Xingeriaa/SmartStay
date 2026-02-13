@@ -46,8 +46,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Cập nhật dịch vụ của hợp đồng.
         /// </summary>
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, ContractService service)
+        [HttpPut("{id:long}")]
+        public async Task<IActionResult> Update(long id, ContractService service)
         {
             if (id != service.Id) return BadRequest();
 
@@ -59,8 +59,8 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// <summary>
         /// Xóa dịch vụ khỏi hợp đồng.
         /// </summary>
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> Delete(long id)
         {
             var service = await _context.ContractServices.FindAsync(id);
             if (service == null) return NotFound();

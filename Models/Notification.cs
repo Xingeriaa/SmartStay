@@ -9,14 +9,15 @@ namespace do_an_tot_nghiep.Models
     {
         [Key]
         [Column("NotificationId")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int UserId { get; set; }
 
         [Required]
         public string Title { get; set; } = string.Empty;
 
-        public string? Content { get; set; }
+        [Required]
+        public string Content { get; set; } = string.Empty;
 
         public bool IsRead { get; set; } = false;
 

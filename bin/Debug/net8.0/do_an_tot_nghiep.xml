@@ -54,12 +54,12 @@
             Thêm dịch vụ vào hợp đồng.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.ContractServicesApiController.Update(System.Int32,do_an_tot_nghiep.Models.ContractService)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.ContractServicesApiController.Update(System.Int64,do_an_tot_nghiep.Models.ContractService)">
             <summary>
             Cập nhật dịch vụ của hợp đồng.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.ContractServicesApiController.Delete(System.Int32)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.ContractServicesApiController.Delete(System.Int64)">
             <summary>
             Xóa dịch vụ khỏi hợp đồng.
             </summary>
@@ -206,32 +206,32 @@
         </member>
         <member name="T:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController">
             <summary>
-            Quản lý chỉ số điện nước theo phòng/tháng.
+            Quan ly chi so dien nuoc theo phong/thang.
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController.GetAll(System.Nullable{System.Int32},System.String)">
             <summary>
-            Danh sách chỉ số (lọc theo roomId, monthYear).
+            Danh sach chi so (loc theo roomId, monthYear).
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController.GetById(System.Int32)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController.GetById(System.Int64)">
             <summary>
-            Lấy chỉ số theo id.
+            Lay chi so theo id.
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController.Create(do_an_tot_nghiep.Models.MeterReading)">
             <summary>
-            Tạo chỉ số mới. Mỗi phòng mỗi tháng chỉ có 1 bản ghi.
+            Tao chi so moi. Moi phong moi thang chi co 1 ban ghi.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController.Update(System.Int32,do_an_tot_nghiep.Models.MeterReading)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController.Update(System.Int64,do_an_tot_nghiep.Models.MeterReading)">
             <summary>
-            Cập nhật chỉ số.
+            Cap nhat chi so.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController.Delete(System.Int32)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.MeterReadingsApiController.Delete(System.Int64)">
             <summary>
-            Xóa chỉ số.
+            Xoa chi so.
             </summary>
         </member>
         <member name="T:do_an_tot_nghiep.Controllers.Api.NhaTroApiController">
@@ -279,39 +279,39 @@
             Tạo thông báo mới.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.NotificationsApiController.MarkRead(System.Int32)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.NotificationsApiController.MarkRead(System.Int64)">
             <summary>
             Đánh dấu đã đọc.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.NotificationsApiController.Delete(System.Int32)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.NotificationsApiController.Delete(System.Int64)">
             <summary>
             Xóa thông báo.
             </summary>
         </member>
         <member name="T:do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController">
             <summary>
-            Quản lý giao dịch thanh toán và xác nhận thanh toán.
+            Quan ly giao dich thanh toan va xac nhan thanh toan.
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController.GetAll(System.Nullable{System.Int32})">
             <summary>
-            Danh sách giao dịch (lọc theo invoiceId).
+            Danh sach giao dich (loc theo invoiceId).
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController.Create(do_an_tot_nghiep.Models.PaymentTransaction)">
             <summary>
-            Tạo giao dịch thanh toán.
+            Tao giao dich thanh toan.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController.Confirm(System.Int32,do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController.ConfirmPaymentRequest)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController.Confirm(System.Int64,do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController.ConfirmPaymentRequest)">
             <summary>
-            Xác nhận giao dịch (ghi nhận người xác nhận).
+            Xac nhan giao dich (ghi nhan nguoi xac nhan).
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController.Delete(System.Int32)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.PaymentTransactionsApiController.Delete(System.Int64)">
             <summary>
-            Xóa giao dịch.
+            Xoa giao dich.
             </summary>
         </member>
         <member name="T:do_an_tot_nghiep.Controllers.Api.PhongTroApiController">
@@ -371,32 +371,32 @@
         </member>
         <member name="T:do_an_tot_nghiep.Controllers.Api.RoomAssetsApiController">
             <summary>
-            Quản lý trang thiết bị trong phòng.
+            Quan ly trang thiet bi trong phong.
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.RoomAssetsApiController.GetAll(System.Nullable{System.Int32})">
             <summary>
-            Danh sách thiết bị theo phòng (roomId có thể bỏ trống).
+            Danh sach thiet bi theo phong (roomId co the bo trong).
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.RoomAssetsApiController.GetById(System.Int32)">
             <summary>
-            Lấy thiết bị theo id.
+            Lay thiet bi theo id.
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.RoomAssetsApiController.Create(do_an_tot_nghiep.Models.RoomAsset)">
             <summary>
-            Tạo thiết bị mới.
+            Tao thiet bi moi.
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.RoomAssetsApiController.Update(System.Int32,do_an_tot_nghiep.Models.RoomAsset)">
             <summary>
-            Cập nhật thiết bị.
+            Cap nhat thiet bi.
             </summary>
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.RoomAssetsApiController.Delete(System.Int32)">
             <summary>
-            Xóa thiết bị.
+            Xoa thiet bi.
             </summary>
         </member>
         <member name="T:do_an_tot_nghiep.Controllers.Api.SystemConfigsApiController">
@@ -455,7 +455,7 @@
             Danh sách ticket (lọc theo status, createdBy, assignedTo).
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.GetById(System.Int32)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.GetById(System.Int64)">
             <summary>
             Lấy ticket theo id (kèm ảnh).
             </summary>
@@ -465,27 +465,27 @@
             Tạo ticket mới.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.Update(System.Int32,do_an_tot_nghiep.Models.Ticket)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.Update(System.Int64,do_an_tot_nghiep.Models.Ticket)">
             <summary>
             Cập nhật ticket.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.Assign(System.Int32,do_an_tot_nghiep.Controllers.Api.TicketsApiController.AssignTicketRequest)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.Assign(System.Int64,do_an_tot_nghiep.Controllers.Api.TicketsApiController.AssignTicketRequest)">
             <summary>
             Gán người xử lý ticket.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.UpdateStatus(System.Int32,do_an_tot_nghiep.Controllers.Api.TicketsApiController.UpdateTicketStatusRequest)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.UpdateStatus(System.Int64,do_an_tot_nghiep.Controllers.Api.TicketsApiController.UpdateTicketStatusRequest)">
             <summary>
             Cập nhật trạng thái ticket.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.Delete(System.Int32)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.Delete(System.Int64)">
             <summary>
             Xóa ticket.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.AddImage(System.Int32,do_an_tot_nghiep.Models.TicketImage)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.TicketsApiController.AddImage(System.Int64,do_an_tot_nghiep.Models.TicketImage)">
             <summary>
             Thêm ảnh cho ticket.
             </summary>

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace do_an_tot_nghiep.Controllers.Api
 {
     /// <summary>
-    /// Quản lý chỉ số điện nước theo phòng/tháng.
+    /// Quan ly chi so dien nuoc theo phong/thang.
     /// </summary>
     [ApiController]
     [Route("api/meter-readings")]
@@ -19,7 +19,7 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Danh sách chỉ số (lọc theo roomId, monthYear).
+        /// Danh sach chi so (loc theo roomId, monthYear).
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<List<MeterReading>>> GetAll([FromQuery] int? roomId, [FromQuery] string? monthYear)
@@ -37,10 +37,10 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Lấy chỉ số theo id.
+        /// Lay chi so theo id.
         /// </summary>
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<MeterReading>> GetById(int id)
+        [HttpGet("{id:long}")]
+        public async Task<ActionResult<MeterReading>> GetById(long id)
         {
             var reading = await _context.MeterReadings.FindAsync(id);
             if (reading == null) return NotFound();
@@ -48,7 +48,7 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Tạo chỉ số mới. Mỗi phòng mỗi tháng chỉ có 1 bản ghi.
+        /// Tao chi so moi. Moi phong moi thang chi co 1 ban ghi.
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<MeterReading>> Create(MeterReading reading)
@@ -57,7 +57,33 @@ namespace do_an_tot_nghiep.Controllers.Api
                 .AnyAsync(x => x.RoomId == reading.RoomId && x.MonthYear == reading.MonthYear);
             if (exists)
             {
-                return Conflict("Đã tồn tại chỉ số cho phòng và tháng này.");
+                return Conflict("Da ton tai chi so cho phong va thang nay.");
+            }
+
+            var previous = await _context.MeterReadings
+                .Where(x => x.RoomId == reading.RoomId)
+                .OrderByDescending(x => x.ReadingDate)
+                .ThenByDescending(x => x.Id)
+                .FirstOrDefaultAsync();
+
+            if (previous != null)
+            {
+                if (reading.OldElectricityIndex == 0)
+                {
+                    reading.OldElectricityIndex = previous.NewElectricityIndex;
+                }
+
+                if (reading.OldWaterIndex == 0)
+                {
+                    reading.OldWaterIndex = previous.NewWaterIndex;
+                }
+
+                reading.PreviousReadingId = previous.Id;
+            }
+
+            if (reading.ReadingDate == default)
+            {
+                reading.ReadingDate = DateTime.UtcNow;
             }
 
             _context.MeterReadings.Add(reading);
@@ -66,10 +92,10 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Cập nhật chỉ số.
+        /// Cap nhat chi so.
         /// </summary>
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, MeterReading reading)
+        [HttpPut("{id:long}")]
+        public async Task<IActionResult> Update(long id, MeterReading reading)
         {
             if (id != reading.Id) return BadRequest();
 
@@ -79,10 +105,10 @@ namespace do_an_tot_nghiep.Controllers.Api
         }
 
         /// <summary>
-        /// Xóa chỉ số.
+        /// Xoa chi so.
         /// </summary>
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> Delete(long id)
         {
             var reading = await _context.MeterReadings.FindAsync(id);
             if (reading == null) return NotFound();

@@ -263,9 +263,41 @@ namespace do_an_tot_nghiep.Services
                 StaffId = staffId
             };
 
+            var latestInvoiceId = await _context.Invoices
+                .Where(x => x.ContractId == hopDong.Id)
+                .OrderByDescending(x => x.CreatedAt)
+                .Select(x => x.Id)
+                .FirstOrDefaultAsync();
+
+            if (latestInvoiceId == 0)
+            {
+                var now = DateTime.UtcNow;
+                var monthYear = now.ToString("yyyy-MM");
+                var fallbackInvoice = new Invoice
+                {
+                    InvoiceCode = $"INV-LQD-{now:yyyyMMddHHmmssfff}",
+                    ContractId = hopDong.Id,
+                    Period = monthYear,
+                    MonthYear = monthYear,
+                    SubTotal = 0,
+                    TaxAmount = 0,
+                    TotalAmount = 0,
+                    DueDate = now,
+                    Status = "Paid",
+                    CreatedAt = now
+                };
+
+                _context.Invoices.Add(fallbackInvoice);
+                await _context.SaveChangesAsync();
+                latestInvoiceId = fallbackInvoice.Id;
+            }
+
             liquidation.CreatedAt = model.NgayThanhLy ?? DateTime.Today;
+            liquidation.InvoiceId = latestInvoiceId;
             liquidation.FinalInvoiceAmount = model.TongTienQuyetToan ?? 0;
             liquidation.RefundAmount = model.SoTienHoanTra ?? 0;
+            liquidation.DepositUsed = 0;
+            liquidation.AdditionalCharge = 0;
             liquidation.Reason = model.GhiChuThanhLy;
 
             if (hopDong.Liquidation == null)

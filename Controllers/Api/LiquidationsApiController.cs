@@ -38,6 +38,16 @@ namespace do_an_tot_nghiep.Controllers.Api
         [HttpPost]
         public async Task<ActionResult<Liquidation>> Create(Liquidation liquidation)
         {
+            if (liquidation.InvoiceId <= 0)
+            {
+                return BadRequest("InvoiceId la bat buoc.");
+            }
+
+            if (liquidation.CreatedAt == default)
+            {
+                liquidation.CreatedAt = DateTime.UtcNow;
+            }
+
             _context.Liquidations.Add(liquidation);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetAll), new { id = liquidation.Id }, liquidation);

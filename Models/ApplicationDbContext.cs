@@ -20,6 +20,7 @@ namespace do_an_tot_nghiep.Models
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<SystemConfig> SystemConfigs { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<Asset> Assets { get; set; }
         public DbSet<RoomAsset> RoomAssets { get; set; }
         public DbSet<ContractExtension> ContractExtensions { get; set; }
         public DbSet<ContractService> ContractServices { get; set; }
