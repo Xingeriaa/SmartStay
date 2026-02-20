@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "SmartStay API",
-    "description": "Tài liệu API quản lý nhà trọ.",
+    "description": "API quản lý nhà trọ SmartStay",
     "version": "v1"
   },
   "paths": {
@@ -338,7 +338,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -379,7 +379,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -572,6 +572,18 @@
               "format": "int32"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Error": {
+      "get": {
+        "tags": [
+          "Error"
         ],
         "responses": {
           "200": {
@@ -1301,7 +1313,7 @@
         "tags": [
           "MeterReadingsApi"
         ],
-        "summary": "Danh sách chỉ số (lọc theo roomId, monthYear).",
+        "summary": "Danh sach chi so (loc theo roomId, monthYear).",
         "parameters": [
           {
             "name": "roomId",
@@ -1355,7 +1367,7 @@
         "tags": [
           "MeterReadingsApi"
         ],
-        "summary": "Tạo chỉ số mới. Mỗi phòng mỗi tháng chỉ có 1 bản ghi.",
+        "summary": "Tao chi so moi. Moi phong moi thang chi co 1 ban ghi.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1404,7 +1416,7 @@
         "tags": [
           "MeterReadingsApi"
         ],
-        "summary": "Lấy chỉ số theo id.",
+        "summary": "Lay chi so theo id.",
         "parameters": [
           {
             "name": "id",
@@ -1412,7 +1424,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -1443,7 +1455,7 @@
         "tags": [
           "MeterReadingsApi"
         ],
-        "summary": "Cập nhật chỉ số.",
+        "summary": "Cap nhat chi so.",
         "parameters": [
           {
             "name": "id",
@@ -1451,7 +1463,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -1484,7 +1496,7 @@
         "tags": [
           "MeterReadingsApi"
         ],
-        "summary": "Xóa chỉ số.",
+        "summary": "Xoa chi so.",
         "parameters": [
           {
             "name": "id",
@@ -1492,7 +1504,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -1802,7 +1814,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -1826,7 +1838,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -1842,7 +1854,7 @@
         "tags": [
           "PaymentTransactionsApi"
         ],
-        "summary": "Danh sách giao dịch (lọc theo invoiceId).",
+        "summary": "Danh sach giao dich (loc theo invoiceId).",
         "parameters": [
           {
             "name": "invoiceId",
@@ -1889,7 +1901,7 @@
         "tags": [
           "PaymentTransactionsApi"
         ],
-        "summary": "Tạo giao dịch thanh toán.",
+        "summary": "Tao giao dich thanh toan.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1938,7 +1950,7 @@
         "tags": [
           "PaymentTransactionsApi"
         ],
-        "summary": "Xác nhận giao dịch (ghi nhận người xác nhận).",
+        "summary": "Xac nhan giao dich (ghi nhan nguoi xac nhan).",
         "parameters": [
           {
             "name": "id",
@@ -1946,7 +1958,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -1981,7 +1993,7 @@
         "tags": [
           "PaymentTransactionsApi"
         ],
-        "summary": "Xóa giao dịch.",
+        "summary": "Xoa giao dich.",
         "parameters": [
           {
             "name": "id",
@@ -1989,7 +2001,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -2828,7 +2840,7 @@
         "tags": [
           "RoomAssetsApi"
         ],
-        "summary": "Danh sách thiết bị theo phòng (roomId có thể bỏ trống).",
+        "summary": "Danh sach thiet bi theo phong (roomId co the bo trong).",
         "parameters": [
           {
             "name": "roomId",
@@ -2875,7 +2887,7 @@
         "tags": [
           "RoomAssetsApi"
         ],
-        "summary": "Tạo thiết bị mới.",
+        "summary": "Tao thiet bi moi.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2924,7 +2936,7 @@
         "tags": [
           "RoomAssetsApi"
         ],
-        "summary": "Lấy thiết bị theo id.",
+        "summary": "Lay thiet bi theo id.",
         "parameters": [
           {
             "name": "id",
@@ -2963,7 +2975,7 @@
         "tags": [
           "RoomAssetsApi"
         ],
-        "summary": "Cập nhật thiết bị.",
+        "summary": "Cap nhat thiet bi.",
         "parameters": [
           {
             "name": "id",
@@ -3004,7 +3016,7 @@
         "tags": [
           "RoomAssetsApi"
         ],
-        "summary": "Xóa thiết bị.",
+        "summary": "Xoa thiet bi.",
         "parameters": [
           {
             "name": "id",
@@ -3440,7 +3452,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -3479,7 +3491,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -3520,7 +3532,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -3544,7 +3556,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -3587,7 +3599,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -3630,7 +3642,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int64"
             }
           }
         ],
@@ -4322,7 +4334,7 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "contractId": {
             "type": "integer",
@@ -4333,8 +4345,8 @@
             "format": "int32"
           },
           "quantity": {
-            "type": "integer",
-            "format": "int32"
+            "type": "number",
+            "format": "double"
           },
           "unitPriceSnapshot": {
             "type": "number",
@@ -4548,7 +4560,7 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "hopDongId": {
             "type": "integer",
@@ -4616,7 +4628,8 @@
           },
           "dueDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "paymentDate": {
             "type": "string",
@@ -4649,7 +4662,7 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "invoiceId": {
             "type": "integer",
@@ -4670,6 +4683,11 @@
           "amount": {
             "type": "number",
             "format": "double"
+          },
+          "readingId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4763,6 +4781,10 @@
             "type": "string",
             "nullable": true
           },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
           "isDeleted": {
             "type": "boolean"
           },
@@ -4794,6 +4816,10 @@
           "contract": {
             "$ref": "#/components/schemas/HopDong"
           },
+          "invoiceId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "reason": {
             "type": "string",
             "nullable": true
@@ -4816,7 +4842,8 @@
           },
           "staffId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "createdAt": {
             "type": "string",
@@ -4833,7 +4860,7 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "roomId": {
             "type": "integer",
@@ -4842,6 +4869,37 @@
           "monthYear": {
             "minLength": 1,
             "type": "string"
+          },
+          "oldElectricityIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newElectricityIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "oldWaterIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newWaterIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "consumptionElectricity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "consumptionWater": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "previousReadingId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
           },
           "readingDate": {
             "type": "string",
@@ -4861,7 +4919,8 @@
           },
           "recordedBy": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "createdAt": {
             "type": "string",
@@ -4947,13 +5006,14 @@
       },
       "Notification": {
         "required": [
+          "content",
           "title"
         ],
         "type": "object",
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "userId": {
             "type": "integer",
@@ -4964,8 +5024,8 @@
             "type": "string"
           },
           "content": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           },
           "isRead": {
             "type": "boolean"
@@ -5005,13 +5065,14 @@
       },
       "PaymentTransaction": {
         "required": [
-          "paymentMethod"
+          "paymentMethod",
+          "transactionCode"
         ],
         "type": "object",
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "invoiceId": {
             "type": "integer",
@@ -5030,8 +5091,8 @@
             "nullable": true
           },
           "transactionCode": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           },
           "evidenceImage": {
             "type": "string",
@@ -5190,9 +5251,6 @@
         "additionalProperties": false
       },
       "RoomAsset": {
-        "required": [
-          "assetName"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5203,9 +5261,13 @@
             "type": "integer",
             "format": "int32"
           },
+          "assetId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "assetName": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "serialNumber": {
             "type": "string",
@@ -5307,7 +5369,7 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "createdBy": {
             "type": "integer",
@@ -5315,8 +5377,7 @@
           },
           "roomId": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "title": {
             "minLength": 1,
@@ -5361,11 +5422,11 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "ticketId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "imageUrl": {
             "minLength": 1,
@@ -5587,7 +5648,7 @@
     },
     {
       "name": "MeterReadingsApi",
-      "description": "Quản lý chỉ số điện nước theo phòng/tháng."
+      "description": "Quan ly chi so dien nuoc theo phong/thang."
     },
     {
       "name": "NhaTroApi",
@@ -5599,15 +5660,19 @@
     },
     {
       "name": "PaymentTransactionsApi",
-      "description": "Quản lý giao dịch thanh toán và xác nhận thanh toán."
+      "description": "Quan ly giao dich thanh toan va xac nhan thanh toan."
     },
     {
       "name": "PhongTroApi",
       "description": "Quản lý phòng trọ."
     },
     {
+      "name": "ReportsApi",
+      "description": "Báo cáo & thống kê tổng quan hệ thống."
+    },
+    {
       "name": "RoomAssetsApi",
-      "description": "Quản lý trang thiết bị trong phòng."
+      "description": "Quan ly trang thiet bi trong phong."
     },
     {
       "name": "SystemConfigsApi",
