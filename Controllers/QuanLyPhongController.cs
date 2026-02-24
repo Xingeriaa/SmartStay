@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using do_an_tot_nghiep.Filters;
+using Microsoft.AspNetCore.Mvc;
 using do_an_tot_nghiep.Models;
 using do_an_tot_nghiep.Services;
 
 namespace do_an_tot_nghiep.Controllers
 {
+    [RequireRole(Roles.AdminOrStaff)]
     public class QuanLyPhongController : Controller
     {
         private readonly IPhongTroService _phongTroService;

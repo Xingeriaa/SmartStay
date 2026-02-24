@@ -1,0 +1,108 @@
+@{
+    ViewData["Title"] = "Tạo phiếu sự cố";
+}
+
+<style>
+    .create-page { max-width: 720px; margin: 0 auto; }
+    .form-card   { background:#fff; border:1px solid #e9ecef; border-radius:16px; padding:2rem; box-shadow:0 2px 12px rgba(0,0,0,.05); }
+    .field-label { font-size:.82rem; font-weight:700; color:#555; margin-bottom:.35rem; }
+    .priority-btn { border:2px solid transparent; border-radius:10px; padding:.5rem 1.1rem; font-weight:700; cursor:pointer; transition:all .15s; background:#f8f9fa; color:#555; }
+    .priority-btn.selected-High   { border-color:#d63031; background:#fde8e8; color:#d63031; }
+    .priority-btn.selected-Medium { border-color:#e67e22; background:#fff3cd; color:#e67e22; }
+    .priority-btn.selected-Low    { border-color:#00b894; background:#d4edda; color:#00b894; }
+    .priority-btn:hover           { transform:translateY(-1px); }
+</style>
+
+<div class="create-page">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-ticket-alt me-1"></i>Sự cố & Hỗ trợ</a></li>
+            <li class="breadcrumb-item active">Tạo phiếu mới</li>
+        </ol>
+    </nav>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger border-0 mb-3"><i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]</div>
+    }
+
+    <div class="form-card">
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <span style="width:40px;height:40px;background:linear-gradient(135deg,#d63031,#e17055);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-ticket-alt text-white"></i>
+            </span>
+            <div>
+                <h5 class="mb-0 fw-bold">Gửi phiếu sự cố</h5>
+                <small class="text-muted">Mô tả rõ vấn đề để nhân viên xử lý nhanh nhất</small>
+            </div>
+        </div>
+
+        <form asp-action="Create" method="post" id="createForm">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <div class="field-label">Phòng <span class="text-danger">*</span></div>
+                <select name="RoomId" class="form-select" required>
+                    <option value="">-- Chọn phòng --</option>
+                    @if (ViewBag.Rooms != null)
+                    {
+                        foreach (var r in (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Rooms)
+                        {
+                            <option value="@r.Value">@r.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <div class="field-label">Tiêu đề sự cố <span class="text-danger">*</span></div>
+                <input name="Title" type="text" class="form-control" placeholder="VD: Điều hòa không hoạt động, nước bị tắc..." required minlength="5" maxlength="200" />
+            </div>
+
+            <div class="mb-3">
+                <div class="field-label">Mô tả chi tiết</div>
+                <textarea name="Description" class="form-control" rows="4"
+                          placeholder="Mô tả cụ thể vấn đề: thời điểm xảy ra, triệu chứng, mức độ ảnh hưởng..."></textarea>
+            </div>
+
+            <div class="mb-4">
+                <div class="field-label">Mức độ ưu tiên <span class="text-danger">*</span></div>
+                <input type="hidden" name="Priority" id="priorityInput" value="Medium" />
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="button" class="priority-btn selected-Medium" data-priority="Medium" onclick="setPriority('Medium')">
+                        🟡 Trung bình
+                    </button>
+                    <button type="button" class="priority-btn" data-priority="High" onclick="setPriority('High')">
+                        🔴 Khẩn cấp
+                    </button>
+                    <button type="button" class="priority-btn" data-priority="Low" onclick="setPriority('Low')">
+                        🟢 Không gấp
+                    </button>
+                </div>
+                <small class="text-muted d-block mt-1">Chọn mức độ phù hợp để nhân viên sắp xếp xử lý</small>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-light border px-4">Hủy</a>
+                <button type="submit" class="btn px-5 fw-bold text-white"
+                        style="background:linear-gradient(135deg,#d63031,#e17055);border-radius:10px;">
+                    <i class="fas fa-paper-plane me-1"></i>Gửi phiếu
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function setPriority(p) {
+        document.getElementById('priorityInput').value = p;
+        document.querySelectorAll('.priority-btn').forEach(btn => {
+            btn.className = 'priority-btn';
+            if (btn.dataset.priority === p) btn.classList.add('selected-' + p);
+        });
+    }
+    // Init
+    setPriority('Medium');
+</script>
+}

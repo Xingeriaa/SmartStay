@@ -1,182 +1,73 @@
-@model HopDong
+@model do_an_tot_nghiep.ViewModels.ContractExtensionViewModel
+
 @{
-    ViewData["Title"] = "Gia hạn hợp đồng";
+    ViewData["Title"] = "Gia Hạn Hợp Đồng";
 }
 
-<style>
-    /* Sử dụng chung Theme Variable để đồng bộ */
-    :root {
-        --theme-primary: var(--brand-600);
-        --theme-gradient: var(--brand-gradient);
-    }
-
-    @@keyframes slideUp {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    }
-
-    .extend-container {
-        animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        max-width: 600px;
-        margin: 2rem auto;
-    }
-
-    .glass-card {
-        background: rgba(255, 255, 255, 1);
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        border: 1px solid rgba(255,255,255,0.5);
-        overflow: hidden;
-        position: relative;
-    }
-
-        /* Trang trí thanh màu trên cùng */
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: var(--theme-gradient);
-        }
-
-    .contract-summary {
-        background: #f8f9fc;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        border: 1px dashed #d1d3e2;
-    }
-
-    .date-box {
-        background: white;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        text-align: center;
-        border: 1px solid #eee;
-    }
-
-    .date-label {
-        font-size: 0.75rem;
-        color: #888;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .date-value {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #333;
-        margin-top: 5px;
-    }
-
-    .arrow-divider {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--theme-primary);
-        font-size: 1.2rem;
-    }
-
-    .btn-extend {
-        background: var(--theme-gradient);
-        color: white;
-        border-radius: 50px; /* Nút bo tròn hoàn toàn */
-        padding: 12px 30px;
-        font-weight: 600;
-        border: none;
-        transition: transform 0.2s;
-        width: 100%;
-        display: block;
-    }
-
-        .btn-extend:hover {
-            transform: scale(1.02);
-            color: white;
-            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
-        }
-</style>
-
-<div class="extend-container">
-    <div class="d-flex align-items-center mb-4">
-        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-light btn-sm rounded-circle me-3" title="Quay lại">
-            <i class="fa fa-arrow-left"></i>
-        </a>
-        <h4 class="fw-bold m-0" style="background: var(--theme-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-            Gia hạn Hợp đồng
-        </h4>
+<div class="card shadow mb-4 col-md-8 mx-auto border-left-info border-info">
+    <div class="card-header py-3 bg-white text-center">
+        <h5 class="m-0 font-weight-bold text-info"><i class="fas fa-file-contract"></i> Phụ Lục Gia Hạn Hợp Đồng</h5>
+        <span class="badge bg-secondary px-3 py-2 mt-2">Mã HĐ: @Model.ContractCode</span>
     </div>
+    <div class="card-body">
+        
+        <div class="alert alert-warning border-start border-warning border-4 small">
+            <strong><i class="fas fa-info-circle"></i> Nguyên tắc Hệ thống Kế toán:</strong> 
+            Không chỉnh sửa trực tiếp Hợp đồng gốc theo quy định. Nghiệp vụ này sẽ tạo riêng 1 bản Phụ Lục (ContractExtension) để ghi nhận thay đổi về Thời hạn và Giá thuê Gốc dùng cho các chu kỳ tính báo cáo tiếp theo.
+        </div>
 
-    <form asp-action="Extend" method="post" class="glass-card p-4 p-md-5">
-        <input type="hidden" name="id" value="@Model.Id" />
+        <form asp-action="Extend" method="post">
+            <input type="hidden" asp-for="ContractId" />
+            <input type="hidden" asp-for="ContractCode" />
+            <input type="hidden" asp-for="OldEndDate" />
+            <input type="hidden" asp-for="OldRentPrice" />
 
-        <div class="contract-summary">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
-                    <i class="fa fa-file-contract me-1"></i> HĐ #@Model.Id
-                </span>
-                <span class="fw-bold text-dark">
-                    <i class="fa fa-door-open me-1 text-secondary"></i> @(Model.PhongTro?.TenPhong ?? "Phòng chưa xác định")
-                </span>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
+
+            <!-- Current States -->
+            <div class="row mb-4 bg-light p-3 rounded">
+                <div class="col-md-6">
+                    <label class="form-label text-muted fw-bold">Ngày Kết Thúc (Cũ)</label>
+                    <div class="form-control bg-white" readonly>@Model.OldEndDate.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted fw-bold">Giá Thuê Gốc (Cũ)</label>
+                    <div class="form-control bg-white text-success fw-bold" readonly>@Model.OldRentPrice.ToString("N0") VNĐ</div>
+                </div>
             </div>
 
-            <div class="row g-2 align-items-center">
-                <div class="col-5">
-                    <div class="date-box">
-                        <div class="date-label">Kết thúc cũ</div>
-                        <div class="date-value">
-                            @(Model.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "--/--/----")
-                        </div>
+            <!-- New Extensions States -->
+            <h6 class="text-info fw-bold mb-3 border-bottom border-info pb-2"><i class="fas fa-edit"></i> Thông Số Gia Hạn</h6>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NewEndDate" class="form-label fw-bold text-dark"></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-info text-white"><i class="fas fa-calendar-plus"></i></span>
+                        <input asp-for="NewEndDate" class="form-control font-weight-bold" />
                     </div>
+                    <span asp-validation-for="NewEndDate" class="text-danger"></span>
+                    <small class="text-muted d-block mt-1">Bắt buộc &gt; Ngày Kết Thúc Cũ</small>
                 </div>
-                <div class="col-2 arrow-divider">
-                    <i class="fa fa-angle-double-right"></i>
-                </div>
-                <div class="col-5">
-                    <div class="date-box border-primary border-opacity-25" style="background: rgba(106, 17, 203, 0.05)">
-                        <div class="date-label text-primary">Kết thúc mới</div>
-                        <div class="date-value text-primary">???</div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NewRentPrice" class="form-label fw-bold text-dark"></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-warning text-dark fw-bold">VNĐ</span>
+                        <input asp-for="NewRentPrice" class="form-control text-success fw-bold" type="number" />
                     </div>
+                    <span asp-validation-for="NewRentPrice" class="text-danger"></span>
+                    <small class="text-muted d-block mt-1">Bỏ trống (hoặc giữ nguyên) nếu giá không đổi</small>
                 </div>
             </div>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label fw-bold ps-1">Chọn ngày kết thúc mới</label>
-            <div class="input-group input-group-lg">
-                <span class="input-group-text bg-white border-end-0 text-primary">
-                    <i class="fa fa-calendar-plus"></i>
-                </span>
-                <input type="date" name="ngayKetThucMoi"
-                       class="form-control border-start-0 ps-0"
-                       value="@Model.NgayKetThuc?.ToString("yyyy-MM-dd")" required />
+            
+            <div class="mt-4 text-end bg-light p-3 rounded">
+                <a asp-action="Index" class="btn btn-secondary me-2"><i class="fas fa-times"></i> Hủy Bỏ</a>
+                <button type="submit" class="btn btn-info fw-bold text-white"><i class="fas fa-check-circle"></i> Đồng Ý Ban Hành Phụ Lục</button>
             </div>
-            <div class="form-text mt-2 ms-1 text-muted">
-                <i class="fa fa-info-circle me-1"></i> Hợp đồng sẽ được tính phí tự động đến ngày này.
-            </div>
-            <span class="text-danger mt-1 d-block small">@Html.ValidationMessage("ngayKetThucMoi")</span>
-        </div>
-
-        <button type="submit" class="btn btn-extend shadow-sm">
-            Xác nhận Gia hạn
-        </button>
-
-        <div class="text-center mt-3">
-            <a asp-action="Details" asp-route-id="@Model.Id" class="text-decoration-none text-muted small hover-underline">
-                Hủy bỏ thao tác
-            </a>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

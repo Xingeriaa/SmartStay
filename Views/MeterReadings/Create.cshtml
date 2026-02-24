@@ -1,0 +1,85 @@
+@model do_an_tot_nghiep.ViewModels.MeterReadingFormViewModel
+
+@{
+    ViewData["Title"] = "Chốt Khối Lượng Tiêu Thụ Hóa Đơn";
+}
+
+<div class="card shadow mb-4 col-md-8 mx-auto border-left-success">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-file-invoice"></i> Lập Phiếu Ghi Điện Nước</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
+
+            <div class="row">
+                <!-- Cột Thông số Định Danh -->
+                <div class="col-md-5 border-end pe-4">
+                    <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-bullseye"></i> Phạm Vi Đối Tượng</h6>
+
+                    <div class="mb-3">
+                        <label asp-for="RoomId" class="form-label fw-bold"></label>
+                        <select asp-for="RoomId" asp-items="Model.AvailableRooms" class="form-select select2-single border-dark">
+                            <option value="">-- Mời Chọn Vị Trí Phòng --</option>
+                        </select>
+                        <span asp-validation-for="RoomId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MonthYear" class="form-label fw-bold text-warning"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-warning text-dark"><i class="fas fa-calendar-alt"></i></span>
+                            <input asp-for="MonthYear" class="form-control fw-bold fs-5 text-center" placeholder="Ví dụ: 2024-05" />
+                        </div>
+                        <span asp-validation-for="MonthYear" class="text-danger"></span>
+                        <small class="text-muted d-block mt-1">Chuẩn format: YYYY-MM (Ví dụ: 2023-10)</small>
+                    </div>
+                </div>
+
+                <!-- Cột Nhập Liệu Thô -->
+                <div class="col-md-7 ps-4">
+                    <h6 class="text-primary fw-bold mb-3 border-bottom pb-2 border-primary"><i class="fas fa-tachometer-alt"></i> Tệp Nhập Số Đo</h6>
+
+                    <div class="row">
+                        <!-- Điện -->
+                        <div class="col-6 mb-3">
+                            <label asp-for="OldElectricityIndex" class="form-label fw-bold text-muted"></label>
+                            <input asp-for="OldElectricityIndex" class="form-control" type="number" />
+                            <small class="text-muted">(Sẽ tự động nếu ẩn - Auto)</small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label asp-for="NewElectricityIndex" class="form-label fw-bold text-warning"></label>
+                            <input asp-for="NewElectricityIndex" class="form-control fs-5 font-weight-bold text-warning" type="number" autofocus />
+                            <span asp-validation-for="NewElectricityIndex" class="text-danger"></span>
+                        </div>
+
+                        <!-- Nước -->
+                        <div class="col-6 mb-3 mt-3">
+                            <label asp-for="OldWaterIndex" class="form-label fw-bold text-muted"></label>
+                            <input asp-for="OldWaterIndex" class="form-control" type="number" />
+                        </div>
+                        <div class="col-6 mb-3 mt-3">
+                            <label asp-for="NewWaterIndex" class="form-label fw-bold text-info"></label>
+                            <input asp-for="NewWaterIndex" class="form-control fs-5 font-weight-bold text-info" type="number" />
+                            <span asp-validation-for="NewWaterIndex" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Note" class="form-label fw-bold"></label>
+                        <textarea asp-for="Note" class="form-control bg-light" rows="2" placeholder="Ghi chú thêm: VD Chốt số sớm do khách về quê..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 form-group text-end bg-light p-3 rounded">
+                <a asp-action="Index" class="btn btn-secondary me-2"><i class="fas fa-times"></i> Hủy Bỏ Lệnh</a>
+                <button type="submit" class="btn btn-success fw-bold text-white"><i class="fas fa-file-signature"></i> Đóng Dấu & Phát Sinh Chứng Từ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

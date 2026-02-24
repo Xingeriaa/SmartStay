@@ -1,0 +1,35 @@
+@using do_an_tot_nghiep.ViewModels
+@model MeterReadingFormViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa chỉ số điện nước";
+}
+
+<div style="max-width:700px;margin:0 auto;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Chỉ số điện nước</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa #@Model.Id</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 py-3 px-4">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-tachometer-alt me-2 text-warning"></i>Chỉnh sửa chỉ số điện nước</h5>
+        </div>
+        <div class="card-body p-4">
+            @if (TempData["Error"] != null) { <div class="alert alert-danger border-0">@TempData["Error"]</div> }
+
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <partial name="_Form" />
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top mt-3">
+                    <a asp-action="Index" class="btn btn-light border px-4">Hủy</a>
+                    <button type="submit" class="btn btn-warning px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

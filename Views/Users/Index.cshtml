@@ -1,74 +1,277 @@
-﻿@model List<do_an_tot_nghiep.Models.User>
+﻿@model IEnumerable<do_an_tot_nghiep.ViewModels.UserListItemViewModel>
 @{
-    ViewData["Title"] = "Quản lý người dùng";
+    ViewData["Title"] = "Quản lý tài khoản RBAC";
+    var total    = Model?.Count() ?? 0;
+    var admins   = Model?.Count(x => x.RoleName == "Admin") ?? 0;
+    var staff    = Model?.Count(x => x.RoleName == "Staff") ?? 0;
+    var tenants  = Model?.Count(x => x.RoleName == "Tenant") ?? 0;
+    var inactive = Model?.Count(x => !x.IsActive) ?? 0;
 }
 
-<h2>Quản lý người dùng</h2>
+<div class="container-fluid px-0">
 
-<a asp-action="Create" class="btn btn-success mb-3">+ Tạo tài khoản</a>
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Tài khoản</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Phân quyền & Tài khoản hệ thống</h1>
+            <p class="text-muted mb-0 mt-1">RBAC — Kiểm soát truy cập theo vai trò</p>
+        </div>
+        <a asp-action="Create" class="btn btn-gradient-primary btn-custom shadow">
+            <i class="fas fa-shield-alt me-1"></i> Tạo tài khoản mới
+        </a>
+    </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Họ tên</th>
-            <th>Role</th>
-            <th>Trạng thái</th>
-            <th width="280"></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
-        {
-            <tr>
-                <td>@u.Username</td>
-                <td>@u.FullName</td>
-                <td>@u.RoleName</td>
-                <td>
-                    @(u.IsLocked ? "Bị khóa" : "Hoạt động")
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@u.Id" class="btn btn-info btn-sm">Xem</a>
-                    <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-warning btn-sm">Sửa</a>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-                    <form asp-action="@(u.IsLocked ? "Unlock" : "Lock")"
-                          asp-route-id="@u.Id"
-                          method="post"
-                          class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-secondary btn-sm">
-                            @(u.IsLocked ? "Mở khóa" : "Khóa")
-                        </button>
-                    </form>
+    {{-- Stat Cards --}}
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer" onclick="filterRole('')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">TỔNG TK</div><div class="stat-value text-gradient mt-1">@total</div></div>
+                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-users-cog"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.1s" onclick="filterRole('Admin')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">ADMIN</div><div class="stat-value text-danger mt-1">@admins</div></div>
+                    <div class="stat-icon-wrapper" style="background:#fce4ec"><i class="fas fa-crown" style="color:#c62828"></i></div>
+                </div>
+                <small class="text-danger fw-bold">Click để lọc</small>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.2s" onclick="filterRole('Staff')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">NHÂN VIÊN</div><div class="stat-value mt-1" style="color:#0984e3">@staff</div></div>
+                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-user-tie"></i></div>
+                </div>
+                <small class="text-primary fw-bold">Click để lọc</small>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.3s" onclick="filterRole('Tenant')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">KHÁCH THUÊ</div><div class="stat-value text-success mt-1">@tenants</div></div>
+                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-user"></i></div>
+                </div>
+                <small class="text-success fw-bold">Click để lọc</small>
+            </div>
+        </div>
+    </div>
 
-                    <button class="btn btn-dark btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#resetPasswordModal"
-                            data-user-id="@u.Id">
-                        Reset MK
-                    </button>
+    {{-- Filter Bar --}}
+    <div class="main-card mb-3 p-4 animate-fade-up" style="animation-delay:.1s">
+        <div class="row g-3 align-items-end">
+            <div class="col-xl-4 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-search me-1"></i>Tìm kiếm</label>
+                <div class="search-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Username, họ tên, email..." oninput="applyFilters()">
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-user-shield me-1"></i>Vai trò</label>
+                <select class="form-select" id="filterRole" onchange="applyFilters()">
+                    <option value="">-- Tất cả --</option>
+                    <option value="Admin">👑 Admin</option>
+                    <option value="Staff">💼 Staff</option>
+                    <option value="Tenant">🏠 Tenant</option>
+                </select>
+            </div>
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-toggle-on me-1"></i>Trạng thái</label>
+                <select class="form-select" id="filterActive" onchange="applyFilters()">
+                    <option value="">-- Tất cả --</option>
+                    <option value="active">✅ Hoạt động</option>
+                    <option value="inactive">🔒 Đã khóa</option>
+                </select>
+            </div>
+            <div class="col-xl-1">
+                <label class="fw-semibold small text-muted mb-1 d-block">&nbsp;</label>
+                <button class="btn btn-light border w-100" onclick="resetFilters()" title="Xóa bộ lọc"><i class="fas fa-times text-muted"></i></button>
+            </div>
+        </div>
+        <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
+    </div>
 
-                    <form asp-action="Delete"
-                          asp-route-id="@u.Id"
-                          method="post"
-                          class="d-inline"
-                          onsubmit="return confirm('Xóa người dùng này?');">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    {{-- Table --}}
+    <div class="main-card animate-fade-up" style="animation-delay:.2s">
+        <div class="card-header-styled">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-users-cog text-brand"></i>
+                <h5 class="fw-bold mb-0">Danh sách tài khoản</h5>
+                <span class="badge bg-soft-brand text-brand"><span id="visibleCount">@total</span> / @total</span>
+                @if (inactive > 0)
+                {
+                    <span class="badge bg-danger ms-1"><i class="fas fa-lock me-1"></i>@inactive bị khóa</span>
+                }
+            </div>
+            <button class="btn btn-light border btn-sm" onclick="location.reload()"><i class="fas fa-sync-alt text-muted"></i></button>
+        </div>
 
-<partial name="~/Views/Shared/_ResetPasswordModal.cshtml" />
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="dataTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tài khoản</th>
+                        <th>Họ và tên</th>
+                        <th class="text-center">Vai trò (RBAC)</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Đăng nhập gần nhất</th>
+                        <th class="text-center" style="width:120px;">Quản trị</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            string roleBadge = item.RoleName == "Admin" ? "bg-danger" : item.RoleName == "Staff" ? "bg-primary" : "bg-secondary";
+                            string roleIcon  = item.RoleName == "Admin" ? "fa-crown" : item.RoleName == "Staff" ? "fa-user-tie" : "fa-user";
+                            <tr data-role="@item.RoleName"
+                                data-active="@(item.IsActive ? "active" : "inactive")"
+                                data-name="@item.FullName?.ToLower()"
+                                data-user="@item.Username?.ToLower()">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="@roleBadge rounded-circle d-flex align-items-center justify-content-center text-white" style="width:40px;height:40px;flex-shrink:0;opacity:.85">
+                                            <i class="fas @roleIcon small"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@item.Username</div>
+                                            <small class="text-muted">ID: #@item.Id</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="fw-medium">@item.FullName</span></td>
+                                <td class="text-center">
+                                    <span class="badge @roleBadge rounded-pill px-3 shadow-sm">
+                                        <i class="fas @roleIcon me-1"></i>@item.RoleName
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="text-success fw-bold"><i class="fas fa-toggle-on me-1"></i>Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-bold"><i class="fas fa-ban me-1"></i>Đã khóa</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <span class="text-muted small">
+                                        @(item.LastLoginAt?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa đăng nhập")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#fff8e1;color:#f57f17;" title="Phân quyền">
+                                            <i class="fas fa-user-lock"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline"
+                                              onsubmit="return confirm('Xóa mềm tài khoản @item.Username?')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="action-btn btn btn-sm" style="background:#fce4ec;color:#c62828;" title="Xóa tài khoản">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="fas fa-users-cog fa-3x text-muted opacity-25 d-block mb-3"></i>
+                                <h6 class="text-muted">Chưa có tài khoản nào</h6>
+                                <a asp-action="Create" class="btn btn-gradient-primary btn-sm mt-2"><i class="fas fa-shield-alt me-1"></i> Tạo tài khoản</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noResultsMsg" class="text-center py-4 d-none">
+            <i class="fas fa-user-slash fa-2x text-muted opacity-25 d-block mb-2"></i>
+            <h6 class="text-muted">Không tìm thấy tài khoản phù hợp</h6>
+            <button class="btn btn-sm btn-light border mt-1" onclick="resetFilters()"><i class="fas fa-times me-1"></i> Xóa bộ lọc</button>
+        </div>
+
+        <div class="px-4 py-3 border-top bg-light rounded-bottom d-flex justify-content-between">
+            <span class="text-muted small">Hiển thị <strong><span id="footerCount">@total</span></strong> / @total tài khoản</span>
+            <span class="small">
+                <span class="badge bg-danger me-1">@admins</span> Admin &nbsp;
+                <span class="badge bg-primary me-1">@staff</span> Staff &nbsp;
+                <span class="badge bg-secondary me-1">@tenants</span> Tenant
+            </span>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
-    <script>
-        $('#resetPasswordModal').on('show.bs.modal', function (e) {
-            const btn = $(e.relatedTarget);
-            $('#resetUserId').val(btn.data('user-id'));
+<script>
+    const allRows = Array.from(document.querySelectorAll('#dataTable tbody tr[data-role]'));
+
+    function filterRole(role) {
+        document.getElementById('filterRole').value = role;
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const q      = document.getElementById('searchInput').value.toLowerCase().trim();
+        const role   = document.getElementById('filterRole').value;
+        const active = document.getElementById('filterActive').value;
+
+        let visible = 0;
+        allRows.forEach(row => {
+            const matchQ  = !q || row.dataset.name?.includes(q) || row.dataset.user?.includes(q) || row.textContent.toLowerCase().includes(q);
+            const matchR  = !role   || row.dataset.role === role;
+            const matchA  = !active || row.dataset.active === active;
+            const show    = matchQ && matchR && matchA;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
         });
-    </script>
+        ['visibleCount','footerCount'].forEach(id=>document.getElementById(id).textContent=visible);
+        document.getElementById('noResultsMsg').classList.toggle('d-none',visible>0||allRows.length===0);
+        renderTags(q,role,active);
+    }
+
+    function renderTags(q,role,active) {
+        const c=document.getElementById('filterTags'); c.innerHTML='';
+        const tag=(l,cl)=>c.innerHTML+=`<span class="badge bg-soft-brand text-brand border px-3 py-2 rounded-pill" style="font-size:.8rem">${l} <span style="cursor:pointer;margin-left:6px" onclick="${cl}">✕</span></span>`;
+        if(q)      tag(`🔍 "${q}"`,`document.getElementById('searchInput').value='';applyFilters()`);
+        if(role)   tag(`🛡️ ${role}`,`document.getElementById('filterRole').value='';applyFilters()`);
+        if(active) tag(active==='active'?'✅ Hoạt động':'🔒 Đã khóa',`document.getElementById('filterActive').value='';applyFilters()`);
+    }
+
+    function resetFilters() {
+        ['searchInput','filterRole','filterActive'].forEach(id=>document.getElementById(id).value='');
+        applyFilters();
+    }
+</script>
 }

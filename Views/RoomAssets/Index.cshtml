@@ -1,0 +1,67 @@
+@* RoomAssets/Index.cshtml — alias chuẩn cho RoomAssetsList *@
+@model List<do_an_tot_nghiep.Models.RoomAsset>
+@{
+    ViewData["Title"] = "Thiết bị phòng";
+    var roomId = ViewBag.RoomId;
+}
+
+<style>
+    .asset-page { max-width:960px; margin:0 auto; }
+    .asset-row { background:#fff; border:1px solid #e9ecef; border-radius:12px; padding:.85rem 1.2rem; margin-bottom:.55rem; display:flex; align-items:center; gap:1rem; transition:box-shadow .15s; }
+    .asset-row:hover { box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .status-badge { display:inline-block; padding:.2rem .7rem; border-radius:20px; font-size:.75rem; font-weight:700; }
+    .sb-1 { background:#d4edda; color:#155724; }
+    .sb-2 { background:#fff3cd; color:#856404; }
+    .sb-3 { background:#f8d7da; color:#721c24; }
+    .sb-4 { background:#e2e3e5; color:#495057; }
+</style>
+
+<div class="asset-page">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-0" style="font-size:1.55rem;"><i class="fas fa-couch me-2 text-secondary"></i>Thiết bị phòng</h1>
+            <p class="text-muted small mb-0">Quản lý tài sản và thiết bị theo từng phòng trọ</p>
+        </div>
+        <a asp-action="Create" asp-route-roomId="@roomId"
+           class="btn fw-bold text-white" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);border-radius:12px;padding:.6rem 1.4rem;">
+            <i class="fas fa-plus me-1"></i>Thêm thiết bị
+        </a>
+    </div>
+
+    @if (TempData["Error"]   != null) { <div class="alert alert-danger border-0 mb-3">@TempData["Error"]</div> }
+    @if (TempData["Success"] != null) { <div class="alert alert-success border-0 mb-3">@TempData["Success"]</div> }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="fas fa-couch fa-3x mb-3 d-block opacity-40"></i>
+            <strong>Chưa có thiết bị nào</strong>
+        </div>
+    }
+    else
+    {
+        foreach (var item in Model)
+        {
+            string statusText  = item.Status switch { 1 => "Hoạt động", 2 => "Hư hỏng", 3 => "Hỏng", 4 => "Thanh lý", _ => "?" };
+            string statusClass = item.Status switch { 1 => "sb-1", 2 => "sb-2", 3 => "sb-3", _ => "sb-4" };
+            <div class="asset-row">
+                <div class="flex-grow-1 min-w-0">
+                    <div class="fw-semibold">@item.AssetName</div>
+                    <div class="text-muted small">SL: @item.Quantity
+                        @if (!string.IsNullOrEmpty(item.SerialNumber)) { <span class="ms-2">S/N: @item.SerialNumber</span> }
+                    </div>
+                </div>
+                <span class="status-badge @statusClass">@statusText</span>
+                <div class="d-flex gap-1">
+                    <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-sm btn-light border">Xem</a>
+                    <a asp-action="Edit"   asp-route-id="@item.Id" class="btn btn-sm btn-primary">Sửa</a>
+                    <form asp-action="Delete" asp-route-id="@item.Id" asp-route-roomId="@item.RoomId" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Xóa thiết bị này?')">Xóa</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+</div>

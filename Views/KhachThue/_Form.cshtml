@@ -1,0 +1,89 @@
+@model do_an_tot_nghiep.ViewModels.KhachThueFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
+
+<div class="row">
+    <!-- Cột trái: Thông tin định danh -->
+    <div class="col-md-6 border-end pe-4">
+        <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="fas fa-id-card-clip"></i> Thông Tin Cá Nhân</h5>
+        
+        <div class="mb-3">
+            <label asp-for="HoTen" class="form-label fw-bold"></label>
+            <input asp-for="HoTen" class="form-control" placeholder="Nguyễn Văn A" />
+            <span asp-validation-for="HoTen" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="SoCCCD" class="form-label fw-bold"></label>
+            <input asp-for="SoCCCD" class="form-control" placeholder="012345678910" />
+            <span asp-validation-for="SoCCCD" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-6 mb-3">
+                <label asp-for="NgaySinh" class="form-label fw-bold"></label>
+                <input asp-for="NgaySinh" class="form-control" />
+                <span asp-validation-for="NgaySinh" class="text-danger"></span>
+            </div>
+            <div class="col-6 mb-3">
+                <label asp-for="Gender" class="form-label fw-bold"></label>
+                <select asp-for="Gender" class="form-select">
+                    <option value="">-- Chọn --</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label fw-bold"></label>
+            <select asp-for="Status" class="form-select">
+                <option value="Active">Đang Cư Trú (Active)</option>
+                <option value="Temporary_Absent">Tạm Vắng (Temporary Absent)</option>
+                <option value="Moved_Out">Đã Rời Đi (Moved Out)</option>
+            </select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Cột phải: Thông tin liên lạc -->
+    <div class="col-md-6 ps-4">
+        <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="fas fa-address-book"></i> Thông Tin Liên Hệ</h5>
+
+        <div class="row">
+            <div class="col-6 mb-3">
+                <label asp-for="SoDienThoai1" class="form-label fw-bold"></label>
+                <input asp-for="SoDienThoai1" class="form-control" placeholder="SĐT Chính" />
+                <span asp-validation-for="SoDienThoai1" class="text-danger"></span>
+            </div>
+            <div class="col-6 mb-3">
+                <label asp-for="SoDienThoai2" class="form-label fw-bold"></label>
+                <input asp-for="SoDienThoai2" class="form-control" placeholder="SĐT Phụ" />
+                <span asp-validation-for="SoDienThoai2" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label fw-bold"></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-at"></i></span>
+                <input asp-for="Email" class="form-control" placeholder="nguyenvana@gmail.com" />
+            </div>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DiaChiThuongTru" class="form-label fw-bold"></label>
+            <textarea asp-for="DiaChiThuongTru" class="form-control" rows="2" placeholder="Xóm A, Tỉnh B..."></textarea>
+            <span asp-validation-for="DiaChiThuongTru" class="text-danger"></span>
+        </div>
+        
+        <div class="mb-3">
+            <label asp-for="NoiSinh" class="form-label fw-bold"></label>
+            <input asp-for="NoiSinh" class="form-control" placeholder="Quê quán / Nơi sinh trên thẻ" />
+            <span asp-validation-for="NoiSinh" class="text-danger"></span>
+        </div>
+    </div>
+</div>

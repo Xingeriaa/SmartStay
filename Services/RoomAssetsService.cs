@@ -13,15 +13,14 @@ namespace do_an_tot_nghiep.Services
         Task<RoomAssetsListResult> GetAssetsAsync(string? token, int? roomId);
         Task<RoomAssetResult> GetAssetAsync(string? token, int id);
         Task<RoomAssetCreateResult> CreateAsync(string? token, RoomAsset model);
+        Task<RoomAssetUpdateResult> UpdateAsync(string? token, RoomAsset model);
         Task<RoomAssetDeleteResult> DeleteAsync(string? token, int id);
     }
 
     public sealed record RoomAssetsListResult(bool Success, bool RequiresLogin, List<RoomAsset> Assets, string? ErrorMessage);
-
     public sealed record RoomAssetResult(bool Success, bool RequiresLogin, bool NotFound, RoomAsset? Asset, string? ErrorMessage);
-
     public sealed record RoomAssetCreateResult(bool Success, bool RequiresLogin, IDictionary<string, string[]>? ValidationErrors, string? ErrorMessage);
-
+    public sealed record RoomAssetUpdateResult(bool Success, bool RequiresLogin, string? ErrorMessage);
     public sealed record RoomAssetDeleteResult(bool Success, bool RequiresLogin, string? ErrorMessage);
 
     public class RoomAssetsService : IRoomAssetsService
@@ -118,6 +117,21 @@ namespace do_an_tot_nghiep.Services
             }
 
             return new RoomAssetCreateResult(true, false, null, null);
+        }
+
+        public async Task<RoomAssetUpdateResult> UpdateAsync(string? token, RoomAsset model)
+        {
+            var client = CreateClient(token, out var requiresLogin);
+            if (requiresLogin) return new RoomAssetUpdateResult(false, true, null);
+
+            var jsonBody = JsonSerializer.Serialize(model);
+            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            var response = await client.PutAsync($"{ApiBaseUrl}/api/room-assets/{model.Id}", content);
+            if (!response.IsSuccessStatusCode)
+                return new RoomAssetUpdateResult(false, false, $"API failed with status {response.StatusCode}");
+
+            return new RoomAssetUpdateResult(true, false, null);
         }
 
         public async Task<RoomAssetDeleteResult> DeleteAsync(string? token, int id)

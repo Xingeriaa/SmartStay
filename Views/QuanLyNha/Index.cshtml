@@ -1,153 +1,205 @@
 ﻿@model IEnumerable<do_an_tot_nghiep.Models.NhaTro>
 @{
-    ViewData["Title"] = "Quản lý hệ thống nhà";
+    ViewData["Title"] = "Hệ Thống Nhà Trọ";
+    var total        = Model?.Count() ?? 0;
+    var totalRevenue = Model?.Sum(x => x.GiaThue) ?? 0;
 }
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+{{-- Select2 for enterprise-scale search --}}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
+<div class="container-fluid px-0">
 
-<div class="container-fluid px-4">
-
-    <div class="d-flex justify-content-between align-items-end page-header animate-fade-up">
+    {{-- Page Header --}}
+    <div class="d-flex justify-content-between align-items-end mb-4 px-1">
         <div>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb breadcrumb-custom mb-1">
-                    <li class="breadcrumb-item"><a href="#"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Quản lý nhà</li>
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Quản lý nhà</li>
                 </ol>
             </nav>
-            <h1 class="page-title">Hệ Thống Nhà</h1>
-            <p class="text-secondary mb-0 fw-medium">Quản lý danh sách tài sản và trạng thái hoạt động.</p>
+            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Hệ thống nhà trọ</h1>
+            <p class="text-muted mb-0 mt-1">Quản lý danh sách tài sản, xem phòng và hoạt động kinh doanh</p>
         </div>
-        <div class="d-flex gap-3">
-            <button type="button" class="btn btn-custom btn-outline-danger shadow-sm" onclick="deleteSelected()">
-                <i class="fas fa-trash-alt"></i> Xóa đã chọn
-            </button>
-            <a href="/QuanLyNha/Create" class="btn btn-custom btn-gradient-primary text-decoration-none">
-                <i class="fas fa-plus-circle"></i> Thêm nhà mới
-            </a>
-        </div>
+        <a asp-action="Create" class="btn btn-gradient-primary btn-custom shadow">
+            <i class="fas fa-plus me-1"></i> Thêm nhà mới
+        </a>
     </div>
 
-    <div class="row g-4 mb-5">
-        <div class="col-xl-3 col-md-6 animate-fade-up">
-            <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-start">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    {{-- Stat Cards --}}
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="stat-label mb-1">TỔNG TÀI SẢN</div>
-                        <div class="stat-value text-gradient">@Model.Count()</div>
+                        <div class="stat-label">TỔNG TÒA NHÀ</div>
+                        <div class="stat-value text-gradient mt-1">@total</div>
                     </div>
                     <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-building"></i></div>
                 </div>
-                <div class="mt-3">
-                    @{
-                        var totalPercent = Model.Count() > 0 ? (Model.Count() * 100 / 100) : 0;
-                    }
-                    <div class="progress" style="height: 6px;">
-                        <div class="progress-bar" style="width: @totalPercent%; background: var(--primary-gradient);"></div>
-                    </div>
-                    <small class="text-muted mt-2 d-block">Mục tiêu: @Model.Count()/100</small>
-                </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 animate-fade-up delay-1">
-            <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-start">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.1s">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="stat-label mb-1">ĐÃ CHO THUÊ</div>
-                        <div class="stat-value">0%</div>
+                        <div class="stat-label">KẾT QUẢ LỌC</div>
+                        <div class="stat-value mt-1" id="filteredCount">@total</div>
                     </div>
-                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-check-circle"></i></div>
-                </div>
-                <div class="mt-3">
-                    <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-success" style="width: 0%"></div>
-                    </div>
-                    <small class="text-muted mt-2 d-block">Tỷ lệ lấp đầy</small>
+                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-filter"></i></div>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 animate-fade-up delay-2">
-            <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div style="min-width: 0;">
-                        <div class="stat-label mb-1">DOANH THU DỰ KIẾN</div>
-                        <div class="stat-value text-nowrap">
-                            @Model.Sum(x => x.GiaThue).ToString("N0")
-                            <span class="fs-6 text-muted fw-normal">VNĐ</span>
-                        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.2s">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div style="min-width:0">
+                        <div class="stat-label">DOANH THU DỰ KIẾN</div>
+                        <div class="stat-value mt-1" style="font-size:1.35rem;">@totalRevenue.ToString("N0") <small class="fs-6 text-muted fw-normal">đ</small></div>
                     </div>
-                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-wallet"></i></div>
-                </div>
-                <div class="mt-3">
-                    <span class="badge bg-light text-primary rounded-pill border text-nowrap">Tổng giá thuê niêm yết</span>
+                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-wallet"></i></div>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 animate-fade-up delay-3">
-            <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-start">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.3s">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="stat-label mb-1">CẦN XỬ LÝ</div>
-                        <div class="stat-value">0</div>
+                        <div class="stat-label">TÌNH TRẠNG</div>
+                        <div class="stat-value mt-1 text-success"><i class="fas fa-check-circle"></i></div>
                     </div>
-                    <div class="stat-icon-wrapper bg-icon-warning"><i class="fas fa-bell"></i></div>
+                    <div class="stat-icon-wrapper bg-icon-warning"><i class="fas fa-heartbeat"></i></div>
                 </div>
-                <div class="mt-3">
-                    <div class="text-success fw-bold font-monospace small text-nowrap">
-                        <i class="fas fa-check-circle me-1"></i>Hệ thống ổn định
-                    </div>
-                </div>
+                <div class="mt-2"><div class="text-success fw-bold small"><i class="fas fa-check-circle me-1"></i>Hệ thống ổn định</div></div>
             </div>
         </div>
     </div>
 
-    <div class="main-card animate-fade-up delay-2">
-        <div class="card-header-styled">
-            <div class="d-flex align-items-center">
-                <div class="bg-light p-2 rounded-circle me-3 text-primary">
-                    <i class="fas fa-list-ul fa-lg"></i>
+    {{-- ====================== ENTERPRISE SEARCH & FILTER BAR ====================== --}}
+    <div class="main-card mb-3 animate-fade-up p-4" style="animation-delay:.1s">
+        <div class="row g-3 align-items-end">
+
+            {{-- 1. Full-text search with Select2 style input --}}
+            <div class="col-xl-4 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block">
+                    <i class="fas fa-search me-1"></i>Tìm kiếm tòa nhà
+                </label>
+                <div class="search-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput"
+                           placeholder="Tên nhà, địa chỉ, mã ID..."
+                           oninput="applyFilters()">
                 </div>
-                <div>
-                    <h5 class="fw-bold mb-0">Danh sách bất động sản</h5>
-                    <small class="text-secondary">Quản lý chi tiết từng hạng mục</small>
+                <div class="text-muted" style="font-size:.72rem;margin-top:4px;">
+                    Tìm theo: tên nhà, địa chỉ, quận/huyện, tỉnh/thành
                 </div>
             </div>
 
-            <div class="toolbar-wrapper">
-                <div class="search-group">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" id="tableSearch" placeholder="Tìm kiếm mã nhà, địa chỉ...">
-                </div>
-                <select class="form-select w-auto border-secondary-subtle fw-medium" style="border-radius: var(--radius-md);">
-                    <option selected>Lọc theo trạng thái</option>
-                    <option value="1">Đang hoạt động</option>
-                    <option value="2">Tạm khóa</option>
+            {{-- 2. Province filter - dành cho 100+ tòa nhà ở nhiều tỉnh --}}
+            <div class="col-xl-3 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block">
+                    <i class="fas fa-map-marker-alt me-1"></i>Tỉnh / Thành phố
+                </label>
+                <select class="form-select" id="filterCity" onchange="applyFilters()">
+                    <option value="">-- Tất cả tỉnh/thành --</option>
+                    @foreach (var city in (Model?.Select(m => m.TinhThanh).Distinct().Where(c => !string.IsNullOrEmpty(c)) ?? Enumerable.Empty<string?>()))
+                    {
+                        <option value="@city">@city</option>
+                    }
                 </select>
-                <button class="btn btn-light border px-3" onclick="location.reload()" title="Tải lại dữ liệu">
-                    <i class="fas fa-sync-alt text-secondary"></i>
+            </div>
+
+            {{-- 3. District filter - load dynamic via JS --}}
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block">
+                    <i class="fas fa-city me-1"></i>Quận / Huyện
+                </label>
+                <select class="form-select" id="filterDistrict" onchange="applyFilters()">
+                    <option value="">-- Tất cả --</option>
+                </select>
+            </div>
+
+            {{-- 4. Floor filter --}}
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block">
+                    <i class="fas fa-layer-group me-1"></i>Số tầng
+                </label>
+                <select class="form-select" id="filterFloor" onchange="applyFilters()">
+                    <option value="">-- Tất cả --</option>
+                    <option value="0">Trệt</option>
+                    <option value="2">2 tầng</option>
+                    <option value="3">3 tầng</option>
+                    <option value="4">4 tầng</option>
+                    <option value="5">5 tầng+</option>
+                </select>
+            </div>
+
+            {{-- 5. Reset + Bulk action --}}
+            <div class="col-xl-1 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block">&nbsp;</label>
+                <button class="btn btn-light border w-100" onclick="resetFilters()" title="Xóa bộ lọc">
+                    <i class="fas fa-times text-muted"></i>
+                </button>
+            </div>
+        </div>
+
+        {{-- Active filter tags --}}
+        <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
+    </div>
+
+    {{-- Main Table --}}
+    <div class="main-card animate-fade-up" style="animation-delay:.2s">
+        <div class="card-header-styled">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-soft-brand p-2 rounded-3" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-building text-brand"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0">Danh sách tòa nhà</h5>
+                    <small class="text-muted">Đang hiển thị <span id="visibleCount">@total</span> / @total kết quả</small>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-light border btn-sm" onclick="location.reload()" title="Làm mới">
+                    <i class="fas fa-sync-alt text-muted"></i>
+                </button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteSelected()">
+                    <i class="fas fa-trash me-1"></i> Xóa đã chọn
                 </button>
             </div>
         </div>
 
         <div class="table-responsive">
-            <table class="table-styled" id="dataTable">
-                <thead>
+            <table class="table table-hover align-middle mb-0" id="dataTable">
+                <thead class="table-light">
                     <tr>
-                        <th style="width: 50px;" class="text-center">
-                            <input class="form-check-input form-check-input-custom" type="checkbox" id="checkAll">
+                        <th style="width:44px;" class="text-center">
+                            <input class="form-check-input" type="checkbox" id="checkAll" onclick="toggleAll(this)">
                         </th>
-                        <th>Tên Nhà Trọ</th>
-                        <th class="text-center">Tầng</th>
-                        <th class="text-end">Giá Thuê</th>
-                        <th class="text-center">Ngày Thu</th>
-                        <th>Dịch Vụ Tích Hợp</th>
-                        <th>Địa Chỉ</th>
-                        <th>Ghi Chú</th>
+                        <th>Tên tòa nhà</th>
+                        <th>Địa chỉ</th>
+                        <th class="text-center">Số tầng</th>
+                        <th class="text-end">Giá thuê TB</th>
+                        <th class="text-center">Ngày thu tiền</th>
+                        <th>Dịch vụ</th>
+                        <th class="text-center" style="width:190px;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -155,51 +207,79 @@
                     {
                         foreach (var item in Model)
                         {
-                            <tr id="row-@item.Id">
-                                <td class="text-center">
-                                    <input class="form-check-input row-checkbox" type="checkbox" value="@item.Id">
-                                </td>
-                                <td class="fw-bold text-primary">@item.TenNhaTro</td>
-                                <td class="text-center">@(item.LoaiNha == 0 ? "Trệt" : "Tầng " + item.LoaiNha)</td>
-                                <td class="text-end fw-bold text-success">@item.GiaThue.ToString("N0") <small>đ</small></td>
-                                <td class="text-center fw-bold text-danger">Ngày @item.NgayThuTien</td>
-
-                                @{
-                                    var allDichVus = ViewBag.AllDichVus as List<do_an_tot_nghiep.Models.DichVu>;
-                                }
-
+                            <tr id="row-@item.Id"
+                                data-name="@item.TenNhaTro.ToLower()"
+                                data-address="@item.DiaChiChiTiet?.ToLower()"
+                                data-city="@item.TinhThanh"
+                                data-district="@item.QuanHuyen"
+                                data-floor="@item.LoaiNha">
+                                <td class="text-center"><input class="form-check-input row-checkbox" type="checkbox" value="@item.Id"></td>
                                 <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-soft-brand rounded-2" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                            <i class="fas fa-building text-brand"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">@item.TenNhaTro</div>
+                                            <small class="text-muted">ID: #@item.Id</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small fw-medium">@item.DiaChiChiTiet</div>
+                                    <div class="text-muted" style="font-size:.75rem;">@item.PhuongXa, @item.QuanHuyen @(!string.IsNullOrEmpty(item.TinhThanh) ? "– " + item.TinhThanh : "")</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light border text-dark fw-medium">
+                                        @(item.LoaiNha == 0 ? "Trệt" : item.LoaiNha + " tầng")
+                                    </span>
+                                </td>
+                                <td class="text-end fw-bold text-success">
+                                    @item.GiaThue.ToString("N0") <small class="text-muted fw-normal">đ</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light border text-dark">Ngày @item.NgayThuTien</span>
+                                </td>
+                                <td>
+                                    @{
+                                        var allDichVus = ViewBag.AllDichVus as List<do_an_tot_nghiep.Models.DichVu>;
+                                    }
                                     @if (!string.IsNullOrEmpty(item.DanhSachDichVu))
                                     {
                                         var dvIds = item.DanhSachDichVu.Split(',');
+                                        int shown = 0;
                                         foreach (var idStr in dvIds)
                                         {
-                                            if (int.TryParse(idStr, out int dvId))
+                                            if (shown >= 2) break;
+                                            if (int.TryParse(idStr.Trim(), out int dvId))
                                             {
                                                 var dvObj = allDichVus?.FirstOrDefault(d => d.Id == dvId);
-                                                if (dvObj != null)
-                                                {
-                                                    // Badge dịch vụ: chỉnh về tông tím nhạt (hoặc giữ cyan nếu muốn khác biệt)
-                                                    // Ở đây tôi dùng màu primary nhưng nhạt đi để đồng bộ tông màu
-                                                    <span class="badge border me-1 bg-soft-brand text-brand badge-xs">
-                                                        <i class="fas fa-check-circle me-1"></i>@dvObj.Ten
-                                                    </span>
-                                                }
+                                                if (dvObj != null) { <span class="badge badge-soft-brand badge-xs me-1">@dvObj.Ten</span>; shown++; }
                                             }
                                         }
+                                        if (dvIds.Length > 2) { <span class="badge bg-light border text-muted badge-xs">+@(dvIds.Length - 2)</span> }
                                     }
-                                    else
-                                    {
-                                        <span class="text-muted small">---</span>
-                                    }
+                                    else { <span class="text-muted small">—</span> }
                                 </td>
-
-                                <td>
-                                    <div class="small fw-medium">@item.DiaChiChiTiet</div>
-                                    <div class="text-muted" style="font-size: 0.7rem;">@item.PhuongXa, @item.QuanHuyen</div>
-                                </td>
-                                <td class="small text-muted text-truncate" style="max-width: 150px;" title="@item.GhiChu">
-                                    @item.GhiChu
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                        <a asp-action="Details" asp-route-id="@item.Id"
+                                           class="action-btn btn btn-sm" style="background:#e3f2fd;color:#1565c0;" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-controller="QuanLyPhong" asp-action="Index" asp-route-nhaId="@item.Id"
+                                           class="action-btn btn btn-sm" style="background:#e8f5e9;color:#2e7d32;" title="Danh sách phòng">
+                                            <i class="fas fa-door-open"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id"
+                                           class="action-btn btn btn-sm" style="background:#fff8e1;color:#f57f17;" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" onclick="deleteNha(@item.Id, '@Html.Raw(item.TenNhaTro.Replace("'", "\\'"))')"
+                                                class="action-btn btn btn-sm" style="background:#fce4ec;color:#c62828;" title="Xóa">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -207,69 +287,160 @@
                     else
                     {
                         <tr>
-                            <td colspan="9" class="text-center py-5">
-                                <div class="text-muted fst-italic">Không có dữ liệu hiển thị. Hãy bấm "Thêm nhà mới" để bắt đầu.</div>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="fas fa-building fa-3x text-muted opacity-25 d-block mb-3"></i>
+                                <h6 class="text-muted">Chưa có nhà trọ nào trong hệ thống</h6>
+                                <a asp-action="Create" class="btn btn-gradient-primary btn-sm mt-2">
+                                    <i class="fas fa-plus me-1"></i> Thêm nhà mới
+                                </a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+
+        {{-- No results state --}}
+        <div id="noResultsMsg" class="text-center py-5 d-none">
+            <i class="fas fa-search fa-2x text-muted opacity-25 d-block mb-2"></i>
+            <h6 class="text-muted">Không tìm thấy kết quả phù hợp</h6>
+            <button class="btn btn-sm btn-light border mt-1" onclick="resetFilters()">
+                <i class="fas fa-times me-1"></i> Xóa bộ lọc
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light rounded-bottom">
+            <span class="text-muted small">Tổng: <strong>@total</strong> tòa nhà | Đang hiển thị: <strong><span id="footerCount">@total</span></strong></span>
+            <span class="text-muted small">Tổng doanh thu niêm yết: <strong class="text-success">@totalRevenue.ToString("N0") đ</strong></span>
+        </div>
     </div>
 </div>
 
+<form id="deleteForm" method="post" asp-action="Delete" asp-controller="QuanLyNha">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" id="deleteId">
+</form>
+
 @section Scripts {
-    <script>
-        function deleteSelected() {
-            const selectedIds = Array.from(document.querySelectorAll('tbody .row-checkbox:checked'))
-                                     .map(cb => parseInt(cb.value));
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // =========================================================
+    // ENTERPRISE FILTER LOGIC
+    // =========================================================
+    const allRows = Array.from(document.querySelectorAll('#dataTable tbody tr[data-name]'));
 
-            if (selectedIds.length === 0) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Thông báo',
-                    text: 'Vui lòng chọn ít nhất một nhà trọ để xóa!',
-                    confirmButtonColor: '#00b894'
-                });
-                return;
-            }
-
-            Swal.fire({
-                title: `Xóa ${selectedIds.length} mục đã chọn?`,
-                text: "Dữ liệu này sẽ bị xóa vĩnh viễn khỏi hệ thống!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444', // Màu đỏ cho hành động nguy hiểm (giữ nguyên để cảnh báo)
-                cancelButtonColor: '#64748b',
-                confirmButtonText: 'Đúng, xóa hết!',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '/QuanLyNha/DeleteSelected',
-                        type: 'POST',
-                        data: {
-                            ids: selectedIds,
-                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        success: function (res) {
-                            if (res.success) {
-                                Swal.fire({
-                                    title: 'Thành công!',
-                                    text: res.message,
-                                    icon: 'success',
-                                    confirmButtonColor: '#00b894'
-                                }).then(() => location.reload());
-                            } else {
-                                Swal.fire('Lỗi!', res.message, 'error');
-                            }
-                        },
-                        error: function () {
-                            Swal.fire('Lỗi!', 'Không thể thực hiện yêu cầu. Kiểm tra lại Controller.', 'error');
-                        }
-                    });
-                }
-            });
+    // When city changes -> populate district dropdown dynamically from current data
+    document.getElementById('filterCity').addEventListener('change', function () {
+        const selectedCity = this.value;
+        const distSelect = document.getElementById('filterDistrict');
+        distSelect.innerHTML = '<option value="">-- Tất cả --</option>';
+        if (selectedCity) {
+            const districts = [...new Set(
+                allRows.filter(r => r.dataset.city === selectedCity)
+                       .map(r => r.dataset.district).filter(Boolean)
+            )];
+            districts.forEach(d => distSelect.add(new Option(d, d)));
         }
-    </script>
+        applyFilters();
+    });
+
+    function applyFilters() {
+        const q       = document.getElementById('searchInput').value.toLowerCase().trim();
+        const city    = document.getElementById('filterCity').value;
+        const district = document.getElementById('filterDistrict').value;
+        const floor   = document.getElementById('filterFloor').value;
+
+        let visible = 0;
+        allRows.forEach(row => {
+            const matchQ    = !q || row.dataset.name?.includes(q) || row.dataset.address?.includes(q)
+                                 || row.dataset.city?.toLowerCase().includes(q)
+                                 || row.dataset.district?.toLowerCase().includes(q)
+                                 || row.querySelector('td:nth-child(2) small')?.textContent.toLowerCase().includes(q);
+            const matchCity = !city || row.dataset.city === city;
+            const matchDist = !district || row.dataset.district === district;
+            const matchFloor = !floor || row.dataset.floor === floor;
+
+            const show = matchQ && matchCity && matchDist && matchFloor;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        document.getElementById('filteredCount').textContent = visible;
+        document.getElementById('visibleCount').textContent  = visible;
+        document.getElementById('footerCount').textContent   = visible;
+        document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0);
+
+        renderFilterTags(q, city, district, floor);
+    }
+
+    function renderFilterTags(q, city, district, floor) {
+        const container = document.getElementById('filterTags');
+        container.innerHTML = '';
+        const addTag = (label, clearFn) => {
+            const tag = document.createElement('span');
+            tag.className = 'badge bg-soft-brand text-brand border px-3 py-2 rounded-pill';
+            tag.style.fontSize = '.8rem';
+            tag.innerHTML = `${label} <span style="cursor:pointer;margin-left:6px;opacity:.7" onclick="${clearFn}">✕</span>`;
+            container.appendChild(tag);
+        };
+        if (q) addTag(`🔍 "${q}"`, `document.getElementById('searchInput').value=''; applyFilters()`);
+        if (city) addTag(`🏙 ${city}`, `document.getElementById('filterCity').value=''; document.getElementById('filterDistrict').innerHTML='<option value="">-- Tất cả --</option>'; applyFilters()`);
+        if (district) addTag(`📍 ${district}`, `document.getElementById('filterDistrict').value=''; applyFilters()`);
+        if (floor !== '') addTag(`🏢 ${floor === '0' ? 'Trệt' : floor + ' tầng'}`, `document.getElementById('filterFloor').value=''; applyFilters()`);
+    }
+
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('filterCity').value  = '';
+        document.getElementById('filterDistrict').innerHTML = '<option value="">-- Tất cả --</option>';
+        document.getElementById('filterFloor').value = '';
+        applyFilters();
+    }
+
+    // =========================================================
+    // CHECKBOX & DELETE LOGIC
+    // =========================================================
+    function toggleAll(src) {
+        document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = src.checked);
+    }
+
+    function deleteNha(id, name) {
+        Swal.fire({
+            title: `Xóa "${name}"?`,
+            text: 'Tòa nhà sẽ bị ẩn khỏi hệ thống (Soft Delete).',
+            icon: 'warning', showCancelButton: true,
+            confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b',
+            confirmButtonText: 'Xóa', cancelButtonText: 'Hủy'
+        }).then(r => {
+            if (r.isConfirmed) {
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteForm').submit();
+            }
+        });
+    }
+
+    function deleteSelected() {
+        const ids = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => parseInt(cb.value));
+        if (!ids.length) {
+            Swal.fire({ icon: 'info', title: 'Thông báo', text: 'Chọn ít nhất một nhà để xóa!', confirmButtonColor: '#00b894' });
+            return;
+        }
+        Swal.fire({
+            title: `Xóa ${ids.length} nhà đã chọn?`, icon: 'warning',
+            showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b',
+            confirmButtonText: 'Xóa tất cả', cancelButtonText: 'Hủy'
+        }).then(r => {
+            if (!r.isConfirmed) return;
+            $.ajax({
+                url: '/QuanLyNha/DeleteSelected', type: 'POST',
+                data: { ids, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                success: res => {
+                    if (res.success) Swal.fire('Đã xóa!', res.message, 'success').then(() => location.reload());
+                    else Swal.fire('Lỗi!', res.message, 'error');
+                },
+                error: () => Swal.fire('Lỗi!', 'Không thể thực hiện yêu cầu.', 'error')
+            });
+        });
+    }
+</script>
 }

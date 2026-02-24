@@ -1,0 +1,67 @@
+@model do_an_tot_nghiep.Models.RoomAsset
+@{
+    ViewData["Title"] = "Chỉnh sửa thiết bị";
+}
+
+<div style="max-width:700px;margin:0 auto;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-roomId="@Model.RoomId" class="text-muted text-decoration-none">Thiết bị phòng</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa #@Model.Id</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 py-3 px-4">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-cube me-2 text-secondary"></i>Chỉnh sửa — @Model.AssetName</h5>
+        </div>
+        <div class="card-body p-4">
+            @if (TempData["Error"] != null) { <div class="alert alert-danger border-0">@TempData["Error"]</div> }
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="RoomId" />
+                <input type="hidden" asp-for="CreatedAt" />
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">Tên thiết bị <span class="text-danger">*</span></label>
+                        <input asp-for="AssetName" class="form-control" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Số lượng</label>
+                        <input asp-for="Quantity" class="form-control" type="number" min="1" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Serial Number</label>
+                        <input asp-for="SerialNumber" class="form-control" placeholder="Tuỳ chọn" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Trạng thái</label>
+                        <select asp-for="Status" class="form-select">
+                            @foreach (var s in ViewBag.StatusList)
+                            {
+                                <option value="@s.Id">@s.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Ngày mua</label>
+                        <input asp-for="PurchaseDate" class="form-control" type="date" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Hết bảo hành</label>
+                        <input asp-for="WarrantyExpiry" class="form-control" type="date" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a asp-action="Index" asp-route-roomId="@Model.RoomId" class="btn btn-light border px-4">Hủy</a>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

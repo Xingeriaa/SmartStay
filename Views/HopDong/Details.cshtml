@@ -1,441 +1,403 @@
-@model HopDong
+﻿@using do_an_tot_nghiep.Controllers
+@model HopDongDetailDto
 @{
-    ViewData["Title"] = "Chi tiết hợp đồng";
+    ViewData["Title"] = $"Chi tiết hợp đồng {Model.ContractCode}";
+
+    var invoices = ViewBag.Invoices as List<InvoiceItemDto> ?? new List<InvoiceItemDto>();
+
+    string statusBg    = Model.TrangThai == "Active"     ? "linear-gradient(135deg,#00b894,#00cec9)"
+                       : Model.TrangThai == "Terminated" ? "linear-gradient(135deg,#d63031,#e17055)"
+                       :                                   "linear-gradient(135deg,#636e72,#b2bec3)";
+    string statusLabel = Model.TrangThai == "Active"     ? "Đang hiệu lực"
+                       : Model.TrangThai == "Terminated" ? "Đã thanh lý"
+                       : Model.TrangThai == "Cancelled"  ? "Đã hủy"
+                       :                                   Model.TrangThai;
+    string statusIcon  = Model.TrangThai == "Active"     ? "fa-check-circle"
+                       : Model.TrangThai == "Terminated" ? "fa-handshake-slash"
+                       :                                   "fa-times-circle";
+
+    bool isActive      = Model.TrangThai == "Active";
+
+    int totalDays      = Model.NgayKetThuc.HasValue
+                            ? (int)(Model.NgayKetThuc.Value - Model.NgayBatDau).TotalDays
+                            : 0;
+    int daysRemaining  = Model.NgayKetThuc.HasValue
+                            ? Math.Max(0, (int)(Model.NgayKetThuc.Value - DateTime.Now).TotalDays)
+                            : 0;
+    double progress    = totalDays > 0 ? Math.Min(100, (1 - (daysRemaining / (double)totalDays)) * 100) : 0;
+
+    decimal unpaidTotal = invoices.Where(i => i.Status == "Unpaid" || i.Status == "Overdue").Sum(i => i.TotalAmount);
 }
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
 <style>
-    /* --- CORE THEME: Monochromatic Purple --- */
-    :root {
-        --theme-primary: var(--brand-600); /* Màu tím chủ đạo */
-        --theme-secondary: var(--accent-500); /* Màu xanh tím phụ trợ */
-        --theme-gradient: var(--brand-gradient);
-        --theme-surface: #ffffff;
-        --theme-bg-body: #f3f4f6;
-        /* Màu trong suốt để tạo chiều sâu (Glassmorphism) */
-        --theme-primary-5: rgba(106, 17, 203, 0.05);
-        --theme-primary-10: rgba(106, 17, 203, 0.1);
-        --theme-primary-20: rgba(106, 17, 203, 0.2);
-        --shadow-soft: 0 10px 40px -10px rgba(106, 17, 203, 0.15);
-        --shadow-hover: 0 20px 50px -10px rgba(106, 17, 203, 0.25);
-        --border-light: rgba(106, 17, 203, 0.1);
-    }
+    .detail-page { max-width: 1080px; margin: 0 auto; }
 
-    /* --- GLOBAL STYLES --- */
-    body {
-        background-color: var(--theme-bg-body);
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    .text-theme {
-        color: var(--theme-primary) !important;
-    }
-
-    .bg-theme-soft {
-        background-color: var(--theme-primary-5) !important;
-    }
-
-    /* Text Gradient Effect */
-    .text-gradient {
-        background: var(--theme-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        display: inline-block;
-    }
-
-    /* --- ANIMATIONS --- */
-    @@keyframes fadeInUp {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    }
-
-    .animate-fade-in {
-        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .delay-100 {
-        animation-delay: 0.1s;
-    }
-
-    .delay-200 {
-        animation-delay: 0.2s;
-    }
-
-    /* --- CARD COMPONENT --- */
-    .card-modern {
-        background: var(--theme-surface);
-        border: 1px solid var(--theme-border-light);
+    .hero-band {
         border-radius: 20px;
-        box-shadow: var(--shadow-soft);
-        transition: all 0.4s ease;
-        overflow: hidden;
+        padding: 2rem 2.5rem;
+        color: #fff;
         position: relative;
-        height: 100%;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .hero-band::after {
+        content: '';
+        position: absolute;
+        right: -40px; top: -40px;
+        width: 220px; height: 220px;
+        background: rgba(255,255,255,.08);
+        border-radius: 50%;
     }
 
-        .card-modern:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--theme-primary-20);
-        }
-
-        /* Dải màu trang trí trên đầu card */
-        .card-modern::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--theme-gradient);
-            opacity: 0.8;
-        }
-
-    .card-header-modern {
-        padding: 1.5rem;
-        background: linear-gradient(to bottom, #fff, rgba(255,255,255,0));
-        border-bottom: 1px dashed var(--border-light);
-    }
-
-    /* --- INFO BOX (Icon + Text) --- */
-    .info-box {
-        display: flex;
-        align-items: flex-start;
-        padding: 1rem;
+    .section-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
         border-radius: 16px;
-        transition: background 0.3s;
-        border: 1px solid transparent;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,.04);
+    }
+    .section-title {
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #6c757d;
+        margin-bottom: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: .45rem;
     }
 
-        .info-box:hover {
-            background: var(--theme-primary-5);
-            border-color: var(--theme-primary-10);
-        }
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: .55rem 0;
+        border-bottom: 1px dashed #f0f0f0;
+        font-size: .92rem;
+    }
+    .info-row:last-child { border: none; }
+    .info-row .lbl { color: #6c757d; }
+    .info-row .val { font-weight: 600; color: #1a1a2e; }
 
-    .info-icon-wrapper {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        background: var(--theme-gradient);
+    .progress-timeline {
+        height: 8px;
+        border-radius: 4px;
+        background: #e9ecef;
+        overflow: hidden;
+        margin: .5rem 0;
+    }
+    .progress-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg,#6c5ce7,#a29bfe);
+        transition: width .6s;
+    }
+
+    .inv-badge {
+        display: inline-block;
+        padding: .2rem .65rem;
+        border-radius: 20px;
+        font-size: .75rem;
+        font-weight: 700;
+    }
+    .inv-paid     { background:#d4edda; color:#155724; }
+    .inv-unpaid   { background:#fff3cd; color:#856404; }
+    .inv-overdue  { background:#f8d7da; color:#721c24; }
+    .inv-settled  { background:#cce5ff; color:#004085; }
+
+    .action-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 1.2rem;
-        box-shadow: 0 4px 12px rgba(106, 17, 203, 0.25);
-        flex-shrink: 0;
-        margin-right: 1rem;
-    }
-
-    .info-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #8898aa;
-        font-weight: 700;
-        margin-bottom: 4px;
-    }
-
-    .info-value {
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: #2d3748;
-    }
-
-    /* --- BADGES --- */
-    .badge-theme {
-        background-color: var(--theme-primary-10);
-        color: var(--theme-primary);
-        padding: 0.5em 1em;
-        border-radius: 30px;
-        font-weight: 700;
-        letter-spacing: 0.3px;
-        border: 1px solid var(--theme-primary-20);
-    }
-
-    /* --- BUTTONS --- */
-    .btn-modern-outline {
-        color: var(--theme-primary);
-        background: transparent;
-        border: 2px solid var(--theme-primary-10);
+        gap: .5rem;
+        padding: .7rem 1rem;
         border-radius: 12px;
-        padding: 0.6rem 1.2rem;
         font-weight: 600;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-    }
-
-        .btn-modern-outline::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 100%;
-            background: var(--theme-gradient);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: -1;
-        }
-
-        .btn-modern-outline:hover {
-            color: white;
-            border-color: transparent;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(106, 17, 203, 0.3);
-        }
-
-            .btn-modern-outline:hover::before {
-                width: 100%;
-            }
-
-    /* Back button style */
-    .btn-back {
-        color: #6c757d;
-        background: #e9ecef;
+        font-size: .88rem;
         border: none;
-        border-radius: 12px;
-        padding: 0.6rem 1.2rem;
-        font-weight: 600;
-        transition: all 0.2s;
+        cursor: pointer;
+        transition: all .2s;
+        text-decoration: none;
     }
-
-        .btn-back:hover {
-            background: #dee2e6;
-            color: #343a40;
-        }
-
-    /* --- LIST GROUP --- */
-    .list-group-custom .list-group-item {
-        border: none;
-        padding: 1rem 0;
-        border-bottom: 1px dashed var(--border-light);
-        transition: padding-left 0.3s;
-    }
-
-        .list-group-custom .list-group-item:last-child {
-            border-bottom: none;
-        }
-
-        .list-group-custom .list-group-item:hover {
-            padding-left: 10px;
-            background: linear-gradient(90deg, var(--theme-primary-5), transparent);
-        }
+    .action-btn:hover { transform: translateY(-1px); opacity: .9; }
+    .btn-extend   { background: linear-gradient(135deg,#6c5ce7,#a29bfe); color: #fff !important; }
+    .btn-terminate{ background: linear-gradient(135deg,#d63031,#e17055); color: #fff !important; }
+    .btn-back     { background: #f0f0f5; color: #555 !important; }
+    .btn-delete   { background: #fff0f0; color: #d63031 !important; border: 1px solid #f5c6cb; }
 </style>
 
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 animate-fade-in">
-    <div class="mb-3 mb-md-0">
-        <h2 class="fw-bold mb-1 text-gradient">Hợp Đồng #@Model.Id</h2>
-        <div class="text-muted small">
-            <i class="fa fa-clock me-1"></i> Cập nhật lần cuối: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
-        </div>
-    </div>
-    <div>
-        <span class="badge badge-theme">
-            <i class="fa fa-circle me-1" style="font-size: 8px; vertical-align: middle;"></i> @Model.TrangThai
-        </span>
-    </div>
-</div>
+<div class="detail-page">
 
-<div class="row g-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a asp-controller="HopDong" asp-action="Index" class="text-muted text-decoration-none">Hợp đồng</a></li>
+            <li class="breadcrumb-item active fw-semibold">@Model.ContractCode</li>
+        </ol>
+    </nav>
 
-    <div class="col-lg-8 animate-fade-in delay-100">
-        <div class="card-modern">
-            <div class="card-header-modern">
-                <h5 class="mb-0 fw-bold text-dark">
-                    <span class="text-theme me-2"><i class="fa fa-file-contract"></i></span>
-                    Thông tin chi tiết
-                </h5>
-            </div>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger border-0 mb-3"><i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 mb-3"><i class="fas fa-check-circle me-2"></i>@TempData["Success"]</div>
+    }
 
-            <div class="card-body p-4">
-                <div class="mb-4">
-                    <h6 class="text-muted text-uppercase fw-bold small mb-3 ps-1 border-start border-4 border-primary">
-                        &nbsp;Vị Trí & Phòng
-                    </h6>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-icon-wrapper"><i class="fa fa-building"></i></div>
-                                <div>
-                                    <div class="info-label">Nhà trọ</div>
-                                    <div class="info-value">@(Model.PhongTro?.NhaTro?.TenNhaTro ?? "---")</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-icon-wrapper"><i class="fa fa-door-open"></i></div>
-                                <div>
-                                    <div class="info-label">Tên phòng</div>
-                                    <div class="info-value">@(Model.PhongTro?.TenPhong ?? "---")</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="text-muted opacity-25 my-4">
-
-                <div class="mb-4">
-                    <h6 class="text-muted text-uppercase fw-bold small mb-3 ps-1 border-start border-4 border-primary">
-                        &nbsp;Thời Gian Hiệu Lực
-                    </h6>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="info-box">
-                                <div class="info-icon-wrapper"><i class="fa fa-calendar-alt"></i></div>
-                                <div>
-                                    <div class="info-label">Ngày bắt đầu</div>
-                                    <div class="info-value">@Model.NgayBatDau.ToString("dd/MM/yyyy")</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="info-box">
-                                <div class="info-icon-wrapper"><i class="fa fa-calendar-check"></i></div>
-                                <div>
-                                    <div class="info-label">Ngày kết thúc</div>
-                                    <div class="info-value">@(Model.NgayKetThuc.HasValue? Model.NgayKetThuc.Value.ToString("dd/MM/yyyy") : "--/--/----")</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="info-box">
-                                <div class="info-icon-wrapper"><i class="fa fa-handshake-slash"></i></div>
-                                <div>
-                                    <div class="info-label">Ngày thanh lý</div>
-                                    <div class="info-value">@(Model.NgayThanhLy.HasValue? Model.NgayThanhLy.Value.ToString("dd/MM/yyyy") : "Chưa thanh lý")</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="text-muted opacity-25 my-4">
-
-                <div>
-                    <h6 class="text-muted text-uppercase fw-bold small mb-3 ps-1 border-start border-4 border-primary">
-                        &nbsp;Thông Tin Tài Chính
-                    </h6>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="info-box bg-theme-soft border border-primary border-opacity-25">
-                                <div class="info-icon-wrapper" style="box-shadow: none;"><i class="fa fa-tag"></i></div>
-                                <div>
-                                    <div class="info-label text-theme">Giá thuê / tháng</div>
-                                    <div class="info-value text-theme fs-5">@Model.GiaThue.ToString("N0") <small>₫</small></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="info-box">
-                                <div class="info-icon-wrapper"><i class="fa fa-shield-alt"></i></div>
-                                <div>
-                                    <div class="info-label">Tiền cọc</div>
-                                    <div class="info-value">@Model.TienCoc.ToString("N0") <small>₫</small></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="info-box">
-                                <div class="info-icon-wrapper"><i class="fa fa-undo"></i></div>
-                                <div>
-                                    <div class="info-label">Hoàn trả</div>
-                                    <div class="info-value">@(Model.SoTienHoanTra.HasValue? Model.SoTienHoanTra.Value.ToString("N0") + " ₫" : "-")</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-4 animate-fade-in delay-200">
-        <div class="card-modern mb-4">
-            <div class="card-header-modern d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold text-dark">
-                    <span class="text-theme me-2"><i class="fa fa-users"></i></span>
-                    Cư dân
-                </h5>
-                <span class="badge bg-light text-dark border">@((Model.HopDongKhachThues?.Count() ?? 0))</span>
-            </div>
-            <div class="card-body px-4 pt-2">
-                <ul class="list-group list-group-custom">
-                    @if (Model.HopDongKhachThues != null && Model.HopDongKhachThues.Any())
+    <div class="hero-band" style="background: @statusBg;">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <div class="opacity-75 small mb-1 fw-medium text-uppercase">Hợp đồng thuê phòng</div>
+                <h1 class="fw-bold mb-1" style="font-size:1.8rem; letter-spacing:-0.5px;">@Model.ContractCode</h1>
+                <div class="d-flex flex-wrap gap-2 align-items-center mt-1 opacity-90">
+                    <span><i class="fas fa-door-open me-1"></i>Phòng <strong>@Model.TenPhong</strong></span>
+                    <span class="opacity-50">|</span>
+                    <span><i class="fas fa-calendar-alt me-1"></i>@Model.NgayBatDau.ToString("dd/MM/yyyy")</span>
+                    @if (Model.NgayKetThuc.HasValue)
                     {
-                        foreach (var k in Model.HopDongKhachThues.OrderBy(x => x.VaiTro))
-                        {
-                            <li class="list-group-item d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
-                                         style="width: 35px; height: 35px; background: #b3c7f9; color: var(--theme-primary) !important;">
-                                        @(k.KhachThue?.HoTen?.FirstOrDefault().ToString().ToUpper() ?? "?")
-                                    </div>
-                                    <div class="ms-3">
-                                        <div class="fw-bold text-dark" style="font-size: 0.95rem;">@k.KhachThue?.HoTen</div>
-                                        <div class="text-muted" style="font-size: 0.8rem;">
-                                            @k.VaiTro
-                                            @if (k.VaiTro == "Đại diện")
-                                            {
-                                                <i class="fa fa-check-circle text-success ms-1"></i>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        }
+                        <span class="opacity-50">→</span>
+                        <span>@Model.NgayKetThuc.Value.ToString("dd/MM/yyyy")</span>
+                    }
+                </div>
+            </div>
+            <div class="text-end">
+                <div style="background:rgba(255,255,255,.18); backdrop-filter:blur(8px); border-radius:12px; padding:.6rem 1.2rem; display:inline-block;">
+                    <i class="fas @statusIcon me-2"></i><strong>@statusLabel</strong>
+                </div>
+                <div class="mt-2 opacity-75 small">Ký ngày @Model.SignatureDate.ToString("dd/MM/yyyy")</div>
+            </div>
+        </div>
+
+        @if (isActive && Model.NgayKetThuc.HasValue)
+        {
+            <div class="mt-3">
+                <div class="d-flex justify-content-between small mb-1 opacity-80">
+                    <span>Tiến độ hợp đồng</span>
+                    <span>@daysRemaining ngày còn lại</span>
+                </div>
+                <div class="progress-timeline" style="background:rgba(255,255,255,.2);">
+                    <div class="progress-fill" style="background:rgba(255,255,255,.6); width:@((int)progress)%;"></div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-coins text-warning"></i>Thông tin tài chính</div>
+                <div class="row g-2 mb-3">
+                    <div class="col-6 col-md-3">
+                        <div class="text-center p-3 rounded-3" style="background:#f0edff;">
+                            <div class="fw-bold" style="font-size:1.2rem;color:#6c5ce7;">@Model.GiaThue.ToString("N0")</div>
+                            <div class="text-muted" style="font-size:.72rem;">Giá thuê/tháng (đ)</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center p-3 rounded-3" style="background:#fef9ea;">
+                            <div class="fw-bold" style="font-size:1.2rem;color:#e67e22;">@Model.TienCoc.ToString("N0")</div>
+                            <div class="text-muted" style="font-size:.72rem;">Tiền cọc (Liability)</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center p-3 rounded-3" style="background:#eafaf1;">
+                            <div class="fw-bold" style="font-size:1.2rem;color:#27ae60;">@Model.PaymentCycle</div>
+                            <div class="text-muted" style="font-size:.72rem;">Chu kỳ (tháng)</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center p-3 rounded-3" style="background:#fef2f2;">
+                            <div class="fw-bold" style="font-size:1.2rem;color:#e74c3c;">@unpaidTotal.ToString("N0")</div>
+                            <div class="text-muted" style="font-size:.72rem;">Nợ chưa thanh toán (đ)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="lbl">Trạng thái tiền cọc</span>
+                    <span class="val">
+                        @if (Model.DepositStatus == "Available")
+                        { <span class="badge bg-success">Đang giữ</span> }
+                        else if (Model.DepositStatus == "Refunded")
+                        { <span class="badge bg-secondary">Đã hoàn</span> }
+                        else
+                        { <span class="badge bg-warning text-dark">@Model.DepositStatus</span> }
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="lbl">Ngày ký kết</span>
+                    <span class="val">@Model.SignatureDate.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="info-row">
+                    <span class="lbl">Tạo lúc</span>
+                    <span class="val">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title d-flex justify-content-between w-100">
+                    <span><i class="fas fa-file-invoice-dollar text-primary"></i>Hóa đơn liên kết</span>
+                    <a asp-controller="Invoices" asp-action="Index" class="text-brand small fw-semibold text-decoration-none">Xem tất cả →</a>
+                </div>
+
+                @if (!invoices.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-inbox fa-2x mb-2 d-block opacity-50"></i>
+                        Chưa có hóa đơn nào cho hợp đồng này
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã HĐ</th>
+                                    <th>Kỳ</th>
+                                    <th class="text-end">Số tiền</th>
+                                    <th class="text-center">Hạn</th>
+                                    <th class="text-center">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var inv in invoices.OrderByDescending(i => i.DueDate))
+                                {
+                                    string invBadge = inv.Status switch
+                                    {
+                                        "Paid"              => "inv-badge inv-paid",
+                                        "Unpaid"            => "inv-badge inv-unpaid",
+                                        "Overdue"           => "inv-badge inv-overdue",
+                                        "SettledByDeposit"  => "inv-badge inv-settled",
+                                        _                   => "inv-badge bg-light text-muted"
+                                    };
+                                    string invLabel = inv.Status switch
+                                    {
+                                        "Paid"              => "Đã thanh toán",
+                                        "Unpaid"            => "Chưa trả",
+                                        "Overdue"           => "Quá hạn",
+                                        "SettledByDeposit"  => "Bù cọc",
+                                        _                   => inv.Status
+                                    };
+                                    <tr>
+                                        <td><code class="small">@inv.InvoiceCode</code></td>
+                                        <td><span class="fw-medium">@inv.MonthYear</span></td>
+                                        <td class="text-end fw-bold">@inv.TotalAmount.ToString("N0") đ</td>
+                                        <td class="text-center small text-muted">@(inv.DueDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                        <td class="text-center"><span class="@invBadge">@invLabel</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-file-contract text-info"></i>Thông tin hợp đồng</div>
+                <div class="info-row"><span class="lbl">ID</span><span class="val">#@Model.Id</span></div>
+                <div class="info-row"><span class="lbl">Mã HĐ</span><span class="val">@Model.ContractCode</span></div>
+                <div class="info-row"><span class="lbl">Phòng</span><span class="val">@Model.TenPhong</span></div>
+                <div class="info-row">
+                    <span class="lbl">Bắt đầu</span>
+                    <span class="val">@Model.NgayBatDau.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="info-row">
+                    <span class="lbl">Kết thúc</span>
+                    <span class="val">@(Model.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "Không thời hạn")</span>
+                </div>
+                <div class="info-row">
+                    <span class="lbl">Trạng thái</span>
+                    <span class="val">
+                        <span class="badge @(isActive ? "bg-success" : "bg-secondary")">@statusLabel</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-sliders-h text-muted"></i>Thao tác</div>
+                <div class="d-grid gap-2">
+                    @if (isActive)
+                    {
+                        <a asp-action="Extend" asp-route-id="@Model.Id" class="action-btn btn-extend">
+                            <i class="fas fa-calendar-plus"></i> Gia hạn hợp đồng
+                        </a>
+                        <a asp-controller="Liquidations" asp-action="Create"
+                           asp-route-contractId="@Model.Id"
+                           class="action-btn btn-terminate">
+                            <i class="fas fa-gavel"></i> Thanh lý hợp đồng
+                        </a>
                     }
                     else
                     {
-                        <li class="list-group-item text-center py-4 text-muted fst-italic">
-                            Chưa có cư dân nào trong hợp đồng
-                        </li>
+                        <div class="alert alert-secondary small text-center py-2 mb-0">
+                            <i class="fas fa-lock me-1"></i>
+                            Hợp đồng @statusLabel — không thể thực hiện thao tác
+                        </div>
                     }
-                </ul>
-            </div>
-        </div>
-
-        <div class="card-modern">
-            <div class="card-body p-4">
-                <h6 class="text-muted text-uppercase fw-bold small mb-3">Thao tác quản lý</h6>
-                <div class="d-grid gap-2">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-modern-outline">
-                        <i class="fa fa-pen me-2"></i> Chỉnh sửa
+                    <hr class="my-1 opacity-25">
+                    <a asp-action="Index" class="action-btn btn-back">
+                        <i class="fas fa-arrow-left"></i> Quay lại danh sách
                     </a>
-
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <a asp-action="Extend" asp-route-id="@Model.Id" class="btn btn-modern-outline w-100 px-1">
-                                <i class="fa fa-clock me-1"></i> Gia hạn
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a asp-action="Terminate" asp-route-id="@Model.Id" class="btn btn-modern-outline w-100 px-1">
-                                <i class="fa fa-times me-1"></i> Thanh lý
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="border-top my-2 opacity-25"></div>
-
-                    <a asp-action="Index" class="btn btn-back text-center">
-                        <i class="fa fa-arrow-left me-2"></i> Quay lại
-                    </a>
+                    @if (isActive)
+                    {
+                        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" id="deleteForm">
+                            @Html.AntiForgeryToken()
+                            <button type="button" class="action-btn btn-delete w-100" onclick="confirmDelete()">
+                                <i class="fas fa-trash-alt"></i> Hủy hợp đồng (Soft delete)
+                            </button>
+                        </form>
+                    }
                 </div>
             </div>
+
+            @if (isActive && Model.NgayKetThuc.HasValue)
+            {
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-clock text-warning"></i>Thời gian còn lại</div>
+                    <div class="text-center">
+                        <div style="font-size:2.5rem; font-weight:900; color: @(daysRemaining < 30 ? "#d63031" : "#6c5ce7");">
+                            @daysRemaining
+                        </div>
+                        <div class="text-muted">ngày</div>
+                        @if (daysRemaining < 30)
+                        {
+                            <div class="alert alert-warning small mt-2 mb-0 py-2">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Hợp đồng sắp hết hạn!
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete() {
+        Swal.fire({
+            title: 'Hủy hợp đồng?',
+            html: `<div style="text-align:left;font-size:.9rem">
+                <p>Hành động này sẽ <strong>soft-delete</strong> hợp đồng <strong>@Model.ContractCode</strong>.</p>
+                <p style="color:#d63031">Không thể hoàn tác. Phòng sẽ về <strong>Vacant</strong>.</p>
+            </div>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d63031',
+            cancelButtonColor: '#6c5ce7',
+            confirmButtonText: '<i class="fas fa-trash me-1"></i> Xác nhận hủy',
+            cancelButtonText: 'Giữ lại',
+        }).then(r => { if (r.isConfirmed) document.getElementById('deleteForm').submit(); });
+    }
+</script>
+}

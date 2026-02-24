@@ -1,0 +1,80 @@
+@{
+    ViewData["Title"] = "Cấu hình hệ thống";
+}
+
+<style>
+    .config-page { max-width:960px; margin:0 auto; }
+    .config-section { background:#fff; border:1px solid #e9ecef; border-radius:14px; padding:1.5rem; margin-bottom:1.2rem; }
+    .config-section-title { font-size:.88rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:#6c5ce7; border-bottom:2px solid #f0edff; padding-bottom:.6rem; margin-bottom:1rem; }
+    .config-row { display:flex; align-items:center; padding:.65rem 0; border-bottom:1px solid #f8f9fa; gap:1rem; }
+    .config-row:last-child { border-bottom:0; padding-bottom:0; }
+    .config-key  { flex:0 0 260px; font-weight:600; font-size:.88rem; }
+    .config-val  { flex:1; font-size:.9rem; color:#444; }
+    .config-badge { display:inline-block; padding:.2rem .7rem; border-radius:20px; font-size:.75rem; font-weight:700; }
+    .cb-active   { background:#d4edda; color:#155724; }
+    .cb-inactive { background:#f8d7da; color:#721c24; }
+</style>
+
+<div class="config-page">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-0" style="font-size:1.55rem;"><i class="fas fa-sliders-h me-2 text-primary"></i>Cấu hình hệ thống</h1>
+            <p class="text-muted small mb-0">Xem và quản lý cấu hình vận hành toàn cục</p>
+        </div>
+    </div>
+
+    @if (TempData["Error"]   != null) { <div class="alert alert-danger border-0 mb-3">@TempData["Error"]</div> }
+    @if (TempData["Success"] != null) { <div class="alert alert-success border-0 mb-3">@TempData["Success"]</div> }
+
+    @if (ViewBag.Configs != null)
+    {
+        var configs = ViewBag.Configs as List<dynamic>;
+        if (configs != null && configs.Any())
+        {
+            <div class="config-section">
+                <div class="config-section-title"><i class="fas fa-cog me-1"></i>Cấu hình hệ thống</div>
+                @foreach (var c in configs)
+                {
+                    <div class="config-row">
+                        <div class="config-key">@c.Key</div>
+                        <div class="config-val">@c.Value</div>
+                        @if (ViewBag.CanEdit == true)
+                        {
+                            <a href="#" class="btn btn-sm btn-light border">Sửa</a>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-cog fa-3x mb-3 d-block opacity-40"></i>
+                <strong>Chưa có cấu hình nào</strong>
+                <p class="small">Thêm cấu hình thông qua API hoặc database.</p>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="config-section">
+            <div class="config-section-title"><i class="fas fa-info-circle me-1"></i>Thông tin hệ thống</div>
+            <div class="config-row">
+                <div class="config-key">Tên hệ thống</div>
+                <div class="config-val">SmartStay — Quản lý nhà trọ thông minh</div>
+            </div>
+            <div class="config-row">
+                <div class="config-key">Phiên bản</div>
+                <div class="config-val">v1.0.0</div>
+            </div>
+            <div class="config-row">
+                <div class="config-key">Môi trường</div>
+                <div class="config-val"><span class="config-badge cb-active">Development</span></div>
+            </div>
+            <div class="config-row">
+                <div class="config-key">Truy cập API</div>
+                <div class="config-val"><span class="config-badge cb-active">Hoạt động</span></div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,290 @@
+@model do_an_tot_nghiep.Models.NhaTro
+@using do_an_tot_nghiep.Models
+@{
+    ViewData["Title"] = "Chỉnh sửa nhà trọ";
+    var listDichVu   = ViewBag.ListDichVu as List<DichVu>;
+    var selectedIds  = Model?.DanhSachDichVu?.Split(',').Select(s => s.Trim()).ToList() ?? new();
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+<div class="container-fluid px-0">
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Nhà trọ</a></li>
+                    <li class="breadcrumb-item active">Chỉnh sửa</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Chỉnh sửa: @Model?.TenNhaTro</h1>
+            <p class="text-muted mb-0 mt-1">Cập nhật thông tin tòa nhà #@Model?.Id</p>
+        </div>
+        <a asp-action="Index" class="btn btn-light border btn-custom">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+
+    <form asp-action="Edit" asp-route-id="@Model?.Id" method="post" id="editForm">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden">
+
+        <div class="row g-4">
+            {{-- Left: Basic + Address --}}
+            <div class="col-xl-8">
+
+                {{-- Basic Info --}}
+                <div class="main-card mb-4 animate-fade-up">
+                    <div class="card-header-styled">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-soft-brand p-2 rounded-2" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-home text-brand"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Thông tin cơ bản</h6>
+                                <small class="text-muted">Tên gọi, giá cả và đặc điểm chính</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="fw-semibold mb-1 d-block">Tên nhà trọ <span class="text-danger">*</span></label>
+                                <input asp-for="TenNhaTro" class="form-control" placeholder="Ví dụ: Chung cư mini Quận 7" required>
+                                <span asp-validation-for="TenNhaTro" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="fw-semibold mb-1 d-block">Giá thuê (VNĐ/tháng)</label>
+                                <div class="input-group">
+                                    <input asp-for="GiaThue" type="number" class="form-control" id="inputPrice" min="0">
+                                    <span class="input-group-text text-brand fw-bold">đ</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fw-semibold mb-1 d-block">Số tầng</label>
+                                <select asp-for="LoaiNha" class="form-select" id="inputFloor">
+                                    <option value="0">Trệt (1 tầng)</option>
+                                    <option value="2">2 tầng</option>
+                                    <option value="3">3 tầng</option>
+                                    <option value="4">4 tầng</option>
+                                    <option value="5">5 tầng trở lên</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="fw-semibold mb-1 d-block">Ngày thu tiền</label>
+                                <select asp-for="NgayThuTien" class="form-select">
+                                    @for (int i = 1; i <= 28; i++)
+                                    {
+                                        <option value="@i">Ngày @i</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Address --}}
+                <div class="main-card mb-4 animate-fade-up" style="animation-delay:.1s">
+                    <div class="card-header-styled">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-soft-brand p-2 rounded-2" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-map-marker-alt text-brand"></i>
+                            </div>
+                            <h6 class="fw-bold mb-0">Địa chỉ</h6>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="fw-semibold mb-1 d-block">Tỉnh / Thành phố</label>
+                                <select id="city" asp-for="TinhThanh" class="form-select">
+                                    <option value="">Chọn Tỉnh/Thành</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fw-semibold mb-1 d-block">Quận / Huyện</label>
+                                <select id="district" asp-for="QuanHuyen" class="form-select">
+                                    <option value="">Chọn Quận/Huyện</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fw-semibold mb-1 d-block">Phường / Xã</label>
+                                <select id="ward" asp-for="PhuongXa" class="form-select">
+                                    <option value="">Chọn Phường/Xã</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="fw-semibold mb-1 d-block">Số nhà, Tên đường <span class="text-danger">*</span></label>
+                                <input asp-for="DiaChiChiTiet" class="form-control" placeholder="Ví dụ: 123 Nguyễn Thị Minh Khai" required>
+                                <span asp-validation-for="DiaChiChiTiet" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Services --}}
+                <div class="main-card mb-4 animate-fade-up" style="animation-delay:.2s">
+                    <div class="card-header-styled">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-soft-brand p-2 rounded-2" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-concierge-bell text-brand"></i>
+                            </div>
+                            <h6 class="fw-bold mb-0">Tiện ích & Dịch vụ</h6>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        @if (listDichVu != null && listDichVu.Any())
+                        {
+                            <div class="row g-3">
+                                @foreach (var dv in listDichVu)
+                                {
+                                    bool isChecked = selectedIds.Contains(dv.Id.ToString());
+                                    <div class="col-md-3 col-6">
+                                        <label class="d-flex align-items-center gap-2 p-3 border rounded-3 cursor-pointer service-check @(isChecked ? "border-brand bg-soft-brand" : "")"
+                                               style="cursor:pointer;transition:all .2s" for="dv_@dv.Id">
+                                            <input type="checkbox" name="DichVuSelect" value="@dv.Id"
+                                                   id="dv_@dv.Id" class="form-check-input" @(isChecked ? "checked" : "")>
+                                            <span class="fw-medium small">@dv.Ten</span>
+                                            <small class="text-muted ms-auto">@dv.DonGia.ToString("N0")đ</small>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small">Chưa có dịch vụ nào được thiết lập.</p>
+                        }
+
+                        <div class="mt-3">
+                            <label class="fw-semibold mb-1 d-block">Ghi chú / Nội quy</label>
+                            <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Nhập ghi chú, nội quy nhà trọ..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Submit --}}
+                <div class="d-flex gap-3 mb-4">
+                    <a asp-action="Index" class="btn btn-light border btn-custom px-4">
+                        <i class="fas fa-times me-1"></i> Hủy
+                    </a>
+                    <button type="submit" class="btn btn-gradient-primary btn-custom flex-grow-1">
+                        <i class="fas fa-save me-1"></i> Lưu thay đổi
+                    </button>
+                </div>
+            </div>
+
+            {{-- Right: Summary panel --}}
+            <div class="col-xl-4">
+                <div class="main-card animate-fade-up" style="animation-delay:.1s;position:sticky;top:80px;">
+                    <div class="card-header-styled">
+                        <h6 class="fw-bold mb-0"><i class="fas fa-eye me-2 text-brand"></i>Xem trước</h6>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-center py-4 rounded-3 mb-3" style="background:var(--brand-gradient)">
+                            <i class="fas fa-building fa-3x text-white mb-2 d-block opacity-75"></i>
+                            <h5 class="text-white fw-bold mb-0" id="prvName">@Model?.TenNhaTro</h5>
+                        </div>
+                        <div class="list-group list-group-flush small">
+                            <div class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Giá thuê</span>
+                                <span class="fw-bold text-success" id="prvPrice">@Model?.GiaThue.ToString("N0") đ</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Số tầng</span>
+                                <span class="fw-bold" id="prvFloor">@(Model?.LoaiNha == 0 ? "Trệt" : Model?.LoaiNha + " tầng")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Ngày thu tiền</span>
+                                <span class="fw-bold">Ngày @Model?.NgayThuTien</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a asp-action="Details" asp-route-id="@Model?.Id" class="btn btn-light border w-100 btn-sm">
+                                <i class="fas fa-external-link-alt me-1"></i> Xem trang chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        // Live preview
+        document.querySelector('[name="TenNhaTro"]')?.addEventListener('input', e => {
+            document.getElementById('prvName').textContent = e.target.value || 'Tên nhà trọ';
+        });
+        document.querySelector('[name="GiaThue"]')?.addEventListener('input', e => {
+            const n = parseInt(e.target.value) || 0;
+            document.getElementById('prvPrice').textContent = n.toLocaleString('vi-VN') + ' đ';
+        });
+        document.querySelector('[name="LoaiNha"]')?.addEventListener('change', e => {
+            const v = parseInt(e.target.value);
+            document.getElementById('prvFloor').textContent = v === 0 ? 'Trệt' : v + ' tầng';
+        });
+
+        // Checkbox service highlight
+        document.querySelectorAll('.service-check input').forEach(cb => {
+            cb.addEventListener('change', function () {
+                this.closest('.service-check').classList.toggle('border-brand', this.checked);
+                this.closest('.service-check').classList.toggle('bg-soft-brand', this.checked);
+            });
+        });
+
+        // Load province API and pre-select saved values
+        const savedCity = "@Model?.TinhThanh";
+        const savedDistrict = "@Model?.QuanHuyen";
+        const savedWard = "@Model?.PhuongXa";
+        const cityEl = document.getElementById('city');
+        const distEl = document.getElementById('district');
+        const wardEl = document.getElementById('ward');
+
+        axios.get('https://provinces.open-api.vn/api/?depth=1').then(res => {
+            res.data.forEach(item => {
+                const opt = new Option(item.name, item.name);
+                opt.dataset.code = item.code;
+                if (item.name === savedCity) opt.selected = true;
+                cityEl.add(opt);
+            });
+            if (savedCity) triggerLoadDistrict();
+        });
+
+        function triggerLoadDistrict() {
+            const sel = cityEl.options[cityEl.selectedIndex];
+            if (!sel?.dataset?.code) return;
+            axios.get(`https://provinces.open-api.vn/api/p/${sel.dataset.code}?depth=2`).then(res => {
+                distEl.length = 1;
+                res.data.districts.forEach(d => {
+                    const opt = new Option(d.name, d.name);
+                    opt.dataset.code = d.code;
+                    if (d.name === savedDistrict) opt.selected = true;
+                    distEl.add(opt);
+                });
+                if (savedDistrict) triggerLoadWard();
+            });
+        }
+
+        function triggerLoadWard() {
+            const sel = distEl.options[distEl.selectedIndex];
+            if (!sel?.dataset?.code) return;
+            axios.get(`https://provinces.open-api.vn/api/d/${sel.dataset.code}?depth=2`).then(res => {
+                wardEl.length = 1;
+                res.data.wards.forEach(w => {
+                    const opt = new Option(w.name, w.name);
+                    if (w.name === savedWard) opt.selected = true;
+                    wardEl.add(opt);
+                });
+            });
+        }
+
+        cityEl.addEventListener('change', () => { distEl.length = 1; wardEl.length = 1; triggerLoadDistrict(); });
+        distEl.addEventListener('change', () => { wardEl.length = 1; triggerLoadWard(); });
+    </script>
+}

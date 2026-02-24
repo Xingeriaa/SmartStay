@@ -35,7 +35,12 @@ html {
 }
 
 body {
-  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--ink-900);
   background: var(--bg-body);
   line-height: 1.6;
@@ -85,6 +90,15 @@ a:hover {
 
 .sidebar-menu {
   padding: 12px 0;
+  height: calc(100vh - 72px);
+  overflow-y: auto;
+}
+.sidebar-menu::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
 }
 
 .sidebar a {
@@ -118,8 +132,10 @@ a:hover {
 
 .main-content {
   margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
   min-height: 100vh;
   transition: all 0.3s ease;
+  overflow-x: hidden;
 }
 
 .topbar {
@@ -136,7 +152,7 @@ a:hover {
 }
 
 .page-content {
-  padding: 28px;
+  padding: 0;
 }
 
 .user-profile {
@@ -173,6 +189,7 @@ a:hover {
 
   .main-content {
     margin-left: 0;
+    width: 100%;
   }
 }
 
@@ -192,9 +209,15 @@ a:hover {
   animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
+.delay-1 {
+  animation-delay: 0.1s;
+}
+.delay-2 {
+  animation-delay: 0.2s;
+}
+.delay-3 {
+  animation-delay: 0.3s;
+}
 
 /* Cards */
 .card-header-custom {
@@ -286,10 +309,22 @@ a:hover {
   color: var(--brand-600);
 }
 
-.bg-icon-success { background-color: #d1fae5; color: #047857; }
-.bg-icon-info { background-color: #e0f2fe; color: #0369a1; }
-.bg-icon-warning { background-color: #fef3c7; color: #b45309; }
-.bg-icon-danger { background-color: #fee2e2; color: #b91c1c; }
+.bg-icon-success {
+  background-color: #d1fae5;
+  color: #047857;
+}
+.bg-icon-info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+.bg-icon-warning {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+.bg-icon-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
 
 /* Buttons */
 .btn-custom {
@@ -392,7 +427,9 @@ a:hover {
   border-bottom: 1px solid var(--border-color);
 }
 
-.table-styled tr { transition: all 0.2s; }
+.table-styled tr {
+  transition: all 0.2s;
+}
 .table-styled tr:hover td {
   box-shadow: var(--shadow-sm);
   transform: translateY(-2px);
@@ -432,7 +469,9 @@ a:hover {
   border-bottom: 1px solid var(--border-color);
 }
 
-.table-custom tr { transition: all 0.2s; }
+.table-custom tr {
+  transition: all 0.2s;
+}
 .table-custom tr:hover td {
   box-shadow: var(--shadow-sm);
   transform: translateY(-2px);
@@ -605,8 +644,14 @@ a:hover {
   gap: 0.4rem;
 }
 
-.status-badge.active { background: #d1fae5; color: #047857; }
-.status-badge.inactive { background: #fee2e2; color: #b91c1c; }
+.status-badge.active {
+  background: #d1fae5;
+  color: #047857;
+}
+.status-badge.inactive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
 
 .badge-modern,
 .badge-brand {

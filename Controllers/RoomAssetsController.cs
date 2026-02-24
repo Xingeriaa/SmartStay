@@ -1,10 +1,12 @@
-﻿using do_an_tot_nghiep.Models;
+﻿using do_an_tot_nghiep.Filters;
+using do_an_tot_nghiep.Models;
 using do_an_tot_nghiep.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace do_an_tot_nghiep.Controllers
 {
 
+    [RequireRole(Roles.AdminOrStaff)]
     public class RoomAssetsController : Controller
     {
         private readonly ILogger<RoomAssetsController> _logger;
@@ -56,7 +58,7 @@ namespace do_an_tot_nghiep.Controllers
                     return View("Error");
                 }
 
-                return View("RoomAssetsList", result.Assets);
+                return View("Index", result.Assets);
             }
             catch (Exception ex)
             {
@@ -82,7 +84,7 @@ namespace do_an_tot_nghiep.Controllers
                     return View("Error");
                 }
 
-                return View("RoomAssetDetail", result.Asset);
+                return View("Details", result.Asset);
             }
             catch (Exception ex)
             {
@@ -107,7 +109,7 @@ namespace do_an_tot_nghiep.Controllers
                 .Select(x => new { Id = (int)x, Name = x.ToString() })
                 .ToList();
 
-            return View("RoomAssetCreate", model);
+            return View("Create", model);
         }
 
         // =============================
@@ -118,7 +120,7 @@ namespace do_an_tot_nghiep.Controllers
         public async Task<IActionResult> Create(RoomAsset model)
         {
             if (!ModelState.IsValid)
-                return View("RoomAssetCreate", model);
+                return View("Create", model);
 
             try
             {
@@ -134,7 +136,7 @@ namespace do_an_tot_nghiep.Controllers
                             ModelState.AddModelError(kv.Key, msg);
                         }
                     }
-                    return View("RoomAssetCreate", model);
+                    return View("Create", model);
                 }
 
                 if (!result.Success)
@@ -148,6 +150,65 @@ namespace do_an_tot_nghiep.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating RoomAsset");
+                return View("Error");
+            }
+        }
+
+        // =============================
+        // EDIT (GET)
+        // =============================
+        public async Task<IActionResult> Edit(int id)
+        {
+            try
+            {
+                var result = await _roomAssetsService.GetAssetAsync(ResolveAccessToken(), id);
+                if (result.RequiresLogin) return RedirectToAction("Login", "Account");
+                if (result.NotFound) return NotFound();
+                if (!result.Success) return View("Error");
+
+                ViewBag.StatusList = Enum.GetValues(typeof(AssetStatus))
+                    .Cast<AssetStatus>()
+                    .Select(x => new { Id = (int)x, Name = x.ToString() })
+                    .ToList();
+
+                return View("Edit", result.Asset);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading RoomAsset for edit. Id={Id}", id);
+                return View("Error");
+            }
+        }
+
+        // =============================
+        // EDIT (POST)
+        // =============================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(RoomAsset model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.StatusList = Enum.GetValues(typeof(AssetStatus))
+                    .Cast<AssetStatus>()
+                    .Select(x => new { Id = (int)x, Name = x.ToString() })
+                    .ToList();
+                return View("Edit", model);
+            }
+            try
+            {
+                var result = await _roomAssetsService.UpdateAsync(ResolveAccessToken(), model);
+                if (result.RequiresLogin) return RedirectToAction("Login", "Account");
+                if (!result.Success)
+                {
+                    _logger.LogError("Update RoomAsset failed. Error: {Error}", result.ErrorMessage);
+                    return View("Error");
+                }
+                return RedirectToAction(nameof(Index), new { roomId = model.RoomId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating RoomAsset. Id={Id}", model.Id);
                 return View("Error");
             }
         }

@@ -1,0 +1,8 @@
+﻿C:\Users\toduc\Downloads\SmartStay\Controllers\InvoicesController.cs(91,63): error CS0019: Operator '==' cannot be applied to operands of type 'TrangThaiHopDong' and 'string' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\InvoicesController.cs(162,31): error CS0266: Cannot implicitly convert type 'System.DateTime?' to 'System.DateTime'. An explicit conversion exists (are you missing a cast?) [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+
+Build FAILED.
+    1 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:06.15

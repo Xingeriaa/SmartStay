@@ -1,0 +1,81 @@
+@using do_an_tot_nghiep.ViewModels
+@model MeterReadingListItemViewModel
+@{
+    ViewData["Title"] = $"Chỉ số điện nước — {Model.RoomName} {Model.MonthYear}";
+    long dElec  = Model.NewElectricityIndex - Model.OldElectricityIndex;
+    long dWater = Model.NewWaterIndex        - Model.OldWaterIndex;
+}
+
+<div style="max-width:700px;margin:0 auto;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-tachometer-alt me-1"></i>Điện nước</a></li>
+            <li class="breadcrumb-item active">@Model.RoomName · @Model.MonthYear</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center gap-2">
+            <span style="width:38px;height:38px;background:linear-gradient(135deg,#fdcb6e,#e67e22);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-tachometer-alt text-white"></i>
+            </span>
+            <div>
+                <h5 class="mb-0 fw-bold">@Model.RoomName</h5>
+                <small class="text-muted">Kỳ @Model.MonthYear · Ghi lúc @Model.ReadingDate.ToString("dd/MM/yyyy HH:mm")</small>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="p-3 rounded-3 text-center" style="background:#fff8e1;">
+                        <div class="text-muted small mb-1">⚡ Điện cũ</div>
+                        <div class="fw-bold fs-4">@Model.OldElectricityIndex</div>
+                        <div class="text-muted small">kWh</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded-3 text-center" style="background:#fff3cd;">
+                        <div class="text-muted small mb-1">⚡ Điện mới</div>
+                        <div class="fw-bold fs-4 text-warning">@Model.NewElectricityIndex</div>
+                        <div class="text-success small">+@dElec kWh tiêu thụ</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded-3 text-center" style="background:#e0f7fa;">
+                        <div class="text-muted small mb-1">💧 Nước cũ</div>
+                        <div class="fw-bold fs-4">@Model.OldWaterIndex</div>
+                        <div class="text-muted small">m³</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded-3 text-center" style="background:#cff4fc;">
+                        <div class="text-muted small mb-1">💧 Nước mới</div>
+                        <div class="fw-bold fs-4 text-info">@Model.NewWaterIndex</div>
+                        <div class="text-success small">+@dWater m³ tiêu thụ</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-light border d-flex justify-content-around text-center mb-0">
+                <div>
+                    <div class="text-muted small">Tiêu thụ điện kỳ này</div>
+                    <div class="fw-bold text-warning fs-5">@dElec kWh</div>
+                </div>
+                <div class="vr opacity-25"></div>
+                <div>
+                    <div class="text-muted small">Tiêu thụ nước kỳ này</div>
+                    <div class="fw-bold text-info fs-5">@dWater m³</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="fas fa-edit me-1"></i>Chỉnh sửa
+        </a>
+        <a asp-action="Index" class="btn btn-light border">
+            <i class="fas fa-arrow-left me-1"></i>Quay lại
+        </a>
+    </div>
+</div>

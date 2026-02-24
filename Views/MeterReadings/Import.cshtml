@@ -1,0 +1,199 @@
+@{
+    ViewData["Title"] = "Import Hàng Loạt Chỉ Số (Excel/CSV)";
+}
+
+<div class="card shadow mb-4 border-left-success">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-file-import"></i> Công Cụ Quét Dữ Liệu Tự Động (Rule 5.2 Validate Chặt Chẽ)</h6>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info border-start border-info border-4">
+            <strong><i class="fas fa-info-circle"></i> Nguyên Tắc Import Kế Toán:</strong>
+            <ul class="mb-0 small">
+                <li>Tải Template <strong>(.csv)</strong> về, điền 6 Cột: <code>Mã phòng, Tháng (YYYY-MM), Điện cũ, Điện mới, Nước cũ, Nước mới</code>.</li>
+                <li>Không sửa cấu trúc cột để Parser chạy chuẩn.</li>
+                <li>Preview Tự động Quét: <code>Trùng kỳ, Chỉ số lùi, Mã Phòng không thực</code>. Phát hiện sai, Rollback tự động.</li>
+            </ul>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 border-end">
+                <form id="uploadForm" class="d-flex align-items-center">
+                    <input type="file" id="fileImport" class="form-control me-2 border-success border-2 shadow-sm" accept=".csv" required />
+                    <button type="submit" class="btn btn-success fw-bold shadow-sm" style="min-width: 150px;">
+                        <i class="fas fa-search-plus"></i> PREVIEW
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-6 text-end">
+                <button type="button" onclick="downloadTemplate()" class="btn btn-outline-info shadow-sm fw-bold">
+                    <i class="fas fa-download"></i> Tải Về Template (Sample)
+                </button>
+                <a asp-action="Index" class="btn btn-secondary shadow-sm ms-2"><i class="fas fa-times"></i> Hủy</a>
+            </div>
+        </div>
+
+        <!-- Vùng hiển thị Preview Result -->
+        <div id="previewArea" style="display: none;">
+            <hr />
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="text-primary fw-bold mb-0">
+                    <i class="fas fa-eye"></i> Kết Quả Bóc Tách: 
+                    <span id="txtTotal" class="badge bg-secondary">0 Record</span>
+                    <span id="txtValid" class="badge bg-success">0 Hợp Lệ</span>
+                    <span id="txtError" class="badge bg-danger">0 Cấm Tải</span>
+                </h6>
+                <button id="btnConfirm" class="btn btn-danger font-weight-bold shadow-lg" style="display: none;" onclick="confirmImport()">
+                    <i class="fas fa-database"></i> CHỐT GHI DỮ LIỆU & GỬI AUDIT LOG
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle table-sm text-center">
+                    <thead class="table-dark text-white text-center">
+                        <tr>
+                            <th>Mã Căn</th>
+                            <th>Kỳ Soát</th>
+                            <th>E-Cũ</th>
+                            <th>E-Mới</th>
+                            <th>W-Cũ</th>
+                            <th>W-Mới</th>
+                            <th>Gate Checker (Tình Trạng)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="previewTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentPayload = null;
+        let fileName = "";
+
+        // Tải mẫu
+        function downloadTemplate() {
+            const csvContent = "Mã Phòng,Tháng (YYYY-MM),Điện Cũ,Điện Mới,Nước Cũ,Nước Mới\nP001,2023-11,100,250,50,65\nP002,2023-11,0,10,0,5\n";
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "BMS_Meter_Template.csv";
+            a.click();
+        }
+
+        // POST Preview
+        document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileImport');
+            if (fileInput.files.length === 0) return;
+
+            const file = fileInput.files[0];
+            fileName = file.name;
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // Call API Preview
+                const response = await fetch('/api/meter-readings/import/preview', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderPreview(data);
+                } else {
+                    const err = await response.text();
+                    alert("Lỗi Bộ lọc: " + err);
+                }
+            } catch (error) {
+                alert("Máy chủ không phản hồi!");
+            }
+        });
+
+        function renderPreview(data) {
+            currentPayload = data.rows;
+
+            document.getElementById('previewArea').style.display = 'block';
+            document.getElementById('txtTotal').innerText = `${data.totalRows} Record(s)`;
+            document.getElementById('txtValid').innerText = `${data.validRows} Sạch`;
+            document.getElementById('txtError').innerText = `${data.errorRows} Lỗi/Vi Phạm`;
+
+            const tbody = document.getElementById('previewTableBody');
+            tbody.innerHTML = '';
+
+            data.rows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                let badgeRule = '';
+                if (!row.isValid) {
+                    badgeRule = `<span class="badge bg-danger shadow-sm"><i class="fas fa-ban"></i> Blocked: ${row.errorMessage}</span>`;
+                } else if (row.warningMessage) {
+                    badgeRule = `<span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle"></i> Cảnh Báo: ${row.warningMessage}</span>`;
+                } else {
+                    badgeRule = `<span class="badge bg-success"><i class="fas fa-check"></i> Hợp Quy</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="font-weight-bold text-dark">${row.roomCode}</td>
+                    <td class="text-info fw-bold">${row.monthYear}</td>
+                    <td>${row.oldElectricityIndex}</td>
+                    <td class="text-warning fw-bold">${row.newElectricityIndex}</td>
+                    <td>${row.oldWaterIndex}</td>
+                    <td class="text-primary fw-bold">${row.newWaterIndex}</td>
+                    <td class="text-start">${badgeRule}</td>
+                `;
+                
+                if (!row.isValid) tr.classList.add('table-danger');
+                else if (row.warningMessage) tr.classList.add('table-warning');
+
+                tbody.appendChild(tr);
+            });
+
+            // Chỉ cho phép Confirm nếu TẤT CẢ đều OK
+            if (data.canConfirm) {
+                document.getElementById('btnConfirm').style.display = 'inline-block';
+            } else {
+                document.getElementById('btnConfirm').style.display = 'none';
+                alert("Gate Checker System Blocked: Dữ liệu chứa vi phạm nghiêm trọng (Rule 5.2/5.1). Xin sửa file và Preview lại. KHÔNG THỂ BYPASS.");
+            }
+        }
+
+        async function confirmImport() {
+            if (!currentPayload || currentPayload.length === 0) return;
+
+            if (!confirm(`Hệ thống sẽ ghi chú Audit Log và Insert nguyên khối (Atomic Transaction). Bạn chắc chắn Import ${currentPayload.length} bản ghi?`)) 
+                return;
+
+            const requestData = {
+                items: currentPayload,
+                fileReference: fileName
+            };
+
+            try {
+                const response = await fetch('/api/meter-readings/import/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert("THÀNH CÔNG: " + result.message);
+                    window.location.href = '/MeterReadings/Index';
+                } else {
+                    const err = await response.text();
+                    alert("CRITICAL ERROR (ROLLBACKED): " + err);
+                }
+            } catch (error) {
+                alert("Máy chủ crash trong lúc chạy ngầm.");
+            }
+        }
+    </script>
+}

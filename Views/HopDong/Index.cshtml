@@ -1,175 +1,280 @@
-@model IEnumerable<HopDong>
+@model IEnumerable<do_an_tot_nghiep.ViewModels.HopDongListItemViewModel>
 @{
-    ViewData["Title"] = "Quản lý Hợp đồng";
-    // Helper function để lấy chữ cái đầu
-    string GetInitials(string name) => !string.IsNullOrEmpty(name) ? name.Substring(0, 1).ToUpper() : "?";
+    ViewData["Title"] = "Quản lý Hợp Đồng";
+    var total      = Model?.Count() ?? 0;
+    var active     = Model?.Count(x => x.TrangThai == "Active" || x.TrangThai == "DangHieuLuc") ?? 0;
+    var terminated = Model?.Count(x => x.TrangThai == "Terminated" || x.TrangThai == "DaThanhLy") ?? 0;
+    var cancelled  = Model?.Count(x => x.TrangThai == "Cancelled" || x.TrangThai == "Huy") ?? 0;
 }
 
+<div class="container-fluid px-0">
 
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Hợp đồng</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Quản lý hợp đồng thuê</h1>
+            <p class="text-muted mb-0 mt-1">Theo dõi toàn bộ hợp đồng trong hệ thống</p>
+        </div>
+        <a asp-action="Create" class="btn btn-gradient-primary btn-custom shadow">
+            <i class="fas fa-pen-nib me-1"></i> Tạo hợp đồng mới
+        </a>
+    </div>
 
-<div class="container-fluid py-4">
-    <div class="card main-card">
-        <div class="card-header-custom">
-            <div class="row align-items-center">
-                <div class="col-md-5">
-                    <h4 class="mb-0 text-gradient">
-                        <i class="fa fa-file-contract me-2"></i>Danh sách Hợp đồng
-                    </h4>
-                    <small class="text-muted">Quản lý @Model.Count() bản ghi hiện có</small>
-                </div>
-                <div class="col-md-7">
-                    <div class="d-flex justify-content-md-end gap-3 mt-3 mt-md-0">
-                        <div class="search-group d-flex align-items-center">
-                            <i class="fa fa-search text-muted"></i>
-                            <input type="text" id="searchInput" placeholder="Tìm kiếm hợp đồng...">
-                        </div>
-                        <a asp-action="Create" class="btn btn-grad text-nowrap">
-                            <i class="fa fa-plus me-1"></i> Tạo mới
-                        </a>
-                    </div>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    {{-- Stat Cards --}}
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer" onclick="filterStatus('')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">TỔNG HỢP ĐỒNG</div><div class="stat-value text-gradient mt-1">@total</div></div>
+                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-file-signature"></i></div>
                 </div>
             </div>
         </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.1s" onclick="filterStatus('active')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">ĐANG HIỆU LỰC</div><div class="stat-value text-success mt-1">@active</div></div>
+                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-check-circle"></i></div>
+                </div>
+                <small class="text-success fw-bold small">Click để lọc</small>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.2s" onclick="filterStatus('terminated')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">ĐÃ THANH LÝ</div><div class="stat-value mt-1" style="color:#e17055">@terminated</div></div>
+                    <div class="stat-icon-wrapper bg-icon-warning"><i class="fas fa-file-contract"></i></div>
+                </div>
+                <small class="text-warning fw-bold small">Click để lọc</small>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.3s">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">ĐÃ HỦY</div><div class="stat-value mt-1 text-danger">@cancelled</div></div>
+                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-ban"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                @if (Model != null && Model.Any())
-                {
-                    <table class="table custom-table mb-0" id="contractTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 50px;">#</th>
-                                <th>Thông tin Phòng</th>
-                                <th>Chủ Hợp đồng</th>
-                                <th>Thời hạn</th>
-                                <th class="text-center">Trạng thái</th>
-                                <th class="text-end" style="width: 100px;">Tác vụ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                var chuHopDong = item.HopDongKhachThues?.FirstOrDefault(x => x.VaiTro == "CHU_HOP_DONG")?.KhachThue?.HoTen ?? "Chưa cập nhật";
-                                var tenNha = item.PhongTro?.NhaTro?.TenNhaTro ?? "-";
-                                var tenPhong = item.PhongTro?.TenPhong ?? "-";
-                                var isExpired = item.NgayKetThuc.HasValue && item.NgayKetThuc.Value < DateTime.Now;
-                                var badgeClass = isExpired ? "badge-soft badge-soft-secondary" : "badge-soft badge-soft-brand";
+    {{-- Filter Bar --}}
+    <div class="main-card mb-3 p-4 animate-fade-up" style="animation-delay:.1s">
+        <div class="row g-3 align-items-end">
+            <div class="col-xl-4 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-search me-1"></i>Tìm kiếm hợp đồng</label>
+                <div class="search-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Mã HĐ, tên phòng, số tiền cọc..." oninput="applyFilters()">
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-circle me-1"></i>Trạng thái</label>
+                <select class="form-select" id="filterStatus" onchange="applyFilters()">
+                    <option value="">-- Tất cả --</option>
+                    <option value="active">Đang hiệu lực</option>
+                    <option value="terminated">Đã thanh lý</option>
+                    <option value="cancelled">Đã hủy</option>
+                </select>
+            </div>
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-calendar me-1"></i>Từ ngày</label>
+                <input type="date" class="form-control" id="filterDateFrom" onchange="applyFilters()">
+            </div>
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-calendar-check me-1"></i>Đến ngày</label>
+                <input type="date" class="form-control" id="filterDateTo" onchange="applyFilters()">
+            </div>
+            <div class="col-xl-1 col-md-3">
+                <label class="fw-semibold small text-muted mb-1 d-block">&nbsp;</label>
+                <button class="btn btn-light border w-100" onclick="resetFilters()" title="Xóa bộ lọc">
+                    <i class="fas fa-times text-muted"></i>
+                </button>
+            </div>
+        </div>
+        <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
+    </div>
 
-                                <tr>
-                                    <td><span class="text-muted">@item.Id</span></td>
+    {{-- Table --}}
+    <div class="main-card animate-fade-up" style="animation-delay:.2s">
+        <div class="card-header-styled">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-file-signature text-brand"></i>
+                <h5 class="fw-bold mb-0">Danh sách hợp đồng</h5>
+                <span class="badge bg-soft-brand text-brand"><span id="visibleCount">@total</span> / @total</span>
+            </div>
+            <button class="btn btn-light border btn-sm" onclick="location.reload()"><i class="fas fa-sync-alt text-muted"></i></button>
+        </div>
 
-                                    <td>
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-bold text-dark">@tenPhong</span>
-                                            <span class="small text-muted"><i class="fa fa-building me-1"></i>@tenNha</span>
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle">@GetInitials(chuHopDong)</div>
-                                            <div>
-                                                <div class="fw-bold">@chuHopDong</div>
-                                                <div class="small text-muted" style="font-size: 0.75rem;">Đại diện</div>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        <div class="d-flex flex-column small">
-                                            <span><i class="fa fa-calendar-check text-success me-1"></i> @item.NgayBatDau.ToString("dd/MM/yyyy")</span>
-                                            <span class="mt-1"><i class="fa fa-calendar-times text-danger me-1"></i> @(item.NgayKetThuc.HasValue? item.NgayKetThuc.Value.ToString("dd/MM/yyyy") : "Vô thời hạn")</span>
-                                        </div>
-                                    </td>
-
-                                    <td class="text-center">
-                                        <span class="@badgeClass">
-                                            @item.TrangThai
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="dataTable">
+                <thead class="table-light">
+                    <tr>
+                        <th style="cursor:pointer" onclick="sortTable(0)">Mã HĐ <i class="fas fa-sort ms-1 text-muted small"></i></th>
+                        <th>Phòng</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Ngày kết thúc</th>
+                        <th class="text-end">Tiền cọc</th>
+                        <th class="text-end">Giá thuê</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center" style="width:200px;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            string sCls = (item.TrangThai == "Active" || item.TrangThai == "DangHieuLuc") ? "active"
+                                        : (item.TrangThai == "Terminated" || item.TrangThai == "DaThanhLy") ? "terminated" : "cancelled";
+                            string badge = sCls == "active" ? "bg-success" : sCls == "terminated" ? "bg-warning text-dark" : "bg-danger";
+                            string label = sCls == "active" ? "Đang hiệu lực" : sCls == "terminated" ? "Đã thanh lý" : "Đã hủy";
+                            string dateStart = item.NgayBatDau.ToString("yyyy-MM-dd");
+                            <tr data-status="@sCls" data-date="@dateStart">
+                                <td>
+                                    <div class="fw-bold"><i class="fas fa-file-contract text-muted me-1"></i>@item.ContractCode</div>
+                                </td>
+                                <td class="fw-bold text-success">@item.TenPhong</td>
+                                <td><span class="badge bg-light border text-dark">@item.NgayBatDau.ToString("dd/MM/yyyy")</span></td>
+                                <td>
+                                    @if (item.NgayKetThuc.HasValue)
+                                    {
+                                        bool soonExpire = item.NgayKetThuc.Value <= DateTime.Now.AddDays(30);
+                                        <span class="badge @(soonExpire ? "bg-warning text-dark" : "bg-light border text-dark")">
+                                            @item.NgayKetThuc.Value.ToString("dd/MM/yyyy")
+                                            @if (soonExpire) { <i class="fas fa-exclamation-triangle ms-1"></i> }
                                         </span>
-                                    </td>
-
-                                    <td class="text-end">
-                                        <div class="dropdown">
-                                            <button class="btn btn-icon-action" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="fa fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg">
-                                                <li>
-                                                    <a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">
-                                                        <i class="fa fa-eye me-2"></i>Xem chi tiết
-                                                    </a>
-                                                </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li>
-                                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">
-                                                        <i class="fa fa-edit me-2"></i>Chỉnh sửa
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" asp-action="Extend" asp-route-id="@item.Id">
-                                                        <i class="fa fa-clock me-2"></i>Gia hạn
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item text-danger" asp-action="Terminate" asp-route-id="@item.Id">
-                                                        <i class="fa fa-ban me-2 text-danger"></i>Thanh lý
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-                else
-                {
-                    <div class="text-center py-5">
-                        <div class="mb-3">
-                            <i class="fa fa-folder-open fa-3x text-muted"></i>
-                        </div>
-                        <h5 class="text-muted">Chưa có hợp đồng nào</h5>
-                        <p class="text-muted small">Hãy tạo hợp đồng mới để bắt đầu quản lý.</p>
-                        <a asp-action="Create" class="btn btn-sm btn-outline-brand rounded-pill px-4">Tạo ngay</a>
-                    </div>
-                }
-            </div>
+                                    }
+                                    else { <span class="text-muted small">Vô thời hạn</span> }
+                                </td>
+                                <td class="text-end fw-bold text-warning">@item.TienCoc.ToString("N0") đ</td>
+                                <td class="text-end fw-bold text-success">@item.GiaThue.ToString("N0") đ</td>
+                                <td class="text-center"><span class="badge @badge rounded-pill px-3">@label</span></td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#e3f2fd;color:#1565c0;" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                                        @if (sCls == "active")
+                                        {
+                                            <a asp-action="Extend" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#e8f5e9;color:#2e7d32;" title="Gia hạn"><i class="fas fa-calendar-plus"></i></a>
+                                            <a asp-action="Terminate" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#fff8e1;color:#f57f17;" title="Thanh lý"><i class="fas fa-handshake"></i></a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="fas fa-file-signature fa-3x text-muted opacity-25 d-block mb-3"></i>
+                                <h6 class="text-muted">Chưa có hợp đồng nào</h6>
+                                <a asp-action="Create" class="btn btn-gradient-primary btn-sm mt-2"><i class="fas fa-plus me-1"></i> Tạo hợp đồng</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
 
-        @if (Model != null && Model.Count() > 10)
-        {
-            <div class="card-footer bg-white border-top-0 py-3">
-                <nav>
-                    <ul class="pagination justify-content-center mb-0 pagination-sm">
-                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-                        <li class="page-item active" style="z-index: 0;"><a class="page-link border-0" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link text-dark" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link text-dark" href="#">Sau</a></li>
-                    </ul>
-                </nav>
-            </div>
-        }
+        <div id="noResultsMsg" class="text-center py-4 d-none">
+            <i class="fas fa-search fa-2x text-muted opacity-25 d-block mb-2"></i>
+            <h6 class="text-muted">Không tìm thấy hợp đồng phù hợp</h6>
+            <button class="btn btn-sm btn-light border mt-1" onclick="resetFilters()"><i class="fas fa-times me-1"></i> Xóa bộ lọc</button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light rounded-bottom">
+            <span class="text-muted small">Hiển thị <strong><span id="footerCount">@total</span></strong> / @total hợp đồng</span>
+            <span class="small">
+                <span class="badge bg-success me-1">@active</span> HĐ &nbsp;
+                <span class="badge bg-warning text-dark me-1">@terminated</span> Thanh lý &nbsp;
+                <span class="badge bg-danger me-1">@cancelled</span> Hủy
+            </span>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        // Simple Client-side Search Script
-        document.getElementById('searchInput').addEventListener('keyup', function() {
-            var input = this.value.toLowerCase();
-            var rows = document.querySelectorAll('#contractTable tbody tr');
+<script>
+    const allRows = Array.from(document.querySelectorAll('#dataTable tbody tr[data-status]'));
+    let sortDir = {};
 
-            rows.forEach(function(row) {
-                var text = row.innerText.toLowerCase();
-                row.style.display = text.includes(input) ? '' : 'none';
-            });
+    function filterStatus(status) {
+        document.getElementById('filterStatus').value = status;
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const q       = document.getElementById('searchInput').value.toLowerCase().trim();
+        const status  = document.getElementById('filterStatus').value;
+        const dateFrom = document.getElementById('filterDateFrom').value;
+        const dateTo   = document.getElementById('filterDateTo').value;
+
+        let visible = 0;
+        allRows.forEach(row => {
+            const matchQ  = !q || row.textContent.toLowerCase().includes(q);
+            const matchSt = !status || row.dataset.status === status;
+            const d       = row.dataset.date;
+            const matchF  = !dateFrom || d >= dateFrom;
+            const matchT  = !dateTo   || d <= dateTo;
+            const show    = matchQ && matchSt && matchF && matchT;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
         });
 
-        // Kích hoạt tooltip nếu dùng bootstrap 5
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-    </script>
+        ['visibleCount','footerCount'].forEach(id => document.getElementById(id).textContent = visible);
+        document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0 || allRows.length === 0);
+        renderTags(q, status, dateFrom, dateTo);
+    }
+
+    function renderTags(q, status, from, to) {
+        const c = document.getElementById('filterTags');
+        c.innerHTML = '';
+        const tag = (label, clear) => c.innerHTML += `<span class="badge bg-soft-brand text-brand border px-3 py-2 rounded-pill" style="font-size:.8rem">${label} <span style="cursor:pointer;margin-left:6px" onclick="${clear}">✕</span></span>`;
+        if (q) tag(`🔍 "${q}"`, `document.getElementById('searchInput').value='';applyFilters()`);
+        const sl = {active:'Đang hiệu lực',terminated:'Đã thanh lý',cancelled:'Đã hủy'};
+        if (status) tag(`📄 ${sl[status]}`, `document.getElementById('filterStatus').value='';applyFilters()`);
+        if (from) tag(`📅 Từ: ${from}`, `document.getElementById('filterDateFrom').value='';applyFilters()`);
+        if (to)   tag(`📅 Đến: ${to}`,  `document.getElementById('filterDateTo').value='';applyFilters()`);
+    }
+
+    function resetFilters() {
+        ['searchInput','filterStatus','filterDateFrom','filterDateTo'].forEach(id => document.getElementById(id).value = '');
+        applyFilters();
+    }
+
+    function sortTable(col) {
+        const tbody = document.querySelector('#dataTable tbody');
+        const rows  = Array.from(tbody.querySelectorAll('tr[data-status]'));
+        const asc   = !sortDir[col];
+        sortDir = {}; sortDir[col] = asc;
+        rows.sort((a,b) => {
+            const av = a.cells[col]?.textContent.trim() || '';
+            const bv = b.cells[col]?.textContent.trim() || '';
+            return asc ? av.localeCompare(bv,'vi') : bv.localeCompare(av,'vi');
+        });
+        rows.forEach(r => tbody.appendChild(r));
+    }
+</script>
 }

@@ -1,286 +1,253 @@
-﻿@model IEnumerable<do_an_tot_nghiep.Models.KhachThue>
+﻿@model IEnumerable<do_an_tot_nghiep.ViewModels.KhachThueListItemViewModel>
 @{
-    ViewData["Title"] = "Quản Lý Khách Thuê";
-    var customers = Model?.ToList() ?? new List<do_an_tot_nghiep.Models.KhachThue>();
+    ViewData["Title"] = "Quản lý cư dân";
+    var total   = Model?.Count() ?? 0;
+    var active  = Model?.Count(x => x.Status == "Active") ?? 0;
+    var absent  = Model?.Count(x => x.Status == "Temporary_Absent") ?? 0;
+    var inactive= Model?.Count(x => x.Status != "Active" && x.Status != "Temporary_Absent") ?? 0;
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<div class="container-fluid px-0">
 
-<div class="container-fluid py-5 animate__animated animate__fadeIn">
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Cư dân</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Quản lý cư dân</h1>
+            <p class="text-muted mb-0 mt-1">Danh sách khách thuê trong toàn hệ thống</p>
+        </div>
+        <a asp-action="Create" class="btn btn-gradient-primary btn-custom shadow">
+            <i class="fas fa-user-plus me-1"></i> Thêm cư dân mới
+        </a>
+    </div>
 
-    <div class="row mb-5">
-        <div class="col-md-4">
-            <div class="card stat-card bg-brand-gradient p-4 text-white">
-                <div class="d-flex align-items-center">
-                    <div class="icon-shape me-3">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div>
-                        <p class="mb-0 opacity-75 fw-medium">Tổng Khách Thuê</p>
-                        <h2 class="mb-0 fw-bold">@customers.Count</h2>
-                    </div>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    {{-- Stat Cards --}}
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer" onclick="filterStatus('')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">TỔNG CƯ DÂN</div><div class="stat-value text-gradient mt-1">@total</div></div>
+                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-users"></i></div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card stat-card bg-brand-gradient p-4 text-white">
-                <div class="d-flex align-items-center">
-                    <div class="icon-shape me-3">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div>
-                        <p class="mb-0 opacity-75 fw-medium">Tổng Tiền Cọc</p>
-                        <h2 class="mb-0 fw-bold">@(customers.Count > 0 ? customers.Sum(x => x.SoTienCoc ?? 0).ToString("N0") : "0") <small style="font-size: 14px">đ</small></h2>
-                    </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.1s" onclick="filterStatus('Active')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">ĐANG THUÊ</div><div class="stat-value text-success mt-1">@active</div></div>
+                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-user-check"></i></div>
                 </div>
+                <small class="text-success fw-bold">Click để lọc</small>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card stat-card bg-brand-gradient p-4 text-white">
-                <div class="d-flex align-items-center">
-                    <div class="icon-shape me-3">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <div>
-                        <p class="mb-0 opacity-75 fw-medium">Quê Quán</p>
-                        <h2 class="mb-0 fw-bold">@customers.Select(x => x.NoiSinh).Distinct().Count() <small style="font-size: 16px; font-weight: 400">tỉnh/thành</small></h2>
-                    </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.2s" onclick="filterStatus('Temporary_Absent')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">TẠM VẮNG</div><div class="stat-value mt-1" style="color:#f39c12">@absent</div></div>
+                    <div class="stat-icon-wrapper bg-icon-warning"><i class="fas fa-user-clock"></i></div>
+                </div>
+                <small class="text-warning fw-bold">Click để lọc</small>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.3s">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">KHÔNG HOẠT ĐỘNG</div><div class="stat-value text-danger mt-1">@inactive</div></div>
+                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-user-slash"></i></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card main-card">
-        <div class="card-header-custom">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h3 class="fw-bold text-dark mb-1">Danh Sách Khách Thuê</h3>
-                    <p class="text-muted mb-0">Quản lý thông tin, hợp đồng và hồ sơ khách hàng</p>
+    {{-- Filter Bar --}}
+    <div class="main-card mb-3 p-4 animate-fade-up" style="animation-delay:.1s">
+        <div class="row g-3 align-items-end">
+            <div class="col-xl-4 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-search me-1"></i>Tìm kiếm cư dân</label>
+                <div class="search-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Họ tên, CCCD, số điện thoại..." oninput="applyFilters()">
                 </div>
-                <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
-                    <button type="button" class="btn btn-grad me-2" id="btnDeleteSelected">
-                        <i class="fas fa-trash-alt"></i> Xóa chọn
-                    </button>
-                    <a asp-controller="KhachThue" asp-action="Create" class="btn btn-grad">
-                        <i class="fas fa-user-plus"></i> Thêm khách mới
-                    </a>
+            </div>
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-circle me-1"></i>Trạng thái</label>
+                <select class="form-select" id="filterStatus" onchange="applyFilters()">
+                    <option value="">-- Tất cả --</option>
+                    <option value="Active">✅ Đang thuê</option>
+                    <option value="Temporary_Absent">⏳ Tạm vắng</option>
+                    <option value="Inactive">❌ Ngừng thuê</option>
+                </select>
+            </div>
+            <div class="col-xl-3 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-birthday-cake me-1"></i>Năm sinh</label>
+                <div class="d-flex gap-2">
+                    <input type="number" class="form-control" id="filterYearFrom" placeholder="Từ năm" min="1950" max="2010" oninput="applyFilters()">
+                    <input type="number" class="form-control" id="filterYearTo" placeholder="Đến năm" min="1950" max="2010" oninput="applyFilters()">
                 </div>
+            </div>
+            <div class="col-xl-1">
+                <label class="fw-semibold small text-muted mb-1 d-block">&nbsp;</label>
+                <button class="btn btn-light border w-100" onclick="resetFilters()" title="Xóa bộ lọc"><i class="fas fa-times text-muted"></i></button>
             </div>
         </div>
+        <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
+    </div>
 
-        <div class="card-body p-4">
-            <div class="row mb-4">
-                <div class="col-md-5">
-                    <div class="search-group d-flex align-items-center">
-                        <i class="fas fa-search text-muted"></i>
-                        <input type="text" id="smartSearch" placeholder="Tìm tên, SĐT, số CCCD hoặc quê quán...">
-                    </div>
-                </div>
-                <div class="col-md-7 text-md-end d-flex justify-content-md-end align-items-center gap-3">
-                    <span class="text-muted">Hiển thị</span>
-                    <select class="form-select w-auto border-0 bg-light rounded-pill">
-                        <option>10 dòng</option>
-                        <option>25 dòng</option>
-                        <option>Tất cả</option>
-                    </select>
-                </div>
+    {{-- Table --}}
+    <div class="main-card animate-fade-up" style="animation-delay:.2s">
+        <div class="card-header-styled">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-users text-brand"></i>
+                <h5 class="fw-bold mb-0">Danh sách cư dân</h5>
+                <span class="badge bg-soft-brand text-brand"><span id="visibleCount">@total</span> / @total</span>
             </div>
+            <button class="btn btn-light border btn-sm" onclick="location.reload()"><i class="fas fa-sync-alt text-muted"></i></button>
+        </div>
 
-            <div class="table-responsive">
-                <table class="table custom-table align-middle">
-                    <thead>
-                        <tr>
-                            <th width="50" class="text-center">
-                                <input type="checkbox" class="form-check-input shadow-none" id="selectAllMain">
-                            </th>
-                            <th>Thông tin khách</th>
-                            <th>Liên hệ</th>
-                            <th>Số CCCD</th>
-                            <th class="text-center">Tiền cọc</th>
-                            <th>Quê quán</th>
-                            <th class="text-center" width="150">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="customerBody">
-                        @if (customers.Count > 0)
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="dataTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>CCCD</th>
+                        <th>Điện thoại</th>
+                        <th class="text-center">Ngày sinh</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center" style="width:130px;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
                         {
-                            foreach (var item in customers)
-                            {
-                                <tr>
-                                    <td class="text-center">
-                                        <input type="checkbox" class="form-check-input ckbItem shadow-none" value="@item.Id">
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-wrapper me-3">
-                                                @if (!string.IsNullOrEmpty(item.HinhAnh))
-                                                {
-                                                    <img src="~/images/khachthue/@item.HinhAnh" class="avatar-img" alt="Avatar" />
-                                                }
-                                                else
-                                                {
-                                                    <div class="avatar-img bg-white d-flex align-items-center justify-content-center text-muted">
-                                                        <i class="fas fa-user"></i>
-                                                    </div>
-                                                }
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-0 fw-bold text-dark">@item.HoTen</h6>
-                                                <small class="text-muted">ID: #@item.Id</small>
-                                            </div>
+                            string badge = item.Status == "Active"    ? "bg-success"
+                                         : item.Status == "Temporary_Absent" ? "bg-warning text-dark"
+                                         : "bg-danger";
+                            string label = item.Status == "Active"    ? "Đang thuê"
+                                         : item.Status == "Temporary_Absent" ? "Tạm vắng"
+                                         : item.Status ?? "—";
+                            int birthYear = item.NgaySinh.Year;
+                            <tr data-status="@item.Status"
+                                data-name="@item.HoTen?.ToLower()"
+                                data-cccd="@item.SoCCCD?.ToLower()"
+                                data-phone="@item.SoDienThoai1?.ToLower()"
+                                data-year="@birthYear">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-soft-brand rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;flex-shrink:0;">
+                                            <i class="fas fa-user-circle text-brand fa-lg"></i>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-medium text-dark"><i class="fas fa-phone-alt fa-xs me-2 text-theme"></i>@item.SoDienThoai1</span>
-                                            @if (!string.IsNullOrEmpty(item.SoDienThoai2))
-                                            {
-                                                <span class="text-muted small ms-4">@item.SoDienThoai2</span>
-                                            }
+                                        <div>
+                                            <div class="fw-bold text-dark">@item.HoTen</div>
+                                            <small class="text-muted">ID: #@item.Id</small>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge-modern shadow-sm">
-                                            <i class="far fa-id-card me-1"></i> @item.SoCCCD
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        @if (item.SoTienCoc.HasValue && item.SoTienCoc > 0)
-                                        {
-                                            <span class="fw-bolder text-theme fs-6">@item.SoTienCoc.Value.ToString("N0")</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted small fst-italic">Chưa cọc</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <div class="text-muted">
-                                            <i class="fas fa-map-marker-alt me-1 text-danger opacity-50"></i> @item.NoiSinh
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center">
-                                            <a asp-action="Details" asp-route-id="@item.Id" class="action-btn" title="Xem chi tiết">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn" title="Chỉnh sửa">
-                                                <i class="fas fa-pen"></i>
-                                            </a>
-                                            <button onclick="confirmDelete(@item.Id, '@item.HoTen')" class="action-btn" title="Xóa">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center py-5">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <div class="icon-shape bg-light text-muted mb-3 rounded-circle">
-                                            <i class="fas fa-user-slash fa-lg"></i>
-                                        </div>
-                                        <h6 class="text-muted fw-normal">Chưa có dữ liệu khách thuê nào</h6>
+                                    </div>
+                                </td>
+                                <td><code class="text-muted small">@item.SoCCCD</code></td>
+                                <td><span class="fw-medium">@item.SoDienThoai1</span></td>
+                                <td class="text-center"><span class="badge bg-light border text-dark">@item.NgaySinh.ToString("dd/MM/yyyy")</span></td>
+                                <td class="text-center"><span class="badge @badge rounded-pill px-3">@label</span></td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#e3f2fd;color:#1565c0;" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#fff8e1;color:#f57f17;" title="Sửa"><i class="fas fa-edit"></i></a>
                                     </div>
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="fas fa-users fa-3x text-muted opacity-25 d-block mb-3"></i>
+                                <h6 class="text-muted">Chưa có cư dân nào trong hệ thống</h6>
+                                <a asp-action="Create" class="btn btn-gradient-primary btn-sm mt-2"><i class="fas fa-user-plus me-1"></i> Thêm cư dân</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-5 border-top pt-4">
-                <p class="text-muted mb-md-0">Hiển thị <b>@customers.Count</b> khách hàng</p>
-                <nav>
-                    <ul class="pagination pagination-animated mb-0">
-                        <li class="page-item disabled"><a class="page-link rounded-start-pill border-0 px-4" href="#">Trước</a></li>
-                        <li class="page-item active"><a class="page-link border-0 px-3" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link border-0 px-3" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link rounded-end-pill border-0 px-4" href="#">Tiếp</a></li>
-                    </ul>
-                </nav>
-            </div>
+        <div id="noResultsMsg" class="text-center py-4 d-none">
+            <i class="fas fa-user-slash fa-2x text-muted opacity-25 d-block mb-2"></i>
+            <h6 class="text-muted">Không có cư dân phù hợp</h6>
+            <button class="btn btn-sm btn-light border mt-1" onclick="resetFilters()"><i class="fas fa-times me-1"></i> Xóa bộ lọc</button>
+        </div>
+
+        <div class="px-4 py-3 border-top bg-light rounded-bottom d-flex justify-content-between">
+            <span class="text-muted small">Hiển thị <strong><span id="footerCount">@total</span></strong> / @total cư dân</span>
+            <span class="small">
+                <span class="badge bg-success me-1">@active</span> Đang thuê &nbsp;
+                <span class="badge bg-warning text-dark me-1">@absent</span> Tạm vắng
+            </span>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        $(document).ready(function () {
-            // Animation for rows
-            $("#customerBody tr").each(function(i) {
-                $(this).addClass("animate__animated animate__fadeInUp");
-                $(this).css("animation-delay", (i * 0.05) + "s");
-            });
+<script>
+    const allRows = Array.from(document.querySelectorAll('#dataTable tbody tr[data-status]'));
 
-            // Select All Logic
-            $('#selectAllMain').click(function () {
-                $('.ckbItem').prop('checked', this.checked);
-            });
+    function filterStatus(st) {
+        document.getElementById('filterStatus').value = st;
+        applyFilters();
+    }
 
-            // Smart Search
-            $("#smartSearch").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $("#customerBody tr").filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-            });
+    function applyFilters() {
+        const q       = document.getElementById('searchInput').value.toLowerCase().trim();
+        const status  = document.getElementById('filterStatus').value;
+        const yearFrom= parseInt(document.getElementById('filterYearFrom').value)||0;
+        const yearTo  = parseInt(document.getElementById('filterYearTo').value)||9999;
 
-            // Bulk Delete Action
-            $('#btnDeleteSelected').click(function () {
-                var ids = $('.ckbItem:checked').map(function() { return $(this).val(); }).get();
-
-                if (ids.length === 0) {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Chưa chọn khách nào',
-                        text: 'Vui lòng tích vào ô trống đầu dòng!',
-                        confirmButtonColor: '#00b894'
-                    });
-                    return;
-                }
-
-                // Logic gọi Ajax xóa nhiều dòng (cần implement action DeleteSelected trong Controller)
-                Swal.fire({
-                    title: 'Xác nhận xóa?',
-                    text: "Bạn sẽ xóa " + ids.length + " khách hàng đã chọn!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#00b894',
-                    cancelButtonColor: '#0984e3',
-                    confirmButtonText: 'Đồng ý',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                         // Placeholder cho Ajax call
-                         Swal.fire('Đã gửi yêu cầu!', 'Tính năng đang được phát triển.', 'success');
-                    }
-                });
-            });
+        let visible = 0;
+        allRows.forEach(row => {
+            const matchQ  = !q || row.dataset.name?.includes(q) || row.dataset.cccd?.includes(q) || row.dataset.phone?.includes(q);
+            const matchSt = !status || row.dataset.status === status;
+            const yr = parseInt(row.dataset.year)||0;
+            const matchY  = yr===0 || (yr>=yearFrom && yr<=yearTo);
+            const show    = matchQ && matchSt && matchY;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
         });
+        ['visibleCount','footerCount'].forEach(id=>document.getElementById(id).textContent=visible);
+        document.getElementById('noResultsMsg').classList.toggle('d-none', visible>0||allRows.length===0);
+        renderTags(q,status,gender,yearFrom,yearTo);
+    }
 
-        // Delete Single Item (Thay thế confirm mặc định)
-        function confirmDelete(id, name) {
-            Swal.fire({
-                title: 'Xóa khách hàng?',
-                text: "Bạn có chắc muốn xóa hồ sơ của: " + name,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#00b894',
-                cancelButtonColor: '#0984e3',
-                confirmButtonText: 'Xóa ngay',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Chuyển hướng đến Action Delete
-                    window.location.href = '/KhachThue/Delete/' + id;
-                }
-            });
-        }
-    </script>
+    function renderTags(q,status,yf,yt) {
+        const c=document.getElementById('filterTags'); c.innerHTML='';
+        const tag=(l,cl)=>c.innerHTML+=`<span class="badge bg-soft-brand text-brand border px-3 py-2 rounded-pill" style="font-size:.8rem">${l} <span style="cursor:pointer;margin-left:6px" onclick="${cl}">✕</span></span>`;
+        if(q) tag(`🔍 "${q}"`,`document.getElementById('searchInput').value='';applyFilters()`);
+        if(status) tag(`👤 ${status}`,`document.getElementById('filterStatus').value='';applyFilters()`);
+        if(yf>0) tag(`🎂 ${yf}-${yt===9999?'now':yt}`,`document.getElementById('filterYearFrom').value='';document.getElementById('filterYearTo').value='';applyFilters()`);
+    }
+
+    function resetFilters() {
+        ['searchInput','filterStatus','filterYearFrom','filterYearTo'].forEach(id=>document.getElementById(id).value='');
+        applyFilters();
+    }
+</script>
 }

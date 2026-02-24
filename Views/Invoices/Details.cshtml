@@ -1,0 +1,113 @@
+@model do_an_tot_nghiep.ViewModels.InvoiceDetailViewModel
+
+@{
+    ViewData["Title"] = "Chi Tiết Chứng Từ";
+}
+
+<div class="card shadow mb-4 col-md-10 mx-auto">
+    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-file-invoice"></i> Tra Soát Chi Tiết Giao Dịch Hóa Đơn #<code>@Model.InvoiceCode</code></h6>
+        @if (Model.Status != "Paid")
+        {
+            <form asp-action="MarkPaid" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Chắc chắn Quỹ đã nhận được tiền Báo Có? Nếu OK sẽ Update Trạng thái (Trường PaymentDate).');">
+                <button type="submit" class="btn btn-success btn-sm shadow text-white fw-bold"><i class="fas fa-hand-holding-usd"></i> Cập Nhật Vào Sổ Vốn</button>
+            </form>
+        }
+        else
+        {
+            <span class="badge bg-success p-2 fs-6"><i class="fas fa-check"></i> ĐÃ YẾT TOÁN</span>
+        }
+    </div>
+    <div class="card-body">
+        
+        <div class="row border-bottom pb-4 mb-4 mt-2">
+            <div class="col-md-6 border-end">
+                <p class="mb-1 text-muted small text-uppercase fw-bold"><i class="fas fa-calendar"></i> Chu kỳ Quyết Toán</p>
+                <p class="fs-5 text-dark fw-bold mb-3">Tài chính Tháng <span class="text-primary">@Model.MonthYear</span></p>
+
+                <p class="mb-1 text-muted small text-uppercase fw-bold"><i class="fas fa-exclamation-triangle"></i> Hạn Nộp (Deadline)</p>
+                <p class="text-danger fw-bold">@Model.DueDate.ToString("dd/MM/yyyy")</p>
+            </div>
+            
+            <div class="col-md-6 ps-4">
+                <p class="mb-1 text-muted small text-uppercase fw-bold"><i class="fas fa-map-marker-alt"></i> Chủ sở hữu HĐ Này</p>
+                <p class="fs-5 text-dark fw-bold mb-3"><i class="fas fa-door-open text-warning"></i> @Model.RoomName</p>
+
+                <p class="mb-1 text-muted small text-uppercase fw-bold"><i class="fas fa-coins"></i> Tổng Giá Vét</p>
+                <p class="text-success fs-4 fw-bold mb-0">@Model.TotalAmount.ToString("N0") VNĐ</p>
+            </div>
+        </div>
+
+        <h6 class="text-info font-weight-bold mb-3"><i class="fas fa-list-ol"></i> Bóc Tách Hạng Mục Dịch Vụ Cụ Thể (InvoiceLines)</h6>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm text-center align-middle" width="100%" cellspacing="0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start">Hạng Mục Thanh Toán / Giải Trình Định Lượng</th>
+                        <th>Đơn Giá / Mức Cắt / Fix Snapshot</th>
+                        <th>Khối Lượng M2 / Suất / Diff</th>
+                        <th>Tổng Giá Trị Tính Toán</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var line in Model.Lines)
+                    {
+                        <tr>
+                            <td class="text-start text-dark fw-bold"><i class="fas fa-angle-right text-muted"></i> @line.Description</td>
+                            <td class="text-muted">@line.UnitPrice.ToString("N0")</td>
+                            <td class="text-warning fw-bold">@line.Quantity.ToString("N0")</td>
+                            @if (line.Amount < 0)
+                            {
+                                <td class="text-danger fw-bold">@line.Amount.ToString("N0")</td>
+                            }
+                            else
+                            {
+                                <td class="text-success fw-bold">@line.Amount.ToString("N0")</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-info border-info fw-bold">
+                        <td colspan="3" class="text-end text-dark border-end-0">Giá Chốt Tạm Tính (SubTotal):</td>
+                        <td class="text-success fs-5 border-start-0 text-center">@Model.SubTotal.ToString("N0")</td>
+                    </tr>
+                    <tr class="table-danger border-danger fw-bold">
+                        <td colspan="3" class="text-end text-dark border-end-0">Thuế (VAT):</td>
+                        <td class="text-danger fs-5 border-start-0 text-center">@Model.TaxAmount.ToString("N0")</td>
+                    </tr>
+                    <tr class="table-success border-success fw-bold">
+                        <td colspan="3" class="text-end text-dark border-end-0 fs-5"><i class="fas fa-check-double"></i> FINAL TỔNG TÀI CHÍNH TOÀN MẶT TRẬN:</td>
+                        <td class="text-dark fs-4 border-start-0 text-center text-decoration-underline shadow text-success">@Model.TotalAmount.ToString("N0") VNĐ</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        @if (Model.Status != "Paid")
+        {
+            <div class="row mt-4">
+                <div class="col-md-6 mx-auto">
+                    <div class="card border-primary shadow-sm text-center">
+                        <div class="card-header bg-primary text-white font-weight-bold">
+                            <i class="fas fa-qrcode"></i> Thanh Toán Điện Tử VietQR (Webhook)
+                        </div>
+                        <div class="card-body bg-light">
+                            <img src="https://img.vietqr.io/image/970415-113366668888-compact2.png?amount=@Model.TotalAmount&addInfo=@Model.InvoiceCode&accountName=BMS%20MANAGEMENT" alt="VietQR" class="img-fluid border border-2 rounded mb-3" style="max-height: 250px;" />
+                            <p class="text-dark fw-bold mb-1">Quét mã bằng App Ngân Hàng/Momo</p>
+                            <p class="small text-muted mb-0">NDCK: <code>@Model.InvoiceCode</code></p>
+                            <div class="alert alert-info mt-3 small p-2 text-start">
+                                <i class="fas fa-robot"></i> <strong>Casso / SePay Webhook is Active:</strong> Khi tiền về tài khoản, Gateway sẽ gọi thẳng API <code>/api/payments/sepay-webhook</code> để Tự động gạch nợ Hóa Đơn <strong>@Model.InvoiceCode</strong>!.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        
+        <div class="mt-4 text-center">
+            <a asp-action="Index" class="btn btn-secondary shadow"><i class="fas fa-arrow-left"></i> Quay Lập Sổ Kế Toán</a>
+        </div>
+    </div>
+</div>

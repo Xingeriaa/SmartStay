@@ -41,9 +41,10 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// 5. MVC + API
+// 5. MVC + API + SignalR
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 
 // 6. Swagger (CHỈ CHẠY DEVELOPMENT – CHUẨN BẢO MẬT)
 builder.Services.AddSwaggerGen(options =>
@@ -65,7 +66,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // 7. HttpClient
-builder.Services.AddHttpClient("BackendApi", client =>
+builder.Services.AddHttpClient("ApiClient", client =>
 {
     var baseUrl = builder.Configuration["ApiBaseUrl"];
     if (!string.IsNullOrWhiteSpace(baseUrl))
@@ -76,7 +77,6 @@ builder.Services.AddHttpClient("BackendApi", client =>
 
 // 8. Dependency Injection
 builder.Services.AddScoped<IPhongTroService, PhongTroService>();
-builder.Services.AddScoped<IHopDongService, HopDongService>();
 builder.Services.AddScoped<IKhachThueService, KhachThueService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IDichVuService, DichVuService>();
@@ -122,6 +122,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Landing}/{id?}"
 );
+
 
 #endregion
 

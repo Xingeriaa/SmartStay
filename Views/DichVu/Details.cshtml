@@ -1,0 +1,50 @@
+@model do_an_tot_nghiep.Models.DichVu
+@{
+    ViewData["Title"] = $"Chi tiết dịch vụ — {Model.Ten}";
+}
+
+<div style="max-width:700px;margin:0 auto;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Dịch vụ</a></li>
+            <li class="breadcrumb-item active">@Model.Ten</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <span style="width:36px;height:36px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-cog text-white" style="font-size:.95rem;"></i>
+                </span>
+                <h5 class="mb-0 fw-bold">@Model.Ten</h5>
+            </div>
+            <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                @(Model.IsActive ? "Hoạt động" : "Tạm dừng")
+            </span>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="text-muted small mb-1">Loại tính phí</div>
+                    <div class="fw-semibold">@Model.LoaiDichVu</div>
+                </div>
+                <div class="col-6">
+                    <div class="text-muted small mb-1">Trạng thái</div>
+                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                        @(Model.IsActive ? "Hoạt động" : "Tạm dừng")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="fas fa-edit me-1"></i>Chỉnh sửa
+        </a>
+        <a asp-action="Index" class="btn btn-light border">
+            <i class="fas fa-arrow-left me-1"></i>Quay lại
+        </a>
+    </div>
+</div>

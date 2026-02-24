@@ -1,0 +1,54 @@
+@* Liquidations/Index.cshtml — danh sách lịch sử thanh lý *@
+@{
+    ViewData["Title"] = "Lịch sử thanh lý hợp đồng";
+
+    var items = ViewBag.Liquidations as List<dynamic> ?? new List<dynamic>();
+}
+
+<style>
+    .liq-row { background:#fff; border:1px solid #e9ecef; border-radius:12px; padding:.9rem 1.2rem; margin-bottom:.6rem; display:flex; align-items:center; gap:1rem; transition:box-shadow .15s; text-decoration:none; color:inherit; }
+    .liq-row:hover { box-shadow:0 4px 16px rgba(0,0,0,.07); border-color:#a29bfe; }
+    .outcome-badge { display:inline-block; padding:.2rem .75rem; border-radius:20px; font-size:.75rem; font-weight:700; }
+    .ob-refund { background:#d4edda; color:#155724; }
+    .ob-charge { background:#f8d7da; color:#721c24; }
+    .ob-zero   { background:#e2e3e5; color:#495057; }
+</style>
+
+<div style="max-width:1100px;margin:0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-0" style="font-size:1.55rem;"><i class="fas fa-gavel me-2 text-danger"></i>Lịch sử thanh lý</h1>
+            <p class="text-muted small mb-0">Tất cả biên bản quyết toán hợp đồng đã được xử lý</p>
+        </div>
+        <a asp-controller="HopDong" asp-action="Index" class="btn btn-light border">
+            <i class="fas fa-file-contract me-1"></i>Quản lý hợp đồng
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null) { <div class="alert alert-success border-0 mb-3">@TempData["Success"]</div> }
+    @if (TempData["Error"]   != null) { <div class="alert alert-danger border-0 mb-3">@TempData["Error"]</div> }
+
+    @if (!items.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="fas fa-file-contract fa-3x mb-3 d-block opacity-40"></i>
+            <strong>Chưa có biên bản thanh lý nào</strong>
+            <p class="small">Kích hoạt thanh lý từ trang chi tiết hợp đồng.</p>
+        </div>
+    }
+    else
+    {
+        foreach (var item in items)
+        {
+            <div class="liq-row">
+                <div class="flex-grow-1 min-w-0">
+                    <div class="fw-bold">@item.ContractCode</div>
+                    <div class="text-muted small">@item.RoomName · Ngày lập @item.LiquidationDate</div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold">@item.Amount đ</div>
+                </div>
+            </div>
+        }
+    }
+</div>

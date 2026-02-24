@@ -1,840 +1,496 @@
 ﻿@model IEnumerable<do_an_tot_nghiep.Models.PhongTro>
-
 @{
-    ViewData["Title"] = "Quản lý danh sách phòng trọ";
+    ViewData["Title"] = "Quản lý phòng trọ";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // --- SERVER SIDE LOGIC ---
-    var totalRooms = Model != null ? Model.Count() : 0;
-    var emptyRooms = Model != null ? Model.Count(x => x.SoLuongNguoi == 0) : 0;
-    var totalCapacity = Model != null && Model.Any() ? Model.Sum(x => x.SoLuongNguoi) : 0;
-    var avgPrice = Model != null && Model.Any() ? Model.Average(x => x.GiaPhong) : 0;
-    System.Globalization.CultureInfo cul = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
-    var currentNhaId = ViewBag.SelectedNhaId;
+    var totalRooms    = Model?.Count() ?? 0;
+    var vacantRooms   = Model?.Count(x => x.Status == "Vacant") ?? 0;
+    var occupiedRooms = Model?.Count(x => x.Status == "Occupied") ?? 0;
+    var maintRooms    = Model?.Count(x => x.Status == "Maintenance") ?? 0;
+    var avgPrice      = (Model != null && Model.Any()) ? Model.Average(x => x.GiaPhong) : 0;
+
+    var nhaTroList = ViewBag.DanhSachNha as List<do_an_tot_nghiep.Models.NhaTro> ?? new();
+    var selectedNhaId = ViewBag.SelectedNhaId as int?;
 }
 
-<style>
-    :root {
-        --main-gradient: var(--brand-gradient);
-        --primary-color: var(--brand-600);
-        --primary-light: rgba(0, 184, 148, 0.12);
-        --primary-dark: var(--accent-600);
-        --secondary-color: var(--ink-600);
-        --dark-color: var(--ink-900);
-        --light-gray: var(--bg-body);
-        --white: var(--bg-surface);
-        --card-border-radius: 16px;
-        --card-shadow: 0 10px 30px 0 rgba(0, 184, 148, 0.08);
-        --card-hover-shadow: 0 15px 35px 0 rgba(0, 184, 148, 0.18);
-        --transition-speed: 0.3s;
-        --table-header-bg: #f8f9fa;
-        --table-border-color: #eff2f7;
-    }
+{{-- Select2 for enterprise building search --}}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
-    /* --- General Reset & Typography --- */
-    .room-manager-container {
-        font-family: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
-        background-color: var(--bg-body);
-        min-height: 100vh;
-        padding-bottom: 50px;
-        color: #555;
-    }
+<div class="container-fluid px-0">
 
-        .room-manager-container h1, .room-manager-container h2,
-        .room-manager-container h3, .room-manager-container h4,
-        .room-manager-container h5, .room-manager-container h6 {
-            color: var(--dark-color);
-            font-weight: 700;
-        }
-
-    /* --- Animations (Giữ nguyên) --- */
-    @@keyframes fadeInUp {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    }
-
-    .animate-fade-in {
-        animation: fadeInUp 0.5s ease-out forwards;
-    }
-
-    /* --- Components: Cards --- */
-    .custom-card {
-        background: var(--white);
-        border: none;
-        border-radius: var(--card-border-radius);
-        box-shadow: var(--card-shadow);
-        transition: all var(--transition-speed) ease;
-        margin-bottom: 1.5rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-        .custom-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--card-hover-shadow);
-        }
-
-    /* --- Stats Cards Specifics --- */
-    .stat-card {
-        padding: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .stat-icon-wrapper {
-        width: 60px;
-        height: 60px;
-        border-radius: 16px; /* Bo góc mềm hơn thay vì tròn hoàn toàn */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-        color: white;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    /* ĐỒNG BỘ MÀU SẮC: Tất cả icon thống kê đều dùng Gradient Tím */
-    .bg-gradient-primary,
-    .bg-gradient-success,
-    .bg-gradient-warning,
-    .bg-gradient-danger {
-        background: var(--main-gradient) !important;
-    }
-
-    .stat-content h3 {
-        font-size: 2rem;
-        margin-bottom: 0;
-        font-weight: 800;
-        color: #333;
-    }
-
-    .stat-content p {
-        margin-bottom: 0;
-        color: var(--secondary-color);
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-    }
-
-    /* --- Toolbar Section --- */
-    .toolbar-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        padding: 1.5rem;
-        background: var(--white);
-        border-radius: var(--card-border-radius);
-        box-shadow: var(--card-shadow);
-        margin-bottom: 2rem;
-    }
-
-    .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        flex-grow: 1;
-    }
-
-    .search-box {
-        position: relative;
-        min-width: 300px;
-    }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 50px;
-            background-color: #f9fafb;
-            transition: all 0.3s;
-        }
-
-            .search-box input:focus {
-                outline: none;
-                border-color: var(--primary-color);
-                background-color: white;
-                box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.15);
-            }
-
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-        }
-
-    /* --- Buttons (Theme Gradient) --- */
-    .btn-action {
-        padding: 0.6rem 1.2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.95rem;
-        text-decoration: none !important;
-    }
-
-    .btn-new {
-        background: var(--main-gradient); /* Dùng Gradient */
-        color: white;
-        box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3);
-    }
-
-        .btn-new:hover {
-            background: var(--main-gradient);
-            opacity: 0.9;
-            transform: translateY(-2px);
-            color: white;
-        }
-
-    .btn-edit-tool {
-        background-color: var(--white);
-        color: var(--dark-color);
-        border: 1px solid #e0e0e0;
-    }
-
-        .btn-edit-tool:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-    .btn-delete-tool {
-        background-color: #fff2f2;
-        color: #fc5a5a;
-        border: 1px solid transparent;
-    }
-
-        .btn-delete-tool:hover {
-            background-color: #ffe5e5;
-            transform: translateY(-2px);
-        }
-
-    /* --- Table Design --- */
-    .table-responsive-custom {
-        border-radius: var(--card-border-radius);
-        overflow: hidden;
-    }
-
-    .modern-table {
-        width: 100%;
-        border-collapse: collapse;
-        white-space: nowrap;
-    }
-
-        .modern-table thead {
-            background-color: #f8f9fa;
-        }
-
-        .modern-table th {
-            padding: 1.2rem 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            color: var(--primary-color); /* Header chữ tím */
-            border-bottom: 2px solid var(--table-border-color);
-            text-align: left;
-        }
-
-        .modern-table td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-bottom: 1px solid var(--table-border-color);
-            color: var(--dark-color);
-            font-size: 0.95rem;
-        }
-
-        .modern-table tbody tr {
-            transition: background-color 0.2s;
-        }
-
-            .modern-table tbody tr:hover {
-                background-color: var(--primary-light); /* Hover màu tím nhạt */
-            }
-
-    /* Column Specifics */
-    .col-checkbox {
-        width: 50px;
-        text-align: center !important;
-    }
-
-    .room-image-thumb {
-        width: 80px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        border: 1px solid #dee2e6;
-    }
-
-    .room-name {
-        font-weight: 700;
-        color: var(--primary-color); /* Tên phòng màu tím */
-        font-size: 1rem;
-        margin-bottom: 0.2rem;
-    }
-
-    .room-location {
-        font-size: 0.8rem;
-        color: #999;
-    }
-
-    /* Giá tiền dùng Gradient text */
-    .price-tag {
-        font-weight: 800;
-        background: var(--main-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 1.1rem;
-    }
-
-    .deposit-text {
-        font-size: 0.75rem;
-        color: #999;
-        font-style: italic;
-    }
-
-    /* Badges */
-    .badge-custom {
-        padding: 0.4em 0.8em;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
-
-    .badge-furniture-full {
-        background-color: rgba(0, 184, 148, 0.12);
-        color: var(--primary-color);
-        border: 1px solid rgba(0, 184, 148, 0.25);
-    }
-
-    .badge-furniture-basic {
-        background-color: rgba(9, 132, 227, 0.12);
-        color: var(--accent-600);
-        border: 1px solid rgba(9, 132, 227, 0.25);
-    }
-
-    .badge-furniture-none {
-        background-color: var(--light-gray);
-        color: var(--secondary-color);
-    }
-
-    .service-tag {
-        display: inline-block;
-        background: #fff;
-        color: var(--ink-600);
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        margin-right: 4px;
-        margin-bottom: 4px;
-        border: 1px solid var(--border-color);
-    }
-
-    /* Checkbox Custom Theme */
-    .custom-control-input {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        accent-color: var(--primary-color);
-    }
-
-    /* Pagination Active State */
-    .page-item.active .page-link {
-        background: var(--main-gradient);
-        border-color: transparent;
-        color: white;
-    }
-
-    .page-link {
-        color: var(--primary-color);
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 4rem 2rem;
-    }
-
-    .empty-state-icon {
-        font-size: 4rem;
-        color: #dee2e6;
-        margin-bottom: 1rem;
-    }
-
-    .fab-container {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        z-index: 999;
-        display: none;
-    }
-
-    @@media (max-width: 768px) {
-        .stat-card
-
-    {
-        margin-bottom: 1rem;
-    }
-
-    .toolbar-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .search-box {
-        min-width: 100%;
-    }
-
-    .action-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 1rem;
-    }
-
-    .fab-container {
-        display: block;
-    }
-
-    .hide-mobile {
-        display: none;
-    }
-
-    }
-</style>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
-<div class="room-manager-container container-fluid py-4">
-
-    <div class="row mb-4 animate-fade-in">
-        <div class="col-12 d-flex justify-content-between align-items-center">
-            <div>
-                <h2 class="mb-1 text-gradient">Quản Lý Phòng Trọ</h2>
-                <p class="text-muted mb-0">Hệ thống quản lý, theo dõi tình trạng và thông tin phòng</p>
-            </div>
-            <div class="date-display text-end d-none d-md-block">
-                <h5 class="mb-0 text-brand">@DateTime.Now.ToString("dd/MM/yyyy")</h5>
-                <small class="text-muted">@DateTime.Now.ToString("dddd")</small>
-            </div>
+    {{-- Page Header --}}
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="QuanLyNha" asp-action="Index" class="text-muted text-decoration-none">Hệ thống nhà</a></li>
+                    <li class="breadcrumb-item active">Phòng trọ</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Quản lý phòng trọ</h1>
+            <p class="text-muted mb-0 mt-1">
+                @if (selectedNhaId != null)
+                {
+                    var nh = nhaTroList.FirstOrDefault(n => n.Id == selectedNhaId);
+                    <span>Tòa nhà: <strong class="text-brand">@(nh?.TenNhaTro ?? "")</strong> — @totalRooms phòng</span>
+                }
+                else { <span>Toàn bộ @totalRooms phòng trong hệ thống</span> }
+            </p>
         </div>
+        @if (selectedNhaId != null)
+        {
+            <a asp-action="Create" asp-route-nhaId="@selectedNhaId" class="btn btn-gradient-primary btn-custom shadow">
+                <i class="fas fa-plus me-1"></i> Thêm phòng mới
+            </a>
+        }
+        else
+        {
+            <button class="btn btn-gradient-primary btn-custom shadow opacity-50" onclick="alertSelectHouseFirst()" style="cursor:not-allowed;">
+                <i class="fas fa-plus me-1"></i> Thêm phòng mới
+            </button>
+        }
     </div>
 
-    <div class="row mb-4 animate-fade-in" style="animation-delay: 0.1s;">
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="custom-card stat-card">
-                <div class="stat-content">
-                    <p>Tổng số phòng</p>
-                    <h3>@totalRooms</h3>
-                </div>
-                <div class="stat-icon-wrapper bg-gradient-primary">
-                    <i class="bi bi-building"></i>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    {{-- Stat Cards --}}
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer" onclick="filterByStatus('')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">TỔNG PHÒNG</div><div class="stat-value text-gradient mt-1">@totalRooms</div></div>
+                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-door-open"></i></div>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="custom-card stat-card">
-                <div class="stat-content">
-                    <p>Phòng trống</p>
-                    <h3 class="@(emptyRooms > 0 ? "" : "text-muted")" style="@(emptyRooms > 0 ? "color: var(--primary-dark)" : "")">@emptyRooms</h3>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.1s" onclick="filterByStatus('Vacant')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">CÒN TRỐNG</div><div class="stat-value text-success mt-1">@vacantRooms</div></div>
+                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-check-circle"></i></div>
                 </div>
-                <div class="stat-icon-wrapper bg-gradient-success">
-                    <i class="bi bi-check-circle"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="custom-card stat-card">
-                <div class="stat-content">
-                    <p>Giá TB / Phòng</p>
-                    <h3>@avgPrice.ToString("#,##0") <small style="font-size: 1rem; color: #999">đ</small></h3>
-                </div>
-                <div class="stat-icon-wrapper bg-gradient-warning">
-                    <i class="bi bi-cash-stack"></i>
+                <div class="mt-2">
+                    @{var vPct = totalRooms > 0 ? vacantRooms * 100 / totalRooms : 0;}
+                    <div class="progress" style="height:4px;"><div class="progress-bar bg-success" style="width:@vPct%"></div></div>
+                    <small class="text-muted mt-1 d-block">@vPct% còn trống · <span class="text-success fw-bold small">Click để lọc</span></small>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="custom-card stat-card">
-                <div class="stat-content">
-                    <p>Tổng sức chứa</p>
-                    <h3>@totalCapacity <small style="font-size: 1rem; color: #999">người</small></h3>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.2s" onclick="filterByStatus('Occupied')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><div class="stat-label">ĐANG THUÊ</div><div class="stat-value mt-1" style="color:#0984e3">@occupiedRooms</div></div>
+                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-users"></i></div>
                 </div>
-                <div class="stat-icon-wrapper bg-gradient-danger">
-                    <i class="bi bi-people-fill"></i>
+                <div class="mt-2">
+                    @{var oPct = totalRooms > 0 ? occupiedRooms * 100 / totalRooms : 0;}
+                    <div class="progress" style="height:4px;"><div class="progress-bar" style="width:@oPct%;background:#0984e3"></div></div>
+                    <small class="text-muted mt-1 d-block">@oPct% đang thuê · <span class="text-primary fw-bold small">Click để lọc</span></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.3s">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div style="min-width:0">
+                        <div class="stat-label">GIÁ TB / PHÒNG</div>
+                        <div class="stat-value mt-1" style="font-size:1.3rem;">@avgPrice.ToString("N0") <small class="fs-6 text-muted fw-normal">đ</small></div>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-warning"><i class="fas fa-coins"></i></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row animate-fade-in" style="animation-delay: 0.2s;">
-        <div class="col-12">
-            <div class="toolbar-container">
-                <div class="filter-group">
-                    <div class="d-flex flex-column">
-                        <label class="small text-muted fw-bold mb-1">Chọn nhà trọ:</label>
-                        <select class="form-select" id="selectNhaTro" style="min-width: 220px; font-weight: 500;" onchange="changeNhaTro(this)">
-                            <option value="">-- Tất cả nhà trọ --</option>
-                            @if (ViewBag.DanhSachNha != null)
-                            {
-                                foreach (var item in (List<do_an_tot_nghiep.Models.NhaTro>)ViewBag.DanhSachNha)
-                                {
-                                    <option value="@item.Id" selected="@(ViewBag.SelectedNhaId?.ToString() == item.Id.ToString())">
-                                        @item.TenNhaTro
-                                    </option>
-                                }
-                            }
-                        </select>
-                    </div>
+    {{-- ============================== ENTERPRISE FILTER PANEL ============================== --}}
+    <div class="main-card mb-3 p-4 animate-fade-up" style="animation-delay:.1s">
+        <div class="row g-3 align-items-end">
 
-                    <div class="search-box ms-md-3 mt-3 mt-md-0">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="searchInput" placeholder="Tìm kiếm phòng..." onkeyup="searchTable()">
-                    </div>
-                </div>
-
-                <div class="action-buttons">
-                    @if (ViewBag.SelectedNhaId != null)
+            {{-- 1. Building Search - Select2 với search box tích hợp (phù hợp 100+ tòa) --}}
+            <div class="col-xl-4 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block">
+                    <i class="fas fa-building me-1"></i>Tòa nhà
+                    <span class="badge bg-soft-brand text-brand ms-1">@nhaTroList.Count tòa</span>
+                </label>
+                <select class="form-select" id="select2Building" style="width:100%">
+                    <option value="">-- Tất cả tòa nhà --</option>
+                    @foreach (var nha in nhaTroList)
                     {
-                        <a href="/QuanLyPhong/Create?nhaId=@ViewBag.SelectedNhaId" class="btn-action btn-new">
-                            <i class="bi bi-plus-lg"></i> Thêm mới
-                        </a>
+                        if (selectedNhaId == nha.Id)
+                        {
+                            <option value="@nha.Id" selected>@nha.TenNhaTro — @nha.DiaChiChiTiet</option>
+                        }
+                        else
+                        {
+                            <option value="@nha.Id">@nha.TenNhaTro — @nha.DiaChiChiTiet</option>
+                        }
+                    }
+                </select>
+                <div class="text-muted" style="font-size:.72rem;margin-top:4px;">
+                    Gõ để tìm theo tên hoặc địa chỉ tòa nhà
+                </div>
+            </div>
+
+            {{-- 2. Text search in room name + floor --}}
+            <div class="col-xl-3 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block">
+                    <i class="fas fa-search me-1"></i>Tìm kiếm phòng
+                </label>
+                <div class="search-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput"
+                           placeholder="Tên phòng, tầng, nội thất..."
+                           oninput="applyFilters()">
+                </div>
+            </div>
+
+            {{-- 3. Status quick filter --}}
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block">
+                    <i class="fas fa-circle me-1"></i>Trạng thái
+                </label>
+                <select class="form-select" id="filterStatus" onchange="applyFilters()">
+                    <option value="">-- Tất cả --</option>
+                    <option value="Vacant">🟢 Còn trống</option>
+                    <option value="Occupied">🔵 Đang thuê</option>
+                    <option value="Maintenance">🟡 Bảo trì</option>
+                </select>
+            </div>
+
+            {{-- 4. Price range --}}
+            <div class="col-xl-2 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block">
+                    <i class="fas fa-tags me-1"></i>Khoảng giá
+                </label>
+                <select class="form-select" id="filterPrice" onchange="applyFilters()">
+                    <option value="">-- Tất cả --</option>
+                    <option value="0-2000000">Dưới 2 triệu</option>
+                    <option value="2000000-4000000">2 – 4 triệu</option>
+                    <option value="4000000-7000000">4 – 7 triệu</option>
+                    <option value="7000000-99999999">Trên 7 triệu</option>
+                </select>
+            </div>
+
+            {{-- 5. Reset --}}
+            <div class="col-xl-1 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block">&nbsp;</label>
+                <button class="btn btn-light border w-100" onclick="resetFilters()" title="Xóa bộ lọc">
+                    <i class="fas fa-times text-muted"></i>
+                </button>
+            </div>
+        </div>
+
+        {{-- Active filter tags --}}
+        <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
+    </div>
+
+    {{-- Main Table --}}
+    <div class="main-card animate-fade-up" style="animation-delay:.2s">
+        <div class="card-header-styled">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-door-open text-brand"></i>
+                <h5 class="fw-bold mb-0">Danh sách phòng</h5>
+                <span class="badge bg-soft-brand text-brand">
+                    <span id="visibleCount">@totalRooms</span> / @totalRooms phòng
+                </span>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-light border btn-sm" onclick="location.reload()"><i class="fas fa-sync-alt text-muted"></i></button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteSelected()"><i class="fas fa-trash me-1"></i> Xóa đã chọn</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="dataTable">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:44px" class="text-center">
+                            <input class="form-check-input" type="checkbox" id="checkAll" onclick="toggleAll(this)">
+                        </th>
+                        <th style="cursor:pointer" onclick="sortTable(1)">Phòng <i class="fas fa-sort ms-1 text-muted small"></i></th>
+                        <th class="text-center" style="cursor:pointer" onclick="sortTable(2)">Tầng <i class="fas fa-sort ms-1 text-muted small"></i></th>
+                        <th class="text-center">Diện tích</th>
+                        <th class="text-end" style="cursor:pointer" onclick="sortTable(4)">Giá thuê <i class="fas fa-sort ms-1 text-muted small"></i></th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Sức chứa</th>
+                        <th>Nội thất</th>
+                        <th class="text-center" style="width:190px;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            string statusClass = item.Status switch { "Vacant" => "bg-success", "Occupied" => "bg-primary", "Maintenance" => "bg-warning text-dark", _ => "bg-secondary" };
+                            string statusLabel = item.Status switch { "Vacant" => "Trống", "Occupied" => "Đang thuê", "Maintenance" => "Bảo trì", _ => item.Status ?? "—" };
+                            <tr class="room-row"
+                                data-status="@item.Status"
+                                data-name="@Html.Raw(item.TenPhong?.ToLower())"
+                                data-floor="@item.Tang"
+                                data-price="@((long)item.GiaPhong)"
+                                data-nha="@item.NhaTroId"
+                                data-noithat="@item.NoiThat?.ToLower()">
+                                <td class="text-center">
+                                    <input type="checkbox" class="form-check-input room-checkbox" value="@item.Id">
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if (!string.IsNullOrEmpty(item.AnhPhong))
+                                        {
+                                            <img src="@item.AnhPhong" class="rounded-2 border" style="width:48px;height:38px;object-fit:cover;"
+                                                 onerror="this.src='https://placehold.co/48x38?text=No+Img'">
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-2 bg-light border d-flex align-items-center justify-content-center text-muted" style="width:48px;height:38px;flex-shrink:0;">
+                                                <i class="fas fa-image small"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <div class="fw-bold text-dark">@item.TenPhong</div>
+                                            <small class="text-muted">ID: @item.Id</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center"><span class="badge bg-light border text-dark fw-medium">T@item.Tang</span></td>
+                                <td class="text-center"><span class="text-muted small">@item.DienTich m²</span></td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-gradient">@item.GiaPhong.ToString("N0") đ</span>
+                                    <small class="d-block text-muted fw-normal" style="font-size:.72rem;">Cọc: @(item.TienCoc > 0 ? item.TienCoc.ToString("N0") + " đ" : "Không")</small>
+                                </td>
+                                <td class="text-center"><span class="badge @statusClass rounded-pill px-3">@statusLabel</span></td>
+                                <td class="text-center"><span class="text-muted small">@item.SoLuongNguoi người</span></td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.NoiThat))
+                                    {
+                                        <span class="badge badge-soft-brand"><i class="fas fa-couch me-1"></i>@item.NoiThat</span>
+                                    }
+                                    else { <span class="text-muted small">—</span> }
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#e3f2fd;color:#1565c0;" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#fff8e1;color:#f57f17;" title="Sửa"><i class="fas fa-edit"></i></a>
+                                        <a asp-controller="HopDong" asp-action="Create" asp-route-roomId="@item.Id"
+                                           class="action-btn btn btn-sm @(item.Status != "Vacant" ? "opacity-40 pe-none" : "")"
+                                           style="background:#e8f5e9;color:#2e7d32;" title="Tạo hợp đồng">
+                                            <i class="fas fa-file-signature"></i>
+                                        </a>
+                                        <button onclick="deletePhong(@item.Id, '@Html.Raw((item.TenPhong ?? "").Replace("'","\\'")); ')" class="action-btn btn btn-sm" style="background:#fce4ec;color:#c62828;" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                     }
                     else
                     {
-                        <button class="btn-action btn-new opacity-50" onclick="alertSelectHouseFirst()" style="cursor: not-allowed;">
-                            <i class="bi bi-plus-lg"></i> Thêm mới
-                        </button>
-                    }
-
-                    <button class="btn-action btn-edit-tool ms-2" onclick="editSelected()">
-                        <i class="bi bi-pencil-square"></i> Sửa
-                    </button>
-
-                    <button class="btn-action btn-delete-tool ms-2" onclick="confirmDeleteMultiple()">
-                        <i class="bi bi-trash"></i> Xóa
-                    </button>
-
-                    <button class="btn-action btn-edit-tool ms-2" onclick="window.location.reload()" title="Tải lại trang">
-                        <i class="bi bi-arrow-clockwise"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row animate-fade-in" style="animation-delay: 0.3s;">
-        <div class="col-12">
-            <div class="custom-card table-card">
-                <div class="table-responsive-custom">
-                    <table class="modern-table" id="dataTable">
-                        <thead>
-                            <tr>
-                                <th class="col-checkbox">
-                                    <input type="checkbox" id="checkAll" class="custom-control-input" onclick="toggleAll(this)">
-                                </th>
-                                <th style="width: 120px;">Hình ảnh</th>
-                                <th>Thông tin phòng</th>
-                                <th>Chi phí</th>
-                                <th>Diện tích & Sức chứa</th>
-                                <th>Nội thất & Tiện ích</th>
-                                <th style="width: 200px;">Dịch vụ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model != null && Model.Any())
-                            {
-                                foreach (var item in Model)
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <i class="fas fa-door-open fa-3x text-muted opacity-25 d-block mb-3"></i>
+                                <h6 class="text-muted">Chưa có phòng nào</h6>
+                                <p class="text-muted small">@(selectedNhaId != null ? "Nhà trọ này chưa có phòng." : "Chọn tòa nhà để xem danh sách phòng.")</p>
+                                @if (selectedNhaId != null)
                                 {
-                                    <tr class="room-row">
-                                        <td class="col-checkbox">
-                                            <input type="checkbox" class="room-checkbox custom-control-input" value="@item.Id" data-name="@item.TenPhong">
-                                        </td>
-                                        <td>
-                                            @if (!string.IsNullOrEmpty(item.AnhPhong))
-                                            {
-                                                <img src="@item.AnhPhong" alt="Room" class="room-image-thumb" onerror="this.src='https://via.placeholder.com/80x60?text=No+Img'">
-                                            }
-                                            else
-                                            {
-                                                <div class="room-image-thumb d-flex align-items-center justify-content-center bg-light text-muted">
-                                                    <i class="bi bi-image fs-4"></i>
-                                                </div>
-                                            }
-                                        </td>
-                                        <td>
-                                            <div class="room-name">@item.TenPhong</div>
-                                            <div class="room-location mb-1">
-                                                <i class="bi bi-layers-fill me-1"></i>Tầng: @item.Tang
-                                            </div>
-                                            <a asp-action="Details"
-                                               asp-route-id="@item.Id"
-                                               class="btn btn-sm mt-1 btn-outline-brand">
-                                                <i class="bi bi-eye"></i> Chi tiết
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <div class="price-tag">@item.GiaPhong.ToString("#,##0") ₫</div>
-                                            <div class="deposit-text">Cọc: @(item.TienCoc > 0 ? item.TienCoc.ToString("#,##0") + " đ" : "Không cọc")</div>
-                                        </td>
-                                        <td>
-                                            <div class="mb-1"><i class="bi bi-aspect-ratio me-1 text-muted"></i> <strong>@item.DienTich</strong> m²</div>
-                                            <div><i class="bi bi-people me-1 text-muted"></i> Tối đa <strong>@item.SoLuongNguoi</strong> người</div>
-                                        </td>
-                                        <td>
-                                            @{
-                                                string badgeClass = "badge-furniture-none";
-                                                string iconClass = "bi-box-seam";
-                                                if (item.NoiThat != null)
-                                                {
-                                                    if (item.NoiThat.Contains("Đầy đủ") || item.NoiThat.ToLower().Contains("full")) { badgeClass = "badge-furniture-full"; iconClass = "bi-stars"; }
-                                                    else if (item.NoiThat.Contains("Cơ bản")) { badgeClass = "badge-furniture-basic"; iconClass = "bi-lamp"; }
-                                                }
-                                            }
-                                            <span class="badge-custom @badgeClass mb-1">
-                                                <i class="bi @iconClass me-1"></i> @(string.IsNullOrEmpty(item.NoiThat) ? "Trống" : item.NoiThat)
-                                            </span>
-                                        </td>
-                                        <td style="white-space: normal;">
-                                            @if (!string.IsNullOrEmpty(item.DichVu))
-                                            {
-                                                var services = item.DichVu.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                                                if (services.Any())
-                                                {
-                                                    foreach (var sv in services.Take(3))
-                                                    {
-                                                        <span class="service-tag">@sv.Trim()</span>
-                                                    }
-                                                    if (services.Length > 3)
-                                                    {
-                                                        <span class="service-tag text-brand">...@(services.Length - 3)+</span>
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted small fs-italic">Không có dịch vụ</span>
-                                            }
-                                        </td>
-                                    </tr>
+                                    <a asp-action="Create" asp-route-nhaId="@selectedNhaId" class="btn btn-gradient-primary btn-sm">
+                                        <i class="fas fa-plus me-1"></i> Thêm phòng ngay
+                                    </a>
                                 }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state">
-                                            <i class="bi bi-folder-x empty-state-icon"></i>
-                                            <h4>Không tìm thấy dữ liệu</h4>
-                                            <p class="text-muted">Chưa có phòng nào được thêm vào danh sách này.</p>
-                                            @if (ViewBag.SelectedNhaId != null)
-                                            {
-                                                <a href="/QuanLyPhong/Create?nhaId=@ViewBag.SelectedNhaId" class="btn btn-new mt-3">
-                                                    <i class="bi bi-plus-circle me-1"></i> Thêm phòng ngay
-                                                </a>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-                @if (Model != null && Model.Count() > 0)
-                {
-                    <div class="d-flex justify-content-between align-items-center p-3 border-top">
-                        <div class="small text-muted">
-                            Hiển thị <strong>@Model.Count()</strong> kết quả
-                        </div>
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination pagination-sm mb-0 justify-content-end">
-                                <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">Sau</a></li>
-                            </ul>
-                        </nav>
-                    </div>
-                }
-            </div>
+        {{-- No results state --}}
+        <div id="noResultsMsg" class="text-center py-4 d-none">
+            <i class="fas fa-filter fa-2x text-muted opacity-25 d-block mb-2"></i>
+            <h6 class="text-muted">Không có phòng phù hợp với bộ lọc</h6>
+            <button class="btn btn-sm btn-light border mt-1" onclick="resetFilters()">
+                <i class="fas fa-times me-1"></i> Xóa bộ lọc
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light rounded-bottom">
+            <span class="text-muted small">
+                <span class="badge bg-success me-1">@vacantRooms</span> Trống &nbsp;
+                <span class="badge bg-primary me-1">@occupiedRooms</span> Đang thuê &nbsp;
+                <span class="badge bg-warning text-dark me-1">@maintRooms</span> Bảo trì
+            </span>
+            <span class="text-muted small">Hiển thị: <strong><span id="footerCount">@totalRooms</span></strong> phòng</span>
         </div>
     </div>
 </div>
 
+<form id="deleteFormPhong" method="post" asp-action="Delete" asp-controller="QuanLyPhong">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" id="deletePhongId">
+</form>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-    // --- 1. FILTER HOUSE LOGIC ---
-    function changeNhaTro(selectObject) {
-        var value = selectObject.value;
-        Swal.fire({
-            title: 'Đang tải dữ liệu...',
-            text: 'Vui lòng chờ trong giây lát',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        window.location.href = '/QuanLyPhong/Index?nhaId=' + value;
-    }
-
-    // --- 2. CHECKBOX LOGIC ---
-    function toggleAll(source) {
-        var checkboxes = document.querySelectorAll('.room-checkbox');
-        for (var i = 0; i < checkboxes.length; i++) {
-            checkboxes[i].checked = source.checked;
-            highlightRow(checkboxes[i]);
+$(document).ready(function () {
+    // ===== SELECT2 ENTERPRISE BUILDING PICKER =====
+    // Supports search, shows address subtitle, handles 100+ buildings
+    $('#select2Building').select2({
+        placeholder: '🔍 Gõ để tìm tòa nhà...',
+        allowClear: true,
+        language: {
+            noResults: () => 'Không tìm thấy tòa nhà',
+            searching: () => 'Đang tìm...'
+        },
+        templateResult: function (data) {
+            if (!data.id) return data.text;
+            const parts = data.text.split(' — ');
+            return $(`<div><div class="fw-bold small">${parts[0]}</div><div class="text-muted" style="font-size:.75rem">${parts[1] || ''}</div></div>`);
         }
-    }
-
-    // Hiệu ứng highlight khi chọn row - DÙNG MÀU TÍM NHẠT
-    function highlightRow(checkbox) {
-        var row = checkbox.closest('tr');
-        if (checkbox.checked) {
-            row.style.backgroundColor = '#f4eefc'; // Tím nhạt
-        } else {
-            row.style.backgroundColor = '';
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var checkboxes = document.querySelectorAll('.room-checkbox');
-        checkboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                highlightRow(this);
-                var allChecked = document.querySelectorAll('.room-checkbox:checked').length === checkboxes.length;
-                document.getElementById('checkAll').checked = allChecked;
-            });
-        });
     });
 
-    // --- 3. ALERT HELPERS ---
-    function alertSelectHouseFirst() {
-        Swal.fire({
-            icon: 'info',
-            title: 'Chưa chọn Nhà trọ',
-            text: 'Vui lòng chọn một Nhà trọ từ danh sách lọc bên trên trước khi thêm phòng mới!',
-            confirmButtonText: 'Đã hiểu',
-            confirmButtonColor: '#00b894'
-        });
-    }
+    $('#select2Building').on('change', function () {
+        const val = this.value;
+        if (val) {
+            Swal.fire({ title: 'Đang tải phòng...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            window.location.href = '/QuanLyPhong/Index?nhaId=' + val;
+        } else {
+            window.location.href = '/QuanLyPhong/Index';
+        }
+    });
+});
 
-    // --- 4. EDIT LOGIC ---
-    function editSelected() {
-        var selected = document.querySelectorAll('.room-checkbox:checked');
-        if (selected.length === 0) {
-            Swal.fire({ icon: 'warning', title: 'Chưa chọn phòng', text: 'Vui lòng chọn 1 phòng để sửa thông tin.', confirmButtonColor: '#00b894' });
-            return;
-        }
-        if (selected.length > 1) {
-            Swal.fire({ icon: 'warning', title: 'Chọn quá nhiều', text: 'Chức năng sửa chỉ áp dụng cho 1 phòng tại một thời điểm.', confirmButtonColor: '#00b894' });
-            return;
-        }
-        var id = selected[0].value;
-        window.location.href = '/QuanLyPhong/Edit/' + id;
-    }
+const allRows = Array.from(document.querySelectorAll('.room-row'));
 
-    // --- 5. DELETE LOGIC ---
-    function confirmDeleteMultiple() {
-        const selected = document.querySelectorAll('.room-checkbox:checked');
-        if (selected.length === 0) {
-            Swal.fire('Thông báo', 'Bạn chưa chọn phòng nào', 'info');
-            return;
-        }
-        const ids = Array.from(selected).map(x => parseInt(x.value));
-        Swal.fire({
-            title: 'Xác nhận xóa?',
-            text: `Bạn có chắc muốn xóa ${ids.length} phòng?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy',
-            confirmButtonColor: '#ff4757', // Giữ màu đỏ cho nút xóa
-            cancelButtonColor: '#8c9097'
-        }).then(result => {
-            if (!result.isConfirmed) return;
-            fetch('/QuanLyPhong/DeleteMultiple', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(ids)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Thành công', data.message, 'success').then(() => location.reload());
-                } else {
-                    Swal.fire('Lỗi', data.message, 'error');
-                }
-            })
-            .catch(err => {
-                Swal.fire('Lỗi', 'Không kết nối được server', 'error');
-                console.error(err);
-            });
-        });
-    }
+// Click stat card to filter
+function filterByStatus(status) {
+    document.getElementById('filterStatus').value = status;
+    applyFilters();
+    document.getElementById('filterStatus').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
-    // --- 6. CLIENT SEARCH ---
-    function searchTable() {
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("searchInput");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("dataTable");
-        tr = table.getElementsByTagName("tr");
-        for (i = 1; i < tr.length; i++) {
-            var found = false;
-            var cols = [2, 3, 5];
-            for(var c of cols) {
-                td = tr[i].getElementsByTagName("td")[c];
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (found) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
+function applyFilters() {
+    const q      = document.getElementById('searchInput').value.toLowerCase().trim();
+    const status = document.getElementById('filterStatus').value;
+    const priceRange = document.getElementById('filterPrice').value;
+
+    let [pMin, pMax] = priceRange ? priceRange.split('-').map(Number) : [0, Infinity];
+    if (!priceRange) { pMin = 0; pMax = Infinity; }
+
+    let visible = 0;
+    allRows.forEach(row => {
+        const matchQ    = !q || row.dataset.name?.includes(q) || row.dataset.noithat?.includes(q)
+                              || ('tầng ' + row.dataset.floor).includes(q)
+                              || row.dataset.floor?.toString().includes(q);
+        const matchSt   = !status || row.dataset.status === status;
+        const price     = parseInt(row.dataset.price) || 0;
+        const matchP    = price >= pMin && price <= pMax;
+
+        const show = matchQ && matchSt && matchP;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+
+    document.getElementById('visibleCount').textContent = visible;
+    document.getElementById('footerCount').textContent  = visible;
+    document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0 || allRows.length === 0);
+
+    renderFilterTags(q, status, priceRange);
+}
+
+function renderFilterTags(q, status, priceRange) {
+    const c = document.getElementById('filterTags');
+    c.innerHTML = '';
+    const addTag = (label, clearFn) => {
+        c.innerHTML += `<span class="badge bg-soft-brand text-brand border px-3 py-2 rounded-pill" style="font-size:.8rem">${label} <span style="cursor:pointer;margin-left:6px;opacity:.7" onclick="${clearFn}">✕</span></span>`;
+    };
+    if (q) addTag(`🔍 "${q}"`, `document.getElementById('searchInput').value=''; applyFilters()`);
+    const sLabel = { 'Vacant': '🟢 Còn trống', 'Occupied': '🔵 Đang thuê', 'Maintenance': '🟡 Bảo trì' };
+    if (status) addTag(sLabel[status] || status, `document.getElementById('filterStatus').value=''; applyFilters()`);
+    const pLabel = { '0-2000000':'Dưới 2 triệu','2000000-4000000':'2–4 triệu','4000000-7000000':'4–7 triệu','7000000-99999999':'Trên 7 triệu' };
+    if (priceRange) addTag(`💰 ${pLabel[priceRange]}`, `document.getElementById('filterPrice').value=''; applyFilters()`);
+}
+
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('filterPrice').value  = '';
+    applyFilters();
+}
+
+// Sort table
+let sortDir = {};
+function sortTable(colIdx) {
+    const tbody = document.querySelector('#dataTable tbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr.room-row'));
+    const asc   = !sortDir[colIdx];
+    sortDir = {};
+    sortDir[colIdx] = asc;
+
+    rows.sort((a, b) => {
+        const av = a.cells[colIdx]?.textContent.trim() || '';
+        const bv = b.cells[colIdx]?.textContent.trim() || '';
+        const an = parseFloat(av.replace(/[^0-9.]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.]/g, ''));
+        if (!isNaN(an) && !isNaN(bn)) return asc ? an - bn : bn - an;
+        return asc ? av.localeCompare(bv, 'vi') : bv.localeCompare(av, 'vi');
+    });
+    rows.forEach(r => tbody.appendChild(r));
+}
+
+function toggleAll(src) {
+    document.querySelectorAll('.room-checkbox').forEach(cb => cb.checked = src.checked);
+}
+
+function alertSelectHouseFirst() {
+    Swal.fire({ icon:'info', title:'Chưa chọn tòa nhà', text:'Tìm và chọn một tòa nhà từ dropdown phía trên.', confirmButtonColor:'#00b894', confirmButtonText:'Đã hiểu' });
+}
+
+function deletePhong(id, name) {
+    Swal.fire({
+        title: `Xóa phòng "${name}"?`, text:'Phòng đang có hợp đồng active không thể xóa.',
+        icon:'warning', showCancelButton:true,
+        confirmButtonColor:'#ef4444', cancelButtonColor:'#64748b',
+        confirmButtonText:'Xóa', cancelButtonText:'Hủy'
+    }).then(r => {
+        if (r.isConfirmed) {
+            document.getElementById('deletePhongId').value = id;
+            document.getElementById('deleteFormPhong').submit();
         }
-    }
+    });
+}
+
+function deleteSelected() {
+    const ids = Array.from(document.querySelectorAll('.room-checkbox:checked')).map(cb => parseInt(cb.value));
+    if (!ids.length) { Swal.fire({icon:'info',title:'Chưa chọn phòng nào',confirmButtonColor:'#00b894'}); return; }
+    Swal.fire({
+        title:`Xóa ${ids.length} phòng đã chọn?`, icon:'warning',
+        showCancelButton:true, confirmButtonColor:'#ef4444', cancelButtonColor:'#64748b',
+        confirmButtonText:'Xóa', cancelButtonText:'Hủy'
+    }).then(r => {
+        if (!r.isConfirmed) return;
+        fetch('/QuanLyPhong/DeleteMultiple', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ids) })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) Swal.fire('Đã xóa!', data.message||'', 'success').then(() => location.reload());
+            else Swal.fire('Không thể xóa', data.message, 'error');
+        })
+        .catch(() => Swal.fire('Lỗi!', 'Không kết nối server.', 'error'));
+    });
+}
 </script>
-
-<div class="fab-container">
-    <div class="btn-group-vertical">
-        <button class="btn rounded-circle shadow mb-2" style="width: 50px; height: 50px; background: var(--main-gradient); color: white; border: none;" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
-            <i class="bi bi-arrow-up"></i>
-        </button>
-        @if (ViewBag.SelectedNhaId != null)
-        {
-            <a href="/QuanLyPhong/Create?nhaId=@ViewBag.SelectedNhaId" class="btn rounded-circle shadow d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: white; color: var(--brand-600); border: 1px solid var(--brand-600);">
-                <i class="bi bi-plus-lg fs-4"></i>
-            </a>
-        }
-    </div>
-</div>
+}

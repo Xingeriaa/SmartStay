@@ -1,0 +1,154 @@
+@model do_an_tot_nghiep.ViewModels.TicketDetailViewModel
+
+@{
+    ViewData["Title"] = "Trạm Điều Hành Ticket";
+}
+
+<div class="row">
+    <!-- Cột Trái: Nội dung Sự cố -->
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow border-left-danger h-100">
+            <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-danger">📝 Hồ sơ Ticket: #@Model.Id</h6>
+                <span class="badge @(Model.Status == "Done" ? "bg-success" : (Model.Status == "In Progress" ? "bg-warning text-dark" : "bg-danger")) px-3 py-2 shadow-sm rounded-pill fs-6" id="statusBadge">
+                    <i class="fas @(Model.Status == "Done" ? "fa-check" : "fa-exclamation-circle")"></i> @Model.Status
+                </span>
+            </div>
+            <div class="card-body">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success"><i class="fas fa-check"></i> @TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger"><i class="fas fa-times"></i> @TempData["Error"]</div>
+                }
+
+                <h4 class="font-weight-bold text-dark mb-3"><i class="fas fa-quote-left text-muted opacity-50"></i> @Model.Title</h4>
+                <div class="d-flex mb-4 text-muted small border-bottom pb-3">
+                    <span class="me-4"><i class="fas fa-door-open text-primary"></i> Lọc Nơi Gửi: <b class="text-dark">@Model.RoomName</b></span>
+                    <span class="me-4"><i class="fas fa-clock text-primary"></i> Lúc: <b class="text-dark">@Model.CreatedDate</b></span>
+                    <span class="me-4"><i class="fas fa-bell text-primary"></i> Độ Nguy: <b class="text-danger">@Model.Priority</b></span>
+                </div>
+
+                <h6 class="text-primary font-weight-bold">Báo Cáo Hoàn Cảnh Thực Tế (Log)</h6>
+                <p class="text-dark p-3 bg-light rounded shadow-sm border" style="line-height: 1.6; white-space: pre-wrap;">@Model.Description</p>
+
+                <h6 class="text-primary font-weight-bold mt-4"><i class="fas fa-images"></i> Storage Hình Ảnh Đính Kèm Khảo Sát Tự Thân</h6>
+                <div class="row">
+                    @if (Model.ImageUrls != null && Model.ImageUrls.Count > 0)
+                    {
+                        foreach (var url in Model.ImageUrls)
+                        {
+                            <div class="col-md-4 mb-3">
+                                <a href="@url" target="_blank">
+                                    <img src="@url" class="img-fluid rounded shadow-sm border border-secondary" alt="Ticket Hinh Anh" style="height: 150px; object-fit: cover; width: 100%; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"/>
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-muted fst-italic">Không chứa file Multipart / Storage trống.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cột Phải: Bảng Điều Khiển (Admin / Tech) -->
+    <div class="col-lg-4 mb-4">
+        <!-- Assign Panel -->
+        <div class="card shadow mb-4 border-bottom-info">
+            <div class="card-header py-3 bg-info text-white">
+                <h6 class="m-0 font-weight-bold"><i class="fas fa-user-hard-hat"></i> Phân Công Nhân Sự Sửa Chữa Thợ</h6>
+            </div>
+            <div class="card-body bg-light">
+                <p class="small text-muted mb-2">Tick hiện tại đang được Assign cho:</p>
+                @if (string.IsNullOrEmpty(Model.AssignedToStaff))
+                {
+                    <div class="alert alert-danger px-2 py-1 text-center font-weight-bold shadow-sm"><i class="fas fa-user-slash"></i> CHƯA CÓ NGƯỜI NHẬN</div>
+                }
+                else
+                {
+                    <div class="alert alert-success px-2 py-1 text-center font-weight-bold shadow-sm fs-5"><i class="fas fa-user-check"></i> @Model.AssignedToStaff</div>
+                }
+                <hr>
+                <form asp-action="Assign" method="post" id="assignForm" class="d-flex mt-3">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <select class="form-select form-control form-select-sm me-2 shadow-sm font-weight-bold text-dark border-info" name="staffId" asp-items="ViewBag.Staffs" required>
+                        <option value="">-- Cấp Lệnh Thợ --</option>
+                    </select>
+                    <button type="submit" class="btn btn-info btn-sm shadow font-weight-bold" onclick="return confirm('Chắc chắn giao việc cho Nhân viên này? SignalR sẽ bắn Alert Socket ngầm tới App Thợ')"><i class="fas fa-bolt"></i> FIRE</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cập nhật Status Mạng (SignalR) -->
+        <div class="card shadow border-bottom-warning">
+            <div class="card-header py-3 bg-warning text-dark">
+                <h6 class="m-0 font-weight-bold"><i class="fas fa-bullseye"></i> Board Cập Nhật Realtime Tình Trạng Hiện Trường Cấp Tốc</h6>
+            </div>
+            <div class="card-body bg-light text-center">
+                <form asp-action="UpdateStatus" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="d-grid gap-2">
+                        <button type="submit" name="status" value="In Progress" class="btn btn-warning shadow font-weight-bold @(Model.Status == "In Progress" ? "disabled opacity-50" : "")">
+                            <i class="fas fa-hammer"></i> ĐANG TRONG QUÁ TRÌNH KHẮC PHỤC (IN-PROGRESS)
+                        </button>
+                        <button type="submit" name="status" value="Done" class="btn btn-success shadow font-weight-bold mt-2 @(Model.Status == "Done" ? "disabled opacity-50" : "")">
+                            <i class="fas fa-check-double"></i> NGHIỆM THU / CHỐT KẾT QUẢ ĐÓNG CASE (DONE)
+                        </button>
+                    </div>
+                </form>
+                <div class="alert alert-info mt-3 mb-0 small text-start border-0 bg-transparent text-muted fst-italic">
+                    <i class="fas fa-satellite-dish"></i> Hệ thống nối ống Cấu Trúc SignalR. Ngay khi Form Submit -> Data Ghi Disk -> Gửi Event Tức Thì làm chập chờn màu sắc giao diện Dashboard Giám Sát tại BQL. Không f5.
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-3">
+            <a asp-action="Index" class="btn btn-secondary shadow"><i class="fas fa-arrow-left"></i> Rời Khỏi Vùng Ticket</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const ticketId = parseInt('@Model.Id', 10);
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/ticketHub")
+            .build();
+
+        connection.on("ReceiveTicketUpdate", function (tId, status) {
+            if (tId === ticketId) {
+                console.log(`[SignalR LIVE IN-DEEP] Pushing UI Ticks ${status}`);
+                const badge = document.getElementById("statusBadge");
+                
+                badge.className = "px-3 py-2 shadow-sm rounded-pill fs-6 badge";
+                
+                if (status === "Done") {
+                    badge.classList.add("bg-success");
+                    badge.innerHTML = '<i class="fas fa-check"></i> ' + status;
+                } else if (status === "In Progress") {
+                    badge.classList.add("bg-warning", "text-dark");
+                    badge.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + status;
+                } else {
+                    badge.classList.add("bg-danger");
+                    badge.innerHTML = '<i class="fas fa-exclamation"></i> ' + status;
+                }
+
+                // Shake effect UX
+                badge.animate([
+                    { transform: 'translateX(0)' },
+                    { transform: 'translateX(-5px)' },
+                    { transform: 'translateX(5px)' },
+                    { transform: 'translateX(0)' }
+                ], { duration: 300, iterations: 2 });
+            }
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+    </script>
+}

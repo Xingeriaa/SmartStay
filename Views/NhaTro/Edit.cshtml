@@ -1,0 +1,26 @@
+@model do_an_tot_nghiep.ViewModels.NhaTroFormViewModel
+
+@{
+    ViewData["Title"] = "Cập Nhật Tòa Nhà";
+}
+
+<div class="card shadow mb-4 col-md-10 mx-auto">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-warning">Chỉnh Sửa Thông Tin Tòa Nhà: @Model.TenNhaTro</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            <partial name="_Form" model="Model" />
+            
+            <div class="mt-4 form-group text-end">
+                <a asp-action="Index" class="btn btn-secondary me-2">Quay Lại Bảng Giao Diện</a>
+                <button type="submit" class="btn btn-warning"><i class="fas fa-save"></i> Xác Nhận Cập Nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

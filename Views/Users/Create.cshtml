@@ -1,30 +1,25 @@
-﻿@model do_an_tot_nghiep.Models.User
+﻿@model do_an_tot_nghiep.ViewModels.UserFormViewModel
+
 @{
-    ViewData["Title"] = "Tạo tài khoản";
+    ViewData["Title"] = "Cấp Tài Khoản Mới";
 }
 
-<h2>Tạo tài khoản</h2>
-
-<form asp-action="Create" method="post" id="userForm">
-    @Html.AntiForgeryToken()
-
-    <partial name="~/Views/Shared/_UserForm.cshtml" model="Model" />
-
-    <button type="submit" class="btn btn-primary" id="btnSubmit">
-        <span class="btn-text">Lưu</span>
-        <span class="spinner-border spinner-border-sm d-none"></span>
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-</form>
+<div class="card shadow mb-4 col-md-8 mx-auto border-left-dark">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-user-plus"></i> Tạo Tài Khoản Gắn Quyền Cấp Bậc Mới</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <partial name="_Form" model="Model" />
+            
+            <div class="mt-4 text-end bg-light p-3 rounded">
+                <a asp-action="Index" class="btn btn-secondary me-2"> Hủy Khởi Tạo</a>
+                <button type="submit" class="btn btn-dark"><i class="fas fa-check-circle"></i> Đồng Ý Phát Hành</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        $('#userForm').on('submit', function () {
-            $('#btnSubmit').prop('disabled', true);
-            $('#btnSubmit .btn-text').text('Đang xử lý...');
-            $('#btnSubmit .spinner-border').removeClass('d-none');
-        });
-    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

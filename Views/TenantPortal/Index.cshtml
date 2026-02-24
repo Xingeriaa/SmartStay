@@ -1,0 +1,189 @@
+@{
+    ViewData["Title"] = "Cổng thông tin cư dân";
+    var userName = ViewBag.UserName as string ?? "Cư dân";
+    var hour = DateTime.Now.Hour;
+    string greeting = hour < 11 ? "Chào buổi sáng" : hour < 13 ? "Chào buổi trưa" :
+                      hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+}
+
+<style>
+    .portal-hero {
+        background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #1a1a2e 100%);
+        border-radius: 20px; padding: 2.5rem 2rem; margin-bottom: 2rem; color: #fff;
+        position: relative; overflow: hidden;
+    }
+    .portal-hero::before {
+        content: ''; position: absolute; width: 300px; height: 300px;
+        background: radial-gradient(circle, rgba(108,92,231,.3), transparent);
+        border-radius: 50%; top: -80px; right: -60px;
+    }
+    .portal-hero::after {
+        content: ''; position: absolute; width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(0,184,148,.2), transparent);
+        border-radius: 50%; bottom: -50px; left: 40px;
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-title   { font-size: 1.8rem; font-weight: 800; margin-bottom: .3rem; }
+    .hero-sub     { color: rgba(255,255,255,.6); font-size: .9rem; }
+
+    .quick-card {
+        background: #fff; border-radius: 16px; padding: 1.5rem;
+        border: 1px solid #eee; box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        transition: transform .2s, box-shadow .2s; text-decoration: none; color: inherit;
+        display: flex; flex-direction: column; align-items: center; text-align: center; gap: .6rem;
+    }
+    .quick-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.1); color: inherit; }
+    .quick-icon {
+        width: 52px; height: 52px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; color: #fff;
+    }
+    .quick-label { font-weight: 600; font-size: .88rem; }
+    .quick-sub   { font-size: .75rem; color: #888; }
+
+    .building-card {
+        background: #fff; border-radius: 16px; border: 1px solid #eee;
+        box-shadow: 0 2px 12px rgba(0,0,0,.04);
+        transition: transform .15s, box-shadow .15s; overflow: hidden;
+    }
+    .building-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+    .building-img {
+        height: 140px; background: linear-gradient(135deg,#6c5ce7,#a29bfe);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 3rem; color: rgba(255,255,255,.6);
+    }
+    .building-body { padding: 1.2rem; }
+    .building-name { font-weight: 700; font-size: 1rem; margin-bottom: .25rem; }
+    .building-addr { font-size: .8rem; color: #888; margin-bottom: .8rem; }
+    .building-meta { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .b-chip {
+        font-size: .72rem; padding: .2rem .6rem; border-radius: 20px;
+        background: #f0edff; color: #6c5ce7; font-weight: 600;
+    }
+    .b-chip.green { background: #d4edda; color: #155724; }
+
+    .notice-bar {
+        background: linear-gradient(90deg,#fff8e1,#fff3cd);
+        border: 1px solid #ffd54f; border-radius: 12px;
+        padding: .9rem 1.2rem; font-size: .85rem; color: #856404;
+        display: flex; align-items: center; gap: .6rem; margin-bottom: 1.5rem;
+    }
+</style>
+
+<!-- Hero -->
+<div class="portal-hero">
+    <div class="hero-content">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <span style="background:rgba(0,184,148,.25);color:#00b894;padding:.2rem .7rem;border-radius:20px;font-size:.75rem;font-weight:700;">
+                Cư dân
+            </span>
+        </div>
+        <div class="hero-title">@greeting, @userName 👋</div>
+        <div class="hero-sub">Chào mừng đến với cổng thông tin cư dân SmartStay</div>
+    </div>
+</div>
+
+<!-- Notice -->
+<div class="notice-bar">
+    <i class="fas fa-circle-info"></i>
+    <span>Đây là cổng xem thông tin. Để thuê phòng hoặc có vấn đề cần hỗ trợ, hãy liên hệ trực tiếp quản lý nhà.</span>
+</div>
+
+<!-- Quick actions -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <a href="#buildings-section" class="quick-card">
+            <div class="quick-icon" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="quick-label">Tòa nhà</div>
+            <div class="quick-sub">Xem danh sách</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a asp-controller="Tickets" asp-action="Index" class="quick-card">
+            <div class="quick-icon" style="background:linear-gradient(135deg,#d63031,#ff7675);">
+                <i class="fas fa-headset"></i>
+            </div>
+            <div class="quick-label">Phản ánh</div>
+            <div class="quick-sub">Gửi yêu cầu hỗ trợ</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="#" class="quick-card">
+            <div class="quick-icon" style="background:linear-gradient(135deg,#00b894,#00cec9);">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+            <div class="quick-label">Hóa đơn</div>
+            <div class="quick-sub">Hóa đơn của tôi</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="#" class="quick-card">
+            <div class="quick-icon" style="background:linear-gradient(135deg,#fdcb6e,#e17055);">
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="quick-label">Liên hệ</div>
+            <div class="quick-sub">Thông tin nhà</div>
+        </a>
+    </div>
+</div>
+
+<!-- Buildings list -->
+<div id="buildings-section">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="fas fa-building me-2 text-primary"></i>Danh sách tòa nhà</h5>
+    </div>
+
+    @if (ViewBag.Buildings != null)
+    {
+        var buildings = ViewBag.Buildings as System.Collections.IEnumerable;
+        bool hasAny = false;
+        if (buildings != null)
+        {
+            <div class="row g-3">
+            @foreach (dynamic b in buildings)
+            {
+                hasAny = true;
+                string name = (string?)b.GetProperty("TenNhaTro").GetString() ?? "Tòa nhà";
+                string addr = (string?)b.GetProperty("DiaChi").GetString() ?? "";
+                int id = (int?)b.GetProperty("Id").GetInt32() ?? 0;
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="building-card">
+                        <div class="building-img">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="building-body">
+                            <div class="building-name">@name</div>
+                            <div class="building-addr"><i class="fas fa-map-marker-alt me-1"></i>@addr</div>
+                            <div class="building-meta">
+                                <span class="b-chip"><i class="fas fa-door-open me-1"></i>Xem phòng</span>
+                            </div>
+                            <a asp-controller="TenantPortal" asp-action="Rooms" asp-route-buildingId="@id"
+                               class="btn btn-sm mt-3 w-100"
+                               style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border-radius:10px;font-weight:600;">
+                                <i class="fas fa-door-open me-1"></i> Xem phòng trống
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            </div>
+            @if (!hasAny)
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-building fa-3x mb-3 d-block opacity-25"></i>
+                    <strong>Chưa có tòa nhà nào</strong>
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary mb-3" role="status"></div>
+            <div class="text-muted small">Đang tải danh sách tòa nhà...</div>
+        </div>
+    }
+</div>

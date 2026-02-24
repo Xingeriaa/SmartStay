@@ -1,0 +1,71 @@
+@using do_an_tot_nghiep.Controllers
+@model TicketListItemDto
+@{
+    ViewData["Title"] = $"Sửa phiếu #{Model.Id}";
+}
+
+<div style="max-width:720px;margin:0 auto;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Sự cố & Hỗ trợ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id" class="text-muted text-decoration-none">#@Model.Id</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa</li>
+        </ol>
+    </nav>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger border-0 mb-3">@TempData["Error"]</div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center gap-2">
+            <span style="width:38px;height:38px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-edit text-white"></i>
+            </span>
+            <h5 class="mb-0 fw-bold">Chỉnh sửa phiếu #@Model.Id</h5>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tiêu đề <span class="text-danger">*</span></label>
+                    <input name="Title" type="text" class="form-control" value="@Model.Title" required minlength="5" maxlength="200" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Mô tả</label>
+                    <textarea name="Description" class="form-control" rows="4">@Model.Description</textarea>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Mức ưu tiên</label>
+                        <select name="Priority" class="form-select">
+                            <option value="High"   selected="@(Model.Priority == "High"   ? "selected" : null)">🔴 Khẩn cấp</option>
+                            <option value="Medium" selected="@(Model.Priority == "Medium" ? "selected" : null)">🟡 Trung bình</option>
+                            <option value="Low"    selected="@(Model.Priority == "Low"    ? "selected" : null)">🟢 Không gấp</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Trạng thái</label>
+                        <select name="Status" class="form-select">
+                            <option value="Open"        selected="@(Model.Status == "Open"        ? "selected" : null)">Chờ xử lý</option>
+                            <option value="In Progress" selected="@(Model.Status == "In Progress" ? "selected" : null)">Đang xử lý</option>
+                            <option value="Done"        selected="@(Model.Status == "Done"        ? "selected" : null)">Hoàn thành</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-light border px-4">Hủy</a>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+@model do_an_tot_nghiep.Models.DichVu
+@{
+    ViewData["Title"] = "Chỉnh sửa dịch vụ";
+}
+
+<div style="max-width:700px;margin:0 auto;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Dịch vụ</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa #@Model.Id</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center gap-2">
+            <span style="width:36px;height:36px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-edit text-white" style="font-size:.95rem;"></i>
+            </span>
+            <h5 class="mb-0 fw-bold">Chỉnh sửa dịch vụ — @Model.Ten</h5>
+        </div>
+        <div class="card-body p-4">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger border-0 mb-3"><i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]</div>
+            }
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <partial name="_Form" />
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top mt-3">
+                    <a asp-action="Index" class="btn btn-light border px-4">Hủy</a>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">
+                        <i class="fas fa-save me-1"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

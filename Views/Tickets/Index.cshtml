@@ -1,0 +1,324 @@
+@using do_an_tot_nghiep.Controllers
+@model List<TicketListItemDto>
+@{
+    ViewData["Title"] = "Quản lý Sự cố & Hỗ trợ";
+
+    string currentStatus   = ViewBag.CurrentStatus   ?? "";
+    string currentPriority = ViewBag.CurrentPriority ?? "";
+    string currentSearch   = ViewBag.CurrentSearch   ?? "";
+
+    int totalAll        = ViewBag.TotalAll        ?? 0;
+    int totalOpen       = ViewBag.TotalOpen       ?? 0;
+    int totalInProgress = ViewBag.TotalInProgress ?? 0;
+    int totalDone       = ViewBag.TotalDone       ?? 0;
+}
+
+<style>
+    .ticket-page { max-width: 1200px; margin: 0 auto; }
+
+    .stat-card {
+        border-radius: 14px;
+        padding: 1.2rem 1.5rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: transform .2s, box-shadow .2s;
+        text-decoration: none;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.15); color:#fff; }
+    .stat-card .stat-icon { font-size: 1.8rem; opacity: .85; }
+    .stat-card .stat-num  { font-size: 2rem; font-weight: 900; line-height:1; }
+    .stat-card .stat-lbl  { font-size: .8rem; opacity: .85; font-weight: 600; text-transform: uppercase; }
+
+    .st-all       { background: linear-gradient(135deg,#6c5ce7,#a29bfe); }
+    .st-open      { background: linear-gradient(135deg,#d63031,#e17055); }
+    .st-progress  { background: linear-gradient(135deg,#e67e22,#fdcb6e); }
+    .st-done      { background: linear-gradient(135deg,#00b894,#00cec9); }
+
+    .filter-bar {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .75rem;
+        align-items: center;
+    }
+
+    .ticket-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        padding: 1.1rem 1.4rem;
+        margin-bottom: .75rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: box-shadow .2s, border-color .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+    .ticket-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.07); border-color: #a29bfe; }
+
+    .priority-dot {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .p-High   { background: #d63031; }
+    .p-Medium { background: #fdcb6e; }
+    .p-Low    { background: #00b894; }
+
+    .ticket-num { font-size: .75rem; color: #aaa; font-weight: 600; }
+    .ticket-title { font-size: .98rem; font-weight: 700; color: #1a1a2e; }
+    .ticket-meta  { font-size: .78rem; color: #888; }
+
+    .status-pill {
+        display: inline-block;
+        padding: .25rem .75rem;
+        border-radius: 20px;
+        font-size: .75rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .s-Open        { background:#fde8e8; color:#d63031; }
+    .s-In-Progress { background:#fff3cd; color:#856404; }
+    .s-Done        { background:#d4edda; color:#155724; }
+
+    .room-chip {
+        background: #f0edff;
+        color: #6c5ce7;
+        font-size: .75rem;
+        font-weight: 700;
+        border-radius: 8px;
+        padding: .15rem .6rem;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg,#6c5ce7,#a29bfe);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: .6rem 1.4rem;
+        font-weight: 700;
+        font-size: .88rem;
+        transition: opacity .2s;
+    }
+    .btn-create:hover { opacity:.85; color:#fff; }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #aaa;
+    }
+    .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+    .filter-btn {
+        border-radius: 20px;
+        padding: .35rem .9rem;
+        font-size: .8rem;
+        font-weight: 600;
+        border: 2px solid transparent;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all .15s;
+    }
+    .filter-btn.active, .filter-btn:hover { text-decoration: none; }
+    .fb-all      { background:#f0edff; color:#6c5ce7; border-color:#6c5ce7; }
+    .fb-open     { background:#fde8e8; color:#d63031; border-color:#d63031; }
+    .fb-progress { background:#fff3cd; color:#856404; border-color:#e67e22; }
+    .fb-done     { background:#d4edda; color:#155724; border-color:#00b894; }
+</style>
+
+<div class="ticket-page">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-0" style="font-size:1.6rem;">
+                <i class="fas fa-ticket-alt me-2" style="color:#6c5ce7;"></i>Sự cố & Hỗ trợ
+            </h1>
+            <p class="text-muted small mb-0">Quản lý toàn bộ phiếu yêu cầu từ cư dân</p>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger border-0 mb-3"><i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 mb-3"><i class="fas fa-check-circle me-2"></i>@TempData["Success"]</div>
+    }
+
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-lg-3">
+            <a asp-action="Index" class="stat-card st-all">
+                <div class="stat-icon"><i class="fas fa-list-ul"></i></div>
+                <div><div class="stat-num">@totalAll</div><div class="stat-lbl">Tất cả</div></div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a asp-action="Index" asp-route-status="Open" class="stat-card st-open">
+                <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div><div class="stat-num">@totalOpen</div><div class="stat-lbl">Chờ xử lý</div></div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a asp-action="Index" asp-route-status="In Progress" class="stat-card st-progress">
+                <div class="stat-icon"><i class="fas fa-hammer"></i></div>
+                <div><div class="stat-num">@totalInProgress</div><div class="stat-lbl">Đang xử lý</div></div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a asp-action="Index" asp-route-status="Done" class="stat-card st-done">
+                <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+                <div><div class="stat-num">@totalDone</div><div class="stat-lbl">Hoàn thành</div></div>
+            </a>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <a asp-action="Index"
+           asp-route-priority="@currentPriority"
+           asp-route-search="@currentSearch"
+           class="filter-btn fb-all @(string.IsNullOrEmpty(currentStatus) ? "active" : "")">
+            Tất cả
+        </a>
+        <a asp-action="Index"
+           asp-route-status="Open"
+           asp-route-priority="@currentPriority"
+           asp-route-search="@currentSearch"
+           class="filter-btn fb-open @(currentStatus == "Open" ? "active" : "")">
+            <i class="fas fa-exclamation-circle me-1"></i>Mở
+        </a>
+        <a asp-action="Index"
+           asp-route-status="In Progress"
+           asp-route-priority="@currentPriority"
+           asp-route-search="@currentSearch"
+           class="filter-btn fb-progress @(currentStatus == "In Progress" ? "active" : "")">
+            <i class="fas fa-hammer me-1"></i>Đang xử lý
+        </a>
+        <a asp-action="Index"
+           asp-route-status="Done"
+           asp-route-priority="@currentPriority"
+           asp-route-search="@currentSearch"
+           class="filter-btn fb-done @(currentStatus == "Done" ? "active" : "")">
+            <i class="fas fa-check-double me-1"></i>Hoàn thành
+        </a>
+
+        <div class="vr d-none d-md-block opacity-25 mx-1"></div>
+
+        <form method="get" asp-action="Index" class="d-flex gap-2 flex-wrap">
+            <input type="hidden" name="status"   value="@currentStatus" />
+            <select name="priority" class="form-select form-select-sm" style="width:auto;border-radius:20px;font-size:.8rem;" onchange="this.form.submit()">
+                <option value="">Độ ưu tiên</option>
+                <option value="High"   selected="@(currentPriority == "High"   ? "selected" : null)">🔴 Cao</option>
+                <option value="Medium" selected="@(currentPriority == "Medium" ? "selected" : null)">🟡 Trung bình</option>
+                <option value="Low"    selected="@(currentPriority == "Low"    ? "selected" : null)">🟢 Thấp</option>
+            </select>
+            <div class="input-group input-group-sm" style="width:200px;">
+                <input type="text" name="search" class="form-control" style="border-radius:20px 0 0 20px;font-size:.8rem;"
+                       placeholder="Tìm tiêu đề..." value="@currentSearch">
+                <button type="submit" class="btn btn-light border" style="border-radius:0 20px 20px 0;">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            @if (!string.IsNullOrEmpty(currentSearch) || !string.IsNullOrEmpty(currentPriority))
+            {
+                <a asp-action="Index" asp-route-status="@currentStatus" class="btn btn-sm btn-light border" style="border-radius:20px;font-size:.8rem;">
+                    <i class="fas fa-times me-1"></i>Xóa lọc
+                </a>
+            }
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-inbox text-muted"></i>
+            <div class="fw-bold mb-1">Không có ticket nào</div>
+            <p class="text-muted small">
+                @if (!string.IsNullOrEmpty(currentStatus) || !string.IsNullOrEmpty(currentSearch))
+                { <span>Không có kết quả phù hợp với bộ lọc hiện tại.</span> }
+                else
+                { <span>Chưa có phiếu yêu cầu nào được gửi.</span> }
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="mb-2 text-muted small">
+            Hiển thị <strong>@Model.Count</strong> kết quả
+            @if (!string.IsNullOrEmpty(currentStatus)) { <span> — trạng thái: <strong>@currentStatus</strong></span> }
+            @if (!string.IsNullOrEmpty(currentPriority)) { <span> — ưu tiên: <strong>@currentPriority</strong></span> }
+            @if (!string.IsNullOrEmpty(currentSearch)) { <span> — tìm: <strong>"@currentSearch"</strong></span> }
+        </div>
+
+        @foreach (var t in Model)
+        {
+            string priorityDotClass = t.Priority switch
+            {
+                "High"   => "p-High",
+                "Low"    => "p-Low",
+                _        => "p-Medium"
+            };
+            string statusClass = t.Status switch
+            {
+                "Done"        => "s-Done",
+                "In Progress" => "s-In-Progress",
+                _             => "s-Open"
+            };
+            string statusLabel = t.Status switch
+            {
+                "Done"        => "Hoàn thành",
+                "In Progress" => "Đang xử lý",
+                _             => "Chờ xử lý"
+            };
+
+            <a asp-action="Details" asp-route-id="@t.Id" class="ticket-card d-flex">
+                <div class="priority-dot @priorityDotClass mt-1 flex-shrink-0"></div>
+                <div class="flex-grow-1 min-w-0">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="ticket-num">#@t.Id</span>
+                        <span class="room-chip"><i class="fas fa-door-open me-1"></i>Phòng @t.RoomId</span>
+                    </div>
+                    <div class="ticket-title text-truncate">@t.Title</div>
+                    @if (!string.IsNullOrEmpty(t.Description))
+                    {
+                        <div class="ticket-meta text-truncate mt-1">@t.Description</div>
+                    }
+                    <div class="ticket-meta mt-1">
+                        <i class="fas fa-clock me-1"></i>@t.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        @if (t.AssignedTo.HasValue)
+                        {
+                            <span class="ms-3"><i class="fas fa-user-check me-1 text-info"></i>Đã phân công</span>
+                        }
+                        else
+                        {
+                            <span class="ms-3 text-danger"><i class="fas fa-user-slash me-1"></i>Chưa phân công</span>
+                        }
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end justify-content-between gap-2 flex-shrink-0">
+                    <span class="status-pill @statusClass">@statusLabel</span>
+                    <span class="text-muted" style="font-size:.8rem;">
+                        @(t.Priority == "High" ? "🔴" : t.Priority == "Medium" ? "🟡" : "🟢") @t.Priority
+                    </span>
+                </div>
+            </a>
+        }
+    }
+</div>
+
+@section Scripts {
+<script>
+    // Auto-dismiss alerts
+    document.querySelectorAll('.alert').forEach(el => {
+        setTimeout(() => { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 400); }, 4000);
+    });
+</script>
+}

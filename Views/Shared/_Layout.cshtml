@@ -1,61 +1,170 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var _session  = HttpContextAccessor.HttpContext?.Session;
+    var _userName = _session?.GetString("UserName");
+    var _fullName = _session?.GetString("FullName") ?? _userName;
+    var _role     = _session?.GetString("Role") ?? "";
+
+    // DB schema: "Admin" / "Staff" / "Tenant"
+    bool isAdmin        = _role == "Admin";
+    bool isStaff        = _role == "Staff";
+    bool isTenant       = _role == "Tenant";
+    bool isAdminOrStaff = isAdmin || isStaff;
+
+    string roleLabel = _role == "Admin" ? "Quản trị viên" :
+                       _role == "Staff" ? "Nhân viên"     :
+                       _role == "Tenant"? "Cư dân"        : _role;
+
+    string roleBadgeColor = _role == "Admin"  ? "#d63031" :
+                            _role == "Staff"  ? "#6c5ce7" :
+                            _role == "Tenant" ? "#00b894" : "#636e72";
+
+    string avatarGradient = _role == "Admin"  ? "linear-gradient(135deg,#d63031,#e17055)" :
+                            _role == "Staff"  ? "linear-gradient(135deg,#6c5ce7,#a29bfe)" :
+                            _role == "Tenant" ? "linear-gradient(135deg,#00b894,#00cec9)" :
+                                               "linear-gradient(135deg,#636e72,#b2bec3)";
+
+    var _ctrl = ViewContext.RouteData.Values["Controller"]?.ToString() ?? "";
+}
+
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"] - Quản Lý Nhà Trọ</title>
+    <title>@ViewData["Title"] - SmartStay</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <link href="~/css/app.css" rel="stylesheet" />
     <link href="~/css/site.css" rel="stylesheet" />
+    <style>
+        .sidebar-section-label {
+            font-size: .7rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .06em; color: rgba(255,255,255,.35);
+            padding: .9rem 1.1rem .3rem;
+        }
+        .sidebar { display: flex; flex-direction: column; }
+        .sidebar-menu { flex: 1; }
+    </style>
 </head>
 <body>
 
+    <!-- ═══════════════ SIDEBAR ═══════════════ -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header d-flex align-items-center">
-            <h5 class="mb-0 fw-bold"><i class="fa fa-home text-primary me-2"></i> SmartStay </h5>
+            <h5 class="mb-0 fw-bold">
+                <i class="fa fa-house-chimney text-primary me-2"></i> SmartStay
+            </h5>
         </div>
-        
+
         <div class="sidebar-menu">
-            <a asp-controller="Users" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")">
-                <i class="fa fa-tools"></i> Quản lý người dùng
-            </a>
-            <a asp-controller="QuanLyNha" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "QuanLyNha" ? "active" : "")">
-                <i class="fa fa-th-large"></i> Quản lý nhà
-            </a>
 
-            <a asp-controller="QuanLyPhong" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "QuanLyPhong" ? "active" : "")">
-                <i class="fa fa-door-open"></i> Quản lý phòng
-            </a>
-            <a asp-controller="KhachThue" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "KhachThue" ? "active" : "")">
-                <i class="fa fa-users"></i> Khách thuê
-            </a>
-            <a asp-controller="RoomAssets" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "RoomAssets" ? "active" : "")">
-                <i class="fa fa-tools"></i> Quản lý thiết bị
-            </a>
-            <a asp-controller="HopDong" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "HopDong" ? "active" : "")">
-                <i class="fa fa-handshake"></i> Hợp đồng
-            </a>
-            <a asp-controller="DichVu" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "DichVu" ? "active" : "")">
-                <i class="fa fa-tools"></i> Dịch vụ
-            </a>
-            <a href="#"><i class="fa fa-boxes"></i> Tài sản</a>
+            @if (isAdminOrStaff)
+            {
+                <a asp-controller="Dashboard" asp-action="Index"
+                   class="@(_ctrl == "Dashboard" ? "active" : "")">
+                    <i class="fas fa-chart-pie me-2"></i> Tổng quan
+                </a>
 
-            <a href="#"><i class="fa fa-car"></i> Phương tiện</a>
-            <a href="#"><i class="fa fa-chart-pie"></i> Thống kê</a>
-            <a href="#"><i class="fa fa-cog"></i> Cài đặt</a>
+                <div class="sidebar-section-label">Quản lý không gian</div>
+                <a asp-controller="QuanLyNha" asp-action="Index"
+                   class="@(_ctrl == "QuanLyNha" || _ctrl == "NhaTro" ? "active" : "")">
+                    <i class="fa fa-building me-2"></i> Hệ thống nhà
+                </a>
+                <a asp-controller="QuanLyPhong" asp-action="Index"
+                   class="@(_ctrl == "QuanLyPhong" || _ctrl == "PhongTro" ? "active" : "")">
+                    <i class="fa fa-door-open me-2"></i> Danh sách phòng
+                </a>
+
+                <div class="sidebar-section-label">Kinh doanh &amp; Cư dân</div>
+                <a asp-controller="KhachThue" asp-action="Index"
+                   class="@(_ctrl == "KhachThue" ? "active" : "")">
+                    <i class="fa fa-users me-2"></i> Cư dân
+                </a>
+                <a asp-controller="HopDong" asp-action="Index"
+                   class="@(_ctrl == "HopDong" ? "active" : "")">
+                    <i class="fa fa-file-signature me-2"></i> Hợp đồng
+                </a>
+                <a asp-controller="DichVu" asp-action="Index"
+                   class="@(_ctrl == "DichVu" ? "active" : "")">
+                    <i class="fa fa-concierge-bell me-2"></i> Dịch vụ
+                </a>
+
+                <div class="sidebar-section-label">Tài chính</div>
+                <a asp-controller="MeterReadings" asp-action="Index"
+                   class="@(_ctrl == "MeterReadings" ? "active" : "")">
+                    <i class="fa fa-tachometer-alt me-2"></i> Điện nước
+                </a>
+                <a asp-controller="Invoices" asp-action="Index"
+                   class="@(_ctrl == "Invoices" ? "active" : "")">
+                    <i class="fa fa-file-invoice-dollar me-2"></i> Hóa đơn
+                </a>
+                <a asp-controller="Liquidations" asp-action="Index"
+                   class="@(_ctrl == "Liquidations" ? "active" : "")">
+                    <i class="fa fa-gavel me-2"></i> Thanh lý
+                </a>
+
+                <div class="sidebar-section-label">Tài sản &amp; Hỗ trợ</div>
+                <a asp-controller="RoomAssets" asp-action="Index"
+                   class="@(_ctrl == "RoomAssets" ? "active" : "")">
+                    <i class="fa fa-couch me-2"></i> Thiết bị phòng
+                </a>
+                <a asp-controller="Tickets" asp-action="Index"
+                   class="@(_ctrl == "Tickets" ? "active" : "") text-danger fw-bold">
+                    <i class="fa fa-headset me-2 text-danger"></i> Sự cố 24/7
+                </a>
+            }
+
+            @if (isAdmin)
+            {
+                <div class="sidebar-section-label" style="color:#ff7675;">Quản trị hệ thống</div>
+                <a asp-controller="Users" asp-action="Index"
+                   class="@(_ctrl == "Users" ? "active" : "")">
+                    <i class="fa fa-user-shield me-2"></i> Phân quyền nhân sự
+                </a>
+                <a asp-controller="SystemConfigs" asp-action="Index"
+                   class="@(_ctrl == "SystemConfigs" ? "active" : "")">
+                    <i class="fa fa-cogs me-2"></i> Cài đặt vận hành
+                </a>
+            }
+
+            @if (isTenant)
+            {
+                <div class="sidebar-section-label">Cổng cư dân</div>
+                <a asp-controller="TenantPortal" asp-action="Index"
+                   class="@(_ctrl == "TenantPortal" ? "active" : "")">
+                    <i class="fa fa-home me-2"></i> Trang chủ cư dân
+                </a>
+                <a href="#" class="text-muted">
+                    <i class="fa fa-file-contract me-2"></i> Hợp đồng của tôi
+                </a>
+                <a href="#" class="text-muted">
+                    <i class="fa fa-file-invoice me-2"></i> Hóa đơn của tôi
+                </a>
+                <a asp-controller="Tickets" asp-action="Index"
+                   class="@(_ctrl == "Tickets" ? "active" : "")">
+                    <i class="fa fa-headset me-2"></i> Gửi phản ánh
+                </a>
+            }
+
         </div>
+
+        @if (!string.IsNullOrEmpty(_role))
+        {
+            <div class="px-3 pb-3">
+                <div class="d-flex align-items-center gap-2 p-2 rounded-3"
+                     style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);">
+                    <div style="width:8px;height:8px;border-radius:50%;background:@roleBadgeColor;flex-shrink:0;"></div>
+                    <small style="color:rgba(255,255,255,.55);font-size:.72rem;">@roleLabel</small>
+                </div>
+            </div>
+        }
     </div>
 
+    <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
     <div class="main-content">
         <header class="topbar">
             <div class="d-flex align-items-center">
@@ -65,46 +174,70 @@
                 <h5 class="fw-semibold mb-0 text-dark">@ViewData["Title"]</h5>
             </div>
 
-            @using Microsoft.AspNetCore.Http
-            @inject IHttpContextAccessor HttpContextAccessor
-
-            <div class="d-flex align-items-center">
-                @{
-                    var userName = HttpContextAccessor.HttpContext?.Session.GetString("UserName");
-                    var hour = DateTime.Now.Hour;
-                    string greeting = hour >= 5 && hour < 11 ? "Chào buổi sáng" :
-                    hour >= 11 && hour < 13 ? "Chào buổi trưa" :
-                    hour >= 13 && hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
-                    var firstLetter = !string.IsNullOrEmpty(userName) ? userName.Substring(0, 1).ToUpper() : "?";
-                }
-
-                @if (userName != null)
+            <div class="d-flex align-items-center gap-3">
+                @if (!string.IsNullOrEmpty(_userName))
                 {
-                    <div class="me-3 d-none d-md-block text-end">
+                    var hour = DateTime.Now.Hour;
+                    string greeting = hour < 11 ? "Chào buổi sáng" :
+                                      hour < 13 ? "Chào buổi trưa"  :
+                                      hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+                    var firstLetter = (_fullName ?? _userName ?? "?").Substring(0, 1).ToUpper();
+
+                    <div class="me-1 d-none d-md-block text-end">
                         <span class="text-muted small">@greeting,</span>
-                        <span class="fw-bold d-block text-dark">@userName</span>
+                        <span class="fw-bold d-block text-dark">@(_fullName ?? _userName)</span>
                     </div>
+
                     <div class="dropdown">
-                        <div class="user-profile d-flex align-items-center" data-bs-toggle="dropdown">
-                            <div class="avatar-circle">@firstLetter</div>
+                        <div class="user-profile d-flex align-items-center"
+                             data-bs-toggle="dropdown" style="cursor:pointer;">
+                            <div class="avatar-circle"
+                                 style="background:@avatarGradient;color:#fff;">@firstLetter</div>
                         </div>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2">
-                            <li><a class="dropdown-item rounded" href="#"><i class="fa fa-user-circle me-2 text-muted"></i> Hồ sơ</a></li>
-                            <li><a class="dropdown-item rounded" href="#"><i class="fa fa-lock me-2 text-muted"></i> Đổi mật khẩu</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2"
+                            style="min-width:210px;">
+                            <li>
+                                <div class="px-3 py-2 mb-1 border-bottom">
+                                    <div class="fw-bold small">@(_fullName ?? _userName)</div>
+                                    <div class="text-muted" style="font-size:.73rem;">
+                                        <span class="badge rounded-pill px-2"
+                                              style="background:@roleBadgeColor;font-size:.65rem;">
+                                            @roleLabel
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item rounded" href="#">
+                                <i class="fas fa-user-circle me-2 text-muted"></i> Hồ sơ cá nhân</a>
+                            </li>
+                            <li><a class="dropdown-item rounded" href="#">
+                                <i class="fas fa-lock me-2 text-muted"></i> Đổi mật khẩu</a>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item rounded text-danger" href="/Account/Logout"><i class="fa fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+                            <li>
+                                <form asp-action="Logout" asp-controller="Account"
+                                      method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="dropdown-item rounded text-danger w-100 text-start">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 }
                 else
                 {
-                    <a href="/Account/Login" class="btn btn-primary btn-sm rounded-pill px-3">Đăng nhập</a>
+                    <a href="/Account/Login" class="btn btn-primary btn-sm rounded-pill px-3">
+                        Đăng nhập
+                    </a>
                 }
             </div>
         </header>
 
-        <main class="page-content">
-            <div class="container-fluid p-0">
+        <main class="page-content bg-light" style="min-height: calc(100vh - 72px);">
+            <div class="container-fluid px-2 px-md-4 py-3">
                 @RenderBody()
             </div>
         </main>
@@ -112,9 +245,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
-
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show');

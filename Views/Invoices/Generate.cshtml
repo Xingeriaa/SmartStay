@@ -1,0 +1,53 @@
+@model do_an_tot_nghiep.ViewModels.GenerateInvoiceViewModel
+
+@{
+    ViewData["Title"] = "Engine Sinh Hóa Đơn Tự Động";
+}
+
+<div class="card shadow mb-4 col-md-7 mx-auto border-left-primary">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-magic"></i> Khởi Tạo Hóa Đơn Lũy Kế Tự Động (Rule 6.1)</h6>
+    </div>
+    <div class="card-body">
+        
+        <div class="alert alert-secondary small mb-4">
+            <i class="fas fa-robot text-dark"></i> Khối Engine sẽ tự chạy: Lấy Tiền Phòng (Contract), Cắt Lấy Snapshot Dịch vụ (Không bị dính giá Dịch Vụ Mới), Móc Số Điện Nước từ Kỳ <code>MonthYear</code> để nhân hệ số, và gộp Nợ cũ / Dư có (Ledger).
+        </div>
+
+        <form asp-action="Generate" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
+
+            <div class="mb-3">
+                <label asp-for="ContractId" class="form-label fw-bold text-dark"></label>
+                <select asp-for="ContractId" asp-items="Model.AvailableContracts" class="form-select select2-single" required>
+                    <option value="">-- Thuộc Hợp Đồng Nào? --</option>
+                </select>
+                <span asp-validation-for="ContractId" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label asp-for="MonthYear" class="form-label fw-bold text-info"></label>
+                    <input asp-for="MonthYear" class="form-control text-center font-weight-bold" placeholder="2023-10" />
+                    <span asp-validation-for="MonthYear" class="text-danger"></span>
+                    <small class="text-muted d-block mt-1">Format bắt buột (YYYY-MM)</small>
+                </div>
+
+                <div class="col-6 mb-3">
+                    <label asp-for="DueDate" class="form-label fw-bold text-danger"></label>
+                    <input asp-for="DueDate" class="form-control" type="date" />
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mt-4 text-end bg-light p-3 rounded">
+                <a asp-action="Index" class="btn btn-secondary me-2"><i class="fas fa-times"></i> Hủy, Quay Về Dashboard</a>
+                <button type="submit" class="btn btn-primary fw-bold shadow-sm"><i class="fas fa-cogs"></i> Khởi Động Engine Tổng Hợp</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -23,20 +23,71 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// Danh sách hợp đồng.
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<List<HopDong>>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return await _context.HopDongs.ToListAsync();
+            var list = await _context.HopDongs
+                .Where(h => !h.IsDeleted)
+                .Include(h => h.PhongTro)
+                .ToListAsync();
+
+            var result = list.Select(h => new
+            {
+                id = h.Id,
+                contractCode = h.ContractCode,
+                phongTroId = h.PhongTroId,
+                tenPhong = h.PhongTro?.TenPhong,
+                ngayBatDau = h.NgayBatDau,
+                ngayKetThuc = h.NgayKetThuc,
+                trangThai = h.TrangThai switch
+                {
+                    TrangThaiHopDong.DangHieuLuc => "Active",
+                    TrangThaiHopDong.DaThanhLy => "Terminated",
+                    TrangThaiHopDong.Huy => "Cancelled",
+                    _ => "Draft"
+                },
+                tienCoc = h.TienCoc,
+                giaThue = h.GiaThue,
+                paymentCycle = h.PaymentCycle,
+                signatureDate = h.SignatureDate
+            });
+
+            return Ok(result);
         }
 
         /// <summary>
         /// Lấy hợp đồng theo id.
         /// </summary>
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<HopDong>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var hopDong = await _context.HopDongs.FindAsync(id);
-            if (hopDong == null) return NotFound();
-            return hopDong;
+            var h = await _context.HopDongs
+                .Include(x => x.PhongTro)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (h == null) return NotFound();
+
+            return Ok(new
+            {
+                id = h.Id,
+                contractCode = h.ContractCode,
+                phongTroId = h.PhongTroId,
+                tenPhong = h.PhongTro?.TenPhong,
+                ngayBatDau = h.NgayBatDau,
+                ngayKetThuc = h.NgayKetThuc,
+                signatureDate = h.SignatureDate,
+                paymentCycle = h.PaymentCycle,
+                giaThue = h.GiaThue,
+                tienCoc = h.TienCoc,
+                depositStatus = h.DepositStatus,
+                trangThai = h.TrangThai switch
+                {
+                    TrangThaiHopDong.DangHieuLuc => "Active",
+                    TrangThaiHopDong.DaThanhLy => "Terminated",
+                    TrangThaiHopDong.Huy => "Cancelled",
+                    _ => "Draft"
+                },
+                isDeleted = h.IsDeleted,
+                createdAt = h.CreatedAt
+            });
         }
 
         /// <summary>

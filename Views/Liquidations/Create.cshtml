@@ -1,0 +1,451 @@
+﻿@model do_an_tot_nghiep.ViewModels.LiquidationPreviewViewModel
+@{
+    ViewData["Title"] = "Thanh lý hợp đồng";
+
+    bool hasRefund  = Model.ExpectedRefundAmount > 0;
+    bool hasCharge  = Model.ExpectedAdditionalCharge > 0;
+
+    string outcomeIcon  = hasRefund ? "fa-hand-holding-usd"
+                        : hasCharge ? "fa-exclamation-circle"
+                        : "fa-balance-scale";
+    string outcomeLabel = hasRefund ? "HOÀN TIỀN CHO KHÁCH"
+                        : hasCharge ? "THU THÊM TỪ KHÁCH"
+                        : "CÂN BẰNG — KHÔNG PHÁT SINH";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<style>
+    :root {
+        --brand: #6c5ce7;
+        --brand-light: #a29bfe;
+        --danger: #d63031;
+        --success: #00b894;
+        --warning: #fdcb6e;
+    }
+
+    .liq-page { max-width: 960px; margin: 0 auto; }
+
+    .section-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    }
+
+    .section-title {
+        font-size: .85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .ledger-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .5rem 0;
+        border-bottom: 1px dashed #f0f0f0;
+        font-size: .95rem;
+    }
+    .ledger-row:last-child { border: none; }
+    .ledger-row .label  { color: #555; }
+    .ledger-row .amount { font-weight: 700; }
+
+    .outcome-banner {
+        border-radius: 14px;
+        padding: 1.25rem 2rem;
+        text-align: center;
+        margin-bottom: 1.25rem;
+    }
+    .outcome-refund   { background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: #fff; }
+    .outcome-charge   { background: linear-gradient(135deg, #d63031 0%, #e17055 100%); color: #fff; }
+    .outcome-balanced { background: linear-gradient(135deg, #636e72 0%, #b2bec3 100%); color: #fff; }
+
+    .form-label-sm { font-size: .8rem; font-weight: 600; color: #6c757d; margin-bottom: .3rem; }
+
+    .input-meter {
+        border: 2px solid transparent;
+        border-radius: 10px;
+        padding: .6rem 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: border .2s;
+    }
+    .input-meter:focus { outline: none; border-color: var(--brand); }
+    .input-meter.elec  { border-color: #fdcb6e; }
+    .input-meter.water { border-color: #74b9ff; }
+
+    .btn-confirm {
+        background: linear-gradient(135deg, #d63031, #e17055);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: .85rem 2.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        transition: all .2s;
+    }
+    .btn-confirm:hover { opacity: .9; transform: translateY(-1px); color: #fff; }
+
+    .timeline-badge {
+        background: var(--brand-light);
+        color: var(--brand);
+        border-radius: 8px;
+        padding: .15rem .6rem;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .diff-badge {
+        font-size: .75rem;
+        border-radius: 6px;
+        padding: .2rem .6rem;
+        font-weight: 600;
+    }
+    .diff-elec  { background: #fff3cd; color: #856404; }
+    .diff-water { background: #cff4fc; color: #055160; }
+</style>
+
+<div class="liq-page">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="HopDong" asp-action="Index" class="text-muted text-decoration-none">Hợp đồng</a></li>
+            <li class="breadcrumb-item active">Thanh lý</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="fw-bold mb-1" style="font-size:1.6rem;">Thanh lý hợp đồng</h1>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="badge bg-light border text-dark fw-semibold fs-6">
+                    <i class="fas fa-file-contract text-muted me-1"></i>@Model.ContractCode
+                </span>
+                <span class="fw-semibold" style="background:#f0edff; padding:.15rem .6rem; border-radius:8px; font-size:.8rem; color:#6c5ce7;">
+                    <i class="fas fa-door-closed me-1"></i>Phòng @Model.RoomName
+                </span>
+                <span class="badge bg-light border text-dark">
+                    <i class="fas fa-user me-1 text-muted"></i>@Model.TenantName
+                </span>
+                <span class="timeline-badge">
+                    <i class="fas fa-calendar me-1"></i>@Model.NgayBatDau.ToString("dd/MM/yyyy") → @(Model.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "Vô thời hạn")
+                </span>
+            </div>
+        </div>
+        <a asp-controller="HopDong" asp-action="Index" class="btn btn-light border btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Quay lại
+        </a>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger border-0 shadow-sm mb-4">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+        </div>
+    }
+
+    <div class="alert alert-warning border-start border-warning border-4 small mb-4">
+        <i class="fas fa-balance-scale me-2"></i>
+        <strong>Nguyên tắc quyết toán:</strong>
+        Tiền cọc = <strong>NỢ PHẢI TRẢ</strong> (Liability), KHÔNG ghi nhận doanh thu. &nbsp;|&nbsp;
+        Hệ thống tự cấn trừ: <em>Nợ ròng &lt; Cọc → Hoàn tiền; Nợ ròng &gt; Cọc → Thu thêm.</em>
+    </div>
+
+    <div class="outcome-banner @(hasRefund ? "outcome-refund" : hasCharge ? "outcome-charge" : "outcome-balanced")">
+        <div class="mb-1 opacity-75 small fw-medium text-uppercase">Kết quả quyết toán dự kiến</div>
+        <div class="fw-bold" style="font-size:1.4rem;">
+            <i class="fas @outcomeIcon me-2"></i>@outcomeLabel
+        </div>
+        @if (hasRefund)
+        {
+            <div class="mt-1" style="font-size:1.6rem;font-weight:900;">+ @Model.ExpectedRefundAmount.ToString("N0") đ</div>
+            <small class="opacity-75">Số tiền hoàn lại cho khách (sau khi cấn trừ toàn bộ nợ)</small>
+        }
+        else if (hasCharge)
+        {
+            <div class="mt-1" style="font-size:1.6rem;font-weight:900;">- @Model.ExpectedAdditionalCharge.ToString("N0") đ</div>
+            <small class="opacity-75">Số tiền cần thu thêm (nợ vượt quá cọc đang giữ)</small>
+        }
+        else
+        {
+            <div class="mt-1" style="font-size:1.2rem;font-weight:700;">0 đ — Cọc vừa đủ bù toàn bộ nợ</div>
+        }
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="section-card h-100">
+                <div class="section-title"><i class="fas fa-vault text-success"></i>Quỹ tiền cọc (Liability)</div>
+
+                <div class="ledger-row">
+                    <span class="label">Cọc đang giữ</span>
+                    <span class="amount text-success">+@Model.DepositAmount.ToString("N0") đ</span>
+                </div>
+                @if (Model.LedgerCredit > 0)
+                {
+                    <div class="ledger-row">
+                        <span class="label">Số dư khách (Credit)</span>
+                        <span class="amount text-info">+@Model.LedgerCredit.ToString("N0") đ</span>
+                    </div>
+                }
+                <div class="ledger-row" style="border-top:2px solid #dee2e6;margin-top:.5rem;padding-top:.75rem;">
+                    <span class="label fw-bold">Tổng tài sản khấu trừ</span>
+                    <span class="amount text-success fs-5">@((Model.DepositAmount + Model.LedgerCredit).ToString("N0")) đ</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="section-card h-100">
+                <div class="section-title"><i class="fas fa-exclamation-circle text-danger"></i>Công nợ phải thu</div>
+
+                @if (Model.TotalUnpaidInvoices > 0)
+                {
+                    <div class="ledger-row">
+                        <span class="label">Hóa đơn tồn <span class="badge bg-danger ms-1">@Model.UnpaidInvoiceCount</span></span>
+                        <span class="amount text-danger">-@Model.TotalUnpaidInvoices.ToString("N0") đ</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="ledger-row">
+                        <span class="label">Hóa đơn tồn</span>
+                        <span class="amount text-success">Sạch nợ ✓</span>
+                    </div>
+                }
+                @if (Model.LedgerDebt > 0)
+                {
+                    <div class="ledger-row">
+                        <span class="label">Nợ sổ cái</span>
+                        <span class="amount text-danger">-@Model.LedgerDebt.ToString("N0") đ</span>
+                    </div>
+                }
+                <div class="ledger-row" style="border-top:2px solid #dee2e6;margin-top:.5rem;padding-top:.75rem;">
+                    <span class="label fw-bold">Tổng nợ ròng</span>
+                    <span class="amount text-danger fs-5">@Model.NetLiability.ToString("N0") đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title"><i class="fas fa-gavel text-danger"></i>Thông tin quyết toán cuối &amp; xác nhận thanh lý</div>
+
+        <form id="liquidationForm" asp-action="ConfirmLiquidation" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ContractId" value="@Model.ContractId" />
+
+            <p class="text-muted small mb-3">
+                <i class="fas fa-info-circle me-1"></i>
+                Nhập chỉ số điện nước tại thời điểm bàn giao. Phải ≥ chỉ số lần ghi gần nhất.
+            </p>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label-sm">⚡ Điện lần trước (kWh)</label>
+                    <input type="number" name="LastElectricityIndex" value="@Model.LastElectricityIndex"
+                           class="form-control input-meter" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label-sm">⚡ Điện bàn giao <span class="text-danger">*</span></label>
+                    <input type="number" id="finalElec" name="FinalElectricityIndex"
+                           value="@Model.LastElectricityIndex"
+                           class="form-control input-meter elec"
+                           required min="@Model.LastElectricityIndex"
+                           oninput="calcDiff()">
+                    <div class="mt-1"><span class="diff-badge diff-elec" id="diffElec">Tiêu thụ: <strong>0 kWh</strong></span></div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label-sm">💧 Nước lần trước (m³)</label>
+                    <input type="number" name="LastWaterIndex" value="@Model.LastWaterIndex"
+                           class="form-control input-meter" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label-sm">💧 Nước bàn giao <span class="text-danger">*</span></label>
+                    <input type="number" id="finalWater" name="FinalWaterIndex"
+                           value="@Model.LastWaterIndex"
+                           class="form-control input-meter water"
+                           required min="@Model.LastWaterIndex"
+                           oninput="calcDiff()">
+                    <div class="mt-1"><span class="diff-badge diff-water" id="diffWater">Tiêu thụ: <strong>0 m³</strong></span></div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label-sm">🔨 Tiền phạt hư hỏng/vi phạm (đ)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-white border-0"><i class="fas fa-hammer"></i></span>
+                        <input type="number" id="penaltyInput" name="PenaltyAmount" value="0"
+                               class="form-control" min="0" step="50000" oninput="updateOutcome()">
+                        <span class="input-group-text text-muted">đ</span>
+                    </div>
+                    <small class="text-muted">Hư hỏng tài sản, vi phạm hợp đồng...</small>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label-sm">📝 Lý do thanh lý <span class="text-danger">*</span></label>
+                    <input type="text" name="Reason" id="reasonInput"
+                           class="form-control"
+                           placeholder="VD: Hết hạn hợp đồng, khách tự nguyện rời phòng..."
+                           required minlength="5" maxlength="500">
+                    <small class="text-muted">Tối thiểu 5 ký tự. Ghi nhận vào Audit Log hệ thống.</small>
+                </div>
+            </div>
+
+            <div class="alert alert-light border mb-4" id="outcomePreview">
+                <div class="row align-items-center text-center">
+                    <div class="col-4">
+                        <div class="text-muted small">Tiền cọc</div>
+                        <div class="fw-bold text-success">@Model.DepositAmount.ToString("N0") đ</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted small">Tổng nợ + phạt</div>
+                        <div class="fw-bold text-danger" id="previewDebt">@Model.NetLiability.ToString("N0") đ</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted small" id="previewResultLabel">Kết quả</div>
+                        <div class="fw-bold fs-5" id="previewResult"
+                             style="color:@(hasRefund ? "var(--success)" : hasCharge ? "var(--danger)" : "#636e72")">
+                            @if (hasRefund) { <span>↩ @Model.ExpectedRefundAmount.ToString("N0") đ hoàn</span> }
+                            else if (hasCharge) { <span>⬆ @Model.ExpectedAdditionalCharge.ToString("N0") đ thu thêm</span> }
+                            else { <span>⚖ Cân bằng</span> }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-check mb-4 p-3 bg-light rounded-3 border">
+                <input class="form-check-input" type="checkbox" id="confirmCheck" required>
+                <label class="form-check-label fw-semibold" for="confirmCheck">
+                    Tôi xác nhận đã kiểm tra đầy đủ thông tin. Sau khi xác nhận,
+                    <strong>hành động này không thể hoàn tác</strong>.
+                    Hệ thống sẽ ghi Audit Log và phòng sẽ được trả về trạng thái Trống.
+                </label>
+            </div>
+
+            <div class="d-flex gap-3 justify-content-center">
+                <a asp-controller="HopDong" asp-action="Index" class="btn btn-light border px-4">
+                    <i class="fas fa-times me-1"></i> Hủy
+                </a>
+                <button type="button" class="btn-confirm" id="btnConfirm" onclick="submitLiquidation()">
+                    <i class="fas fa-gavel me-2"></i> Xác nhận thanh lý hợp đồng
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const depositAmt  = @Model.DepositAmount;
+    const baseDebt    = @Model.NetLiability;
+    const lastElec    = @Model.LastElectricityIndex;
+    const lastWater   = @Model.LastWaterIndex;
+
+    function calcDiff() {
+        const elec  = parseInt(document.getElementById('finalElec').value)  || lastElec;
+        const water = parseInt(document.getElementById('finalWater').value) || lastWater;
+        const dE = Math.max(0, elec  - lastElec);
+        const dW = Math.max(0, water - lastWater);
+        document.getElementById('diffElec').innerHTML  = `Tiêu thụ: <strong>${dE.toLocaleString()} kWh</strong>`;
+        document.getElementById('diffWater').innerHTML = `Tiêu thụ: <strong>${dW.toLocaleString()} m³</strong>`;
+    }
+
+    function updateOutcome() {
+        const penalty   = parseFloat(document.getElementById('penaltyInput').value) || 0;
+        const totalDebt = baseDebt + penalty;
+        const refund    = Math.max(0, depositAmt - totalDebt);
+        const charge    = Math.max(0, totalDebt  - depositAmt);
+
+        document.getElementById('previewDebt').textContent = totalDebt.toLocaleString('vi-VN') + ' đ';
+        const lblEl = document.getElementById('previewResultLabel');
+        const resEl = document.getElementById('previewResult');
+
+        if (refund > 0) {
+            lblEl.textContent = 'Hoàn lại khách';
+            resEl.style.color = 'var(--success)';
+            resEl.innerHTML   = `↩ <strong>${refund.toLocaleString('vi-VN')} đ</strong>`;
+        } else if (charge > 0) {
+            lblEl.textContent = 'Thu thêm từ khách';
+            resEl.style.color = 'var(--danger)';
+            resEl.innerHTML   = `⬆ <strong>${charge.toLocaleString('vi-VN')} đ</strong>`;
+        } else {
+            lblEl.textContent = 'Kết quả';
+            resEl.style.color = '#636e72';
+            resEl.innerHTML   = '⚖ Cân bằng';
+        }
+    }
+
+    function submitLiquidation() {
+        const checked = document.getElementById('confirmCheck').checked;
+        if (!checked) {
+            Swal.fire({ icon: 'warning', title: 'Chưa xác nhận', text: 'Vui lòng tích vào ô xác nhận trước.', confirmButtonColor: '#6c5ce7' });
+            return;
+        }
+        const reason = document.getElementById('reasonInput').value.trim();
+        if (reason.length < 5) {
+            Swal.fire({ icon: 'warning', title: 'Thiếu lý do', text: 'Vui lòng nhập lý do thanh lý (≥ 5 ký tự).', confirmButtonColor: '#6c5ce7' });
+            return;
+        }
+        const finalElec  = parseInt(document.getElementById('finalElec').value);
+        const finalWater = parseInt(document.getElementById('finalWater').value);
+        if (finalElec < lastElec) {
+            Swal.fire({ icon: 'error', title: 'Chỉ số điện không hợp lệ', text: `Chỉ số điện (${finalElec}) phải ≥ lần trước (${lastElec}).`, confirmButtonColor: '#6c5ce7' });
+            return;
+        }
+        if (finalWater < lastWater) {
+            Swal.fire({ icon: 'error', title: 'Chỉ số nước không hợp lệ', text: `Chỉ số nước (${finalWater}) phải ≥ lần trước (${lastWater}).`, confirmButtonColor: '#6c5ce7' });
+            return;
+        }
+        const penalty      = parseFloat(document.getElementById('penaltyInput').value) || 0;
+        const totalDebt    = baseDebt + penalty;
+        const refund       = Math.max(0, depositAmt - totalDebt);
+        const charge       = Math.max(0, totalDebt  - depositAmt);
+        let finText = charge > 0
+            ? `⬆ Thu thêm <strong>${charge.toLocaleString('vi-VN')} đ</strong>`
+            : refund > 0
+            ? `↩ Hoàn lại <strong>${refund.toLocaleString('vi-VN')} đ</strong>`
+            : `⚖ Quyết toán cân bằng`;
+
+        Swal.fire({
+            title: '⚠️ Xác nhận thanh lý hợp đồng?',
+            html: `<div style="text-align:left;font-size:.95rem">
+                <p>Thao tác này <strong>KHÔNG THỂ HOÀN TÁC</strong>.</p>
+                <hr>
+                <div><b>Hợp đồng:</b> @Model.ContractCode</div>
+                <div><b>Phòng:</b> @Model.RoomName → về Trống</div>
+                <div><b>Khách:</b> @Model.TenantName</div>
+                <div><b>Tài chính:</b> ${finText}</div>
+                <div style="font-size:.82rem;color:#888;margin-top:.5rem">Audit Log sẽ được ghi tự động</div>
+            </div>`,
+            icon: 'warning',
+            showCancelButton:    true,
+            confirmButtonColor:  '#d63031',
+            cancelButtonColor:   '#6c5ce7',
+            confirmButtonText:   '<i class="fas fa-gavel me-1"></i> Xác nhận thanh lý',
+            cancelButtonText:    'Quay lại kiểm tra',
+            reverseButtons:      true,
+            width: '500px'
+        }).then(result => {
+            if (result.isConfirmed) {
+                document.getElementById('btnConfirm').disabled = true;
+                document.getElementById('btnConfirm').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
+                document.getElementById('liquidationForm').submit();
+            }
+        });
+    }
+
+    calcDiff();
+</script>
+}

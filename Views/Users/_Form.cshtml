@@ -1,0 +1,64 @@
+@model do_an_tot_nghiep.ViewModels.UserFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
+
+<div class="row">
+    <!-- Cột thông tin hồ sơ -->
+    <div class="col-md-6 border-end pe-4">
+        <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2">Thông Tin Định Danh</h6>
+
+        <div class="mb-3">
+            <label asp-for="Username" class="form-label fw-bold"></label>
+            <input asp-for="Username" class="form-control" placeholder="user_account123" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label fw-bold"></label>
+            <input asp-for="FullName" class="form-control" placeholder="Tên hiện thị người quản lý..." />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label fw-bold"></label>
+            <input asp-for="Email" class="form-control" type="email" placeholder="admin@bms.com" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Phone" class="form-label fw-bold"></label>
+            <input asp-for="Phone" class="form-control" placeholder="SĐT liên kết bảo mật" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Cột bảo mật phân quyền -->
+    <div class="col-md-6 ps-4 bg-light rounded pt-2 pb-2">
+        <h6 class="text-danger fw-bold mb-3 border-bottom pb-2 border-danger"><i class="fas fa-lock"></i> Thiết Lập Bảo Mật & RBAC</h6>
+
+        <div class="mb-3">
+            <label asp-for="RoleName" class="form-label fw-bold"></label>
+            <select asp-for="RoleName" class="form-select bg-white border-dark">
+                <option value="Admin">🛡️ Admin (Quản trị toàn hệ thống)</option>
+                <option value="Staff">💼 Staff (Ban quản lý/Vận hành nhà)</option>
+                <option value="Tenant">👤 Tenant (Cư dân tự tra cứu)</option>
+            </select>
+            <span asp-validation-for="RoleName" class="text-danger"></span>
+            <small class="text-muted mt-1 d-block">Quyết định vai trò đăng nhập của user.</small>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Password" class="form-label fw-bold"></label>
+            <input asp-for="Password" class="form-control" placeholder="@(Model.Id > 0 ? "Bỏ trống nếu không muốn can thiệp đổi" : "Buộc nhập để tạo tài khoản")" autocomplete="new-password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="form-check form-switch mb-3 pt-3 border-top">
+            <input class="form-check-input fs-5" type="checkbox" asp-for="IsActive">
+            <label class="form-check-label ms-2 mt-1 fw-bold @(Model.IsActive ? "text-success" : "text-danger")" asp-for="IsActive">
+                Cấp phép Hoạt Động Kích Hoạt (Login Unlock)
+            </label>
+            <small class="text-muted d-block mt-1">Turn off để cưỡng chế Lock Account chặn mọi Action API.</small>
+        </div>
+    </div>
+</div>

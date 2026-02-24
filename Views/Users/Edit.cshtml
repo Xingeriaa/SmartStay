@@ -1,34 +1,31 @@
-﻿@model do_an_tot_nghiep.Models.User
+﻿@model do_an_tot_nghiep.ViewModels.UserFormViewModel
+
 @{
-    ViewData["Title"] = "Cập nhật người dùng";
+    ViewData["Title"] = "Đổi Quyền Tài Khoản";
 }
 
-<h2>Cập nhật người dùng</h2>
+<div class="card shadow mb-4 col-md-8 mx-auto border-left-warning">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-warning"><i class="fas fa-user-cog"></i> Sửa Nhóm Quyền & Bảo Mật: @Model.Username</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="alert alert-info">
+                <strong><i class="fas fa-info-circle"></i> Thông báo từ Hệ thống RBAC:</strong> Việc nâng/hạ quyền hạn (Role) sẽ có hiệu lực tức thời.
+            </div>
 
-<form asp-action="Edit"
-      asp-route-id="@Model.Id"
-      method="post"
-      id="userForm">
-
-    @Html.AntiForgeryToken()
-
-    <partial name="~/Views/Shared/_UserForm.cshtml" model="Model" />
-
-    <button type="submit" class="btn btn-primary" id="btnSubmit">
-        <span class="btn-text">Cập nhật</span>
-        <span class="spinner-border spinner-border-sm d-none"></span>
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-</form>
+            <partial name="_Form" model="Model" />
+            
+            <div class="mt-4 text-end bg-light p-3 rounded border">
+                <a asp-action="Index" class="btn btn-secondary me-2"> Bỏ Qua & Quay Lại</a>
+                <button type="submit" class="btn btn-warning fw-bold text-dark"><i class="fas fa-shield-alt"></i> Xác Nhận Update Token</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        $('#userForm').on('submit', function () {
-            $('#btnSubmit').prop('disabled', true);
-            $('#btnSubmit .btn-text').text('Đang xử lý...');
-            $('#btnSubmit .spinner-border').removeClass('d-none');
-        });
-    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

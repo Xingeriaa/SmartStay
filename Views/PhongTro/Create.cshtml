@@ -1,0 +1,25 @@
+@model do_an_tot_nghiep.ViewModels.PhongTroFormViewModel
+
+@{
+    ViewData["Title"] = "Thêm Phòng Mới";
+}
+
+<div class="card shadow mb-4 col-md-10 mx-auto border-left-success">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-plus-square"></i> Khai Báo Dữ Liệu Phòng Trọ Mới</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <partial name="_Form" model="Model" />
+            
+            <div class="mt-4 form-group text-end bg-light p-3 rounded">
+                <a asp-action="Index" asp-route-buildingId="@Model.NhaTroId" class="btn btn-secondary me-2"><i class="fas fa-arrow-left"></i> Trở Lại Danh Sách</a>
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Hoàn Thành Thêm Mới</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

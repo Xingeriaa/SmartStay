@@ -1,0 +1,143 @@
+@model do_an_tot_nghiep.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard Thống Kê & Giao Dịch";
+}
+
+<!-- Tiêu đề & Bộ Lọc Tháng -->
+<div class="row align-items-center justify-content-between mb-4">
+    <div class="col-md-5">
+        <h4 class="h4 mb-0 text-gray-800 font-weight-bold"><i class="fas fa-chart-line text-success"></i> Kết Quả Kinh Doanh & Vận Hành</h4>
+    </div>
+    <div class="col-md-7 text-end">
+        <form asp-action="Index" method="get" class="d-inline-flex align-items-center bg-white shadow-sm p-2 rounded rounded-pill border">
+            <label class="me-2 fw-bold text-dark px-2"><i class="fas fa-calendar-alt text-primary"></i> Lọc Kỳ:</label>
+            <input type="text" name="monthYear" value="@ViewBag.CurrentMonth" class="form-control form-control-sm me-2 rounded-pill font-weight-bold text-center border-primary" style="width: 120px;" placeholder="MM/yyyy" required pattern="(0[1-9]|1[0-2])\/20[0-9]{2}">
+            <button type="submit" class="btn btn-primary btn-sm rounded-pill fw-bold"><i class="fas fa-search"></i> Tra Cứu</button>
+        </form>
+        
+        <a asp-action="ExportExcel" asp-route-monthYear="@ViewBag.CurrentMonth" class="btn btn-success btn-sm shadow-sm rounded-pill fw-bold ms-2">
+            <i class="fas fa-file-excel"></i> Xuất Báo Cáo Cứng
+        </a>
+    </div>
+</div>
+
+<!-- Dòng CARD CHỈ SỐ SUMMARY QUAN TRỌNG NHẤT -->
+<div class="row mb-4">
+    <!-- Doanh Thu (Invoices Paid) -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-3 bg-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2 text-center">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">DÒNG TIỀN THU VỀ</div>
+                        <div class="h4 mb-0 font-weight-bold text-gray-800">@Model.Revenue.ToString("N0") <sup class="text-muted">đ</sup></div>
+                        <div class="small text-muted mt-2 fst-italic">Hóa đơn đã thanh toán T.@ViewBag.CurrentMonth</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-money-bill-wave fa-3x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Công Nợ Cần Thu -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-3 bg-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2 text-center">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">TỔNG NỢ RỦI RO LÕI</div>
+                        <div class="h4 mb-0 font-weight-bold text-gray-800">@Model.Debt.ToString("N0") <sup class="text-muted">đ</sup></div>
+                        <div class="small text-muted mt-2 fst-italic">Nợ Bill + Ghi Nợ Sổ Cái (Ledger)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-search-dollar fa-3x text-danger opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tỷ lệ Trống -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-3 bg-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2 text-center">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">KHUNG PHÒNG TRỐNG</div>
+                        <div class="h4 mb-0 font-weight-bold text-gray-800">@Model.VacancyRate.ToString("0.##")<span class="fs-5">%</span></div>
+                        <div class="small text-muted mt-2 fw-bold">Trống @Model.EmptyRooms / @Model.TotalRooms Căn</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-house-damage fa-3x text-warning opacity-50"></i>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="progress progress-sm mr-2 mt-3" style="height:5px;">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: @Model.VacancyRate%" aria-valuenow="@Model.VacancyRate" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tài Nguyên Năng Lượng -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-3 bg-white">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2 text-center">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">NĂNG LƯỢNG TIÊU THỤ</div>
+                        <div class="h5 mb-1 font-weight-bold text-gray-800"><i class="fas fa-bolt text-warning"></i> @Model.ElectricityConsumption kWh</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800"><i class="fas fa-tint text-primary"></i> @Model.WaterConsumption Khối</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-plug fa-3x text-info opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Placeholder Chart UI để Đẹp Mắt / WOW Effect -->
+<div class="row">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-chart-area"></i> Biểu đồ Dòng Tiền (Cash Flow) theo Chu kỳ</h6>
+            </div>
+            <div class="card-body text-center p-5 bg-light">
+                <i class="fas fa-chart-bar fa-5x text-muted opacity-25 mb-4"></i>
+                <h5 class="text-muted">Tính năng Chart.js Mapping đang đợi Render...</h5>
+                <p class="small text-muted">Dữ liệu hiện tại: Doanh Thu @Model.Revenue.ToString("N0") / Công Nợ @Model.Debt.ToString("N0")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cấu Hình Ngay Lập Tức -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary text-white">
+                <h6 class="m-0 font-weight-bold"><i class="fas fa-cog"></i> Lối Tắt Vận Hành Tòa Nhà</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a asp-action="Index" asp-controller="SystemConfigs" class="list-group-item list-group-item-action fw-bold text-dark d-flex align-items-center p-3">
+                        <div class="bg-primary text-white p-2 rounded-circle me-3"><i class="fas fa-cogs fa-fw"></i></div> Cấu Hình Hạn Đóng & Billing Ngày
+                    </a>
+                    <a asp-action="Import" asp-controller="MeterReadings" class="list-group-item list-group-item-action fw-bold text-dark d-flex align-items-center p-3">
+                        <div class="bg-warning text-white p-2 rounded-circle me-3"><i class="fas fa-upload fa-fw text-dark"></i></div> Bắn Excel Chỉ Số Điện Nước Lô
+                    </a>
+                    <a asp-action="Index" asp-controller="Invoices" class="list-group-item list-group-item-action fw-bold text-dark d-flex align-items-center p-3">
+                        <div class="bg-success text-white p-2 rounded-circle me-3"><i class="fas fa-file-invoice-dollar fa-fw"></i></div> Invoice Generator / In VAT
+                    </a>
+                    <a asp-action="Index" asp-controller="Tickets" class="list-group-item list-group-item-action fw-bold text-dark d-flex align-items-center p-3">
+                        <div class="bg-danger text-white p-2 rounded-circle me-3"><i class="fas fa-bell fa-fw"></i></div> Cảnh Báo Support Kỹ Thuật (Socket)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

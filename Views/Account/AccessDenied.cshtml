@@ -1,0 +1,61 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Không có quyền truy cập — SmartStay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        body {
+            font-family:'Inter','Segoe UI',sans-serif;
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+            background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+            padding:1.5rem; color:#fff;
+        }
+        .box {
+            text-align:center; max-width:440px;
+            background:rgba(255,255,255,.06);
+            backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,.1);
+            border-radius:24px; padding:3rem 2.5rem;
+            box-shadow:0 24px 64px rgba(0,0,0,.4);
+            animation:pop .4s cubic-bezier(.22,.78,.38,1) both;
+        }
+        @@keyframes pop { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+        .icon-ring {
+            width:80px; height:80px; border-radius:50%;
+            background:rgba(214,48,49,.2); border:2px solid rgba(214,48,49,.4);
+            display:flex; align-items:center; justify-content:center;
+            margin:0 auto 1.5rem; font-size:2rem; color:#ff7675;
+        }
+        h1 { font-size:1.55rem; font-weight:700; margin-bottom:.5rem; }
+        p  { color:rgba(255,255,255,.5); font-size:.9rem; line-height:1.6; margin-bottom:2rem; }
+        .btn-back {
+            display:inline-block; padding:.75rem 2rem;
+            background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+            border-radius:12px; color:#fff; font-weight:700;
+            text-decoration:none; font-size:.9rem;
+            transition:opacity .2s, transform .15s;
+        }
+        .btn-back:hover { opacity:.85; transform:translateY(-2px); }
+        .code { font-size:4rem; font-weight:700; color:rgba(214,48,49,.4); margin-bottom:.5rem; letter-spacing:.05em; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="code">403</div>
+    <div class="icon-ring"><i class="fas fa-shield-halved"></i></div>
+    <h1>Không có quyền truy cập</h1>
+    <p>Bạn không có quyền xem trang này.<br>
+    Nếu bạn cho rằng đây là lỗi, hãy liên hệ quản trị viên để được cấp quyền.</p>
+    <a href="javascript:history.back()" class="btn-back">
+        <i class="fas fa-arrow-left" style="margin-right:.4rem;"></i>Quay lại
+    </a>
+</div>
+</body>
+</html>

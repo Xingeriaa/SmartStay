@@ -1,320 +1,46 @@
-@model HopDongFormViewModel
+@model do_an_tot_nghiep.ViewModels.HopDongFormViewModel
+
 @{
-    ViewData["Title"] = "Tạo hợp đồng";
+    ViewData["Title"] = "Lập Hợp Đồng Mới";
 }
 
-<style>
-    /* --- CẤU HÌNH MÀU SẮC & BIẾN --- */
-    :root {
-        --primary-hue: 260; /* Tông tím */
-        --theme-color-primary: var(--brand-600);
-        --theme-color-secondary: var(--accent-500);
-        --theme-gradient: linear-gradient(135deg, var(--theme-color-primary) 0%, var(--theme-color-secondary) 100%);
-        --theme-light-bg: rgba(106, 17, 203, 0.04);
-        --theme-border-focus: rgba(106, 17, 203, 0.4);
-        --theme-shadow: 0 10px 30px -5px rgba(106, 17, 203, 0.15);
-    }
-
-    /* --- HIỆU ỨNG NỀN & CARD --- */
-    body {
-        background-color: #f8f9fa; /* Nền xám nhẹ làm nổi bật form */
-    }
-
-    .card-modern {
-        border: none;
-        border-radius: 1rem;
-        background: #fff;
-        box-shadow: var(--theme-shadow);
-        overflow: hidden;
-        position: relative;
-    }
-
-        /* Đường line màu gradient trên cùng */
-        .card-modern::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: var(--theme-gradient);
-            z-index: 1;
-        }
-
-    /* --- TYPOGRAPHY --- */
-    .form-section-title {
-        font-size: 0.95rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--theme-color-primary);
-        font-weight: 700;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--theme-light-bg);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .text-gradient-theme {
-        background: var(--theme-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-    }
-
-    /* --- INPUT & SELECT STYLING --- */
-    .form-label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #444;
-        margin-bottom: 0.4rem;
-    }
-
-    .input-group-text {
-        background-color: #fff;
-        border: 1px solid #e0e0e0;
-        border-right: none;
-        color: var(--theme-color-primary);
-        border-radius: 0.5rem 0 0 0.5rem;
-        transition: all 0.3s;
-    }
-
-    .form-control, .form-select {
-        border: 1px solid #e0e0e0;
-        border-radius: 0.5rem;
-        padding: 0.7rem 1rem;
-        font-size: 0.95rem;
-        transition: all 0.3s ease-in-out;
-        background-color: #fff;
-    }
-
-    /* Khi input có icon đi kèm */
-    .input-group .form-control,
-    .input-group .form-select {
-        border-left: none;
-        border-radius: 0 0.5rem 0.5rem 0;
-    }
-
-    /* Trạng thái Focus */
-    .form-control:focus, .form-select:focus {
-        border-color: var(--theme-color-primary);
-        box-shadow: 0 0 0 4px rgba(106, 17, 203, 0.1);
-        background-color: #fff;
-    }
-
-    .input-group:focus-within .input-group-text {
-        border-color: var(--theme-color-primary);
-        background-color: var(--theme-light-bg);
-    }
-
-    /* Custom select multiple scrollbar */
-    select[multiple] {
-        background-image: none; /* Bỏ mũi tên mặc định */
-        padding: 0.5rem;
-    }
-
-        select[multiple]::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        select[multiple]::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        select[multiple]::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 3px;
-        }
-
-            select[multiple]::-webkit-scrollbar-thumb:hover {
-                background: var(--theme-color-primary);
-            }
-
-    /* --- BUTTONS --- */
-    .btn-action {
-        padding: 0.8rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .btn-save {
-        background: var(--theme-gradient);
-        color: white;
-        border: none;
-    }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
-            color: white;
-        }
-
-    .btn-back {
-        background: #fff;
-        color: #666;
-        border: 1px solid #ddd;
-    }
-
-        .btn-back:hover {
-            background: #f8f9fa;
-            color: #333;
-            border-color: #ccc;
-        }
-
-    /* --- UTILS --- */
-    .note-text {
-        font-size: 0.8rem;
-        color: #888;
-        font-style: italic;
-        margin-top: 0.3rem;
-        display: block;
-    }
-</style>
-
-<div class="container py-4" style="max-width: 900px;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="mb-0 text-gradient-theme">Thiết lập Hợp đồng</h2>
-            <p class="text-muted mb-0 small">Điền thông tin chi tiết để tạo hợp đồng thuê phòng mới</p>
-        </div>
-        <div class="d-none d-md-block">
-            <span class="badge rounded-pill bg-light text-primary border border-primary px-3 py-2">
-                <i class="fa fa-file-contract me-1"></i> New Contract
-            </span>
-        </div>
+<div class="card shadow mb-4 col-md-10 mx-auto border-left-success">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-plus-square"></i> Tạo lập Hợp Đồng Khách Thuê</h6>
     </div>
-
-    <form asp-action="Create" method="post" class="card card-modern p-4 p-md-5">
-        <div class="mb-3 text-danger fw-bold bg-danger bg-opacity-10 p-2 rounded" asp-validation-summary="ModelOnly"></div>
-
-        <div class="row g-4">
-
-            <div class="col-12">
-                <div class="form-section-title">
-                    <i class="fa fa-info-circle"></i> Thông tin chung
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Chọn Phòng Thuê <span class="text-danger">*</span></label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-home"></i></span>
-                    <select asp-for="HopDong.PhongTroId" class="form-select">
-                        <option value="">-- Vui lòng chọn phòng --</option>
-                        @foreach (var p in Model.PhongTros)
-                        {
-                            <option value="@p.Id">@((p.NhaTro?.TenNhaTro ?? "Nhà chưa cập nhật") + " - " + p.TenPhong)</option>
-                        }
-                    </select>
-                </div>
-                <span class="text-danger small mt-1 d-block" asp-validation-for="HopDong.PhongTroId"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Người Đại Diện (Chủ HĐ) <span class="text-danger">*</span></label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-user-tie"></i></span>
-                    <select asp-for="ChuHopDongId" class="form-select">
-                        <option value="">-- Chọn khách thuê --</option>
-                        @foreach (var k in Model.KhachThues)
-                        {
-                            <option value="@k.Id">@k.HoTen</option>
-                        }
-                    </select>
-                </div>
-                <span class="text-danger small mt-1 d-block" asp-validation-for="ChuHopDongId"></span>
-            </div>
-
-            <div class="col-12">
-                <label class="form-label">Cư Dân Ở Cùng (Tùy chọn)</label>
-                <div class="d-flex align-items-start">
-                    <div class="input-group">
-                        <span class="input-group-text pt-2 align-items-start" style="height: auto;"><i class="fa fa-users mt-1"></i></span>
-                        <select asp-for="CuDanIds" class="form-select" multiple size="4" style="min-height: 100px;">
-                            @foreach (var k in Model.KhachThues)
-                            {
-                                <option value="@k.Id" class="py-1 px-2">@k.HoTen</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <span class="note-text"><i class="fa fa-lightbulb-o me-1"></i> Mẹo: Giữ phím <strong>Ctrl</strong> (Windows) hoặc <strong>Command</strong> (Mac) để chọn nhiều người cùng lúc.</span>
-            </div>
-
-            <div class="col-12 mt-5">
-                <div class="form-section-title">
-                    <i class="fa fa-calendar-check-o"></i> Thời hạn & Hiệu lực
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Ngày Bắt Đầu</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-calendar-plus-o"></i></span>
-                    <input asp-for="HopDong.NgayBatDau" type="date" class="form-control" />
-                </div>
-                <span class="text-danger small" asp-validation-for="HopDong.NgayBatDau"></span>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Ngày Kết Thúc</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-calendar-minus-o"></i></span>
-                    <input asp-for="HopDong.NgayKetThuc" type="date" class="form-control" />
-                </div>
-                <span class="text-danger small" asp-validation-for="HopDong.NgayKetThuc"></span>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Trạng Thái Hợp Đồng</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-flag"></i></span>
-                    <select asp-for="HopDong.TrangThai" class="form-select fw-bold text-primary">
-                        <option value="1">🟢 Đang hiệu lực</option>
-                        <option value="2">🔴 Đã thanh lý</option>
-                        <option value="3">⚪ Hủy bỏ</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="col-12 mt-5">
-                <div class="form-section-title">
-                    <i class="fa fa-money"></i> Chi phí & Đặt cọc
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Giá Thuê Hàng Tháng</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-tag"></i></span>
-                    <input asp-for="HopDong.GiaThue" class="form-control fw-bold" placeholder="0" />
-                    <span class="input-group-text bg-light text-secondary">VNĐ</span>
-                </div>
-                <span class="text-danger small" asp-validation-for="HopDong.GiaThue"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Tiền Đặt Cọc (Giữ chân)</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa fa-shield"></i></span>
-                    <input asp-for="HopDong.TienCoc" class="form-control fw-bold" placeholder="0" />
-                    <span class="input-group-text bg-light text-secondary">VNĐ</span>
-                </div>
-                <span class="text-danger small" asp-validation-for="HopDong.TienCoc"></span>
-            </div>
+    <div class="card-body">
+        
+        <div class="alert alert-info border-start border-info border-4">
+            <h6 class="fw-bold"><i class="fas fa-cogs"></i> Automations Trigger:</h6>
+            <ul class="mb-0 small">
+                <li>Phòng sẽ lập tức chuyển sang trạng thái <strong>Occupied (Đang Thuê)</strong>.</li>
+                <li>Hệ thống <strong>Tự động Snapshot (chốt giá)</strong> Tiền Thuê & Dịch Vụ tại thời điểm này. Hóa đơn sẽ tham chiếu lịch sử giá đó.</li>
+            </ul>
         </div>
 
-        <div class="mt-5 pt-3 border-top d-flex justify-content-end gap-3">
-            <a asp-action="Index" class="btn btn-action btn-back">
-                <i class="fa fa-arrow-left me-2"></i>Quay lại danh sách
-            </a>
-            <button type="submit" class="btn btn-action btn-save px-5">
-                <i class="fa fa-save me-2"></i>Lưu Hợp Đồng
-            </button>
-        </div>
-    </form>
+        <form asp-action="Create" method="post">
+            <partial name="_Form" model="Model" />
+            
+            <div class="mt-4 form-group text-end bg-light p-3 rounded">
+                <a asp-action="Index" class="btn btn-secondary me-2"><i class="fas fa-times"></i> Hủy Giao Dịch</a>
+                <button type="submit" class="btn btn-success fw-bold text-white"><i class="fas fa-signature"></i> Đồng Ý Phát Hành Ký Kết</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <!-- Make Multiple Select look better -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2-multiple').select2({
+                placeholder: "Chọn những người ở. Người đầu tiên là ĐẠI DIỆN HỢP ĐỒNG.",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
+}

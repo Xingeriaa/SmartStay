@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable CS8618
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 namespace do_an_tot_nghiep.Models
@@ -31,10 +32,38 @@ namespace do_an_tot_nghiep.Models
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TicketImage> TicketImages { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<RoomStatusHistory> RoomStatusHistories { get; set; } = null!;
+        public DbSet<TenantBalance> TenantBalances { get; set; } = null!;
+        public DbSet<TenantBalanceTransaction> TenantBalanceTransactions { get; set; } = null!;
+        public DbSet<PaymentWebhookLog> PaymentWebhookLogs { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<PhongTro>()
+                .HasIndex(r => new { r.NhaTroId, r.TenPhong })
+                .IsUnique();
+
+            modelBuilder.Entity<HopDong>()
+                .HasIndex(c => c.ContractCode)
+                .IsUnique();
+
+            modelBuilder.Entity<MeterReading>()
+                .HasIndex(m => new { m.RoomId, m.MonthYear })
+                .IsUnique();
+
+            modelBuilder.Entity<Invoice>()
+                .HasIndex(i => i.InvoiceCode)
+                .IsUnique();
+
+            modelBuilder.Entity<PaymentTransaction>()
+                .HasIndex(p => p.TransactionCode)
+                .IsUnique();
+
+            modelBuilder.Entity<KhachThue>()
+                .HasIndex(t => t.SoCCCD)
+                .IsUnique();
 
             modelBuilder.Entity<HopDongKhachThue>()
                 .HasOne(x => x.HopDong)

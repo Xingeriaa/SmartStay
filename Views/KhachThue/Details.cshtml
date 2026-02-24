@@ -1,289 +1,58 @@
-﻿@model do_an_tot_nghiep.Models.KhachThue
+﻿@model do_an_tot_nghiep.ViewModels.KhachThueFormViewModel
 
 @{
-    ViewData["Title"] = "Chi Tiết Hồ Sơ Khách Thuê";
+    ViewData["Title"] = "Hồ Sơ Cư Dân";
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
-
-<style>
-    :root {
-        /* --- MÀU CHỦ ĐẠO DUY NHẤT --- */
-        --theme-gradient: var(--brand-gradient);
-        --theme-color-primary: var(--brand-600);
-        --theme-color-secondary: var(--accent-500);
-        --glass-bg: rgba(255, 255, 255, 0.95);
-        --bg-light: #f8faff;
-    }
-
-    body {
-        background-color: #f4f7f6;
-        font-family: 'Inter', 'Segoe UI', sans-serif;
-    }
-
-    /* Main Card Layout */
-    .main-card {
-        border: none;
-        border-radius: 25px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-        background: white;
-        overflow: hidden;
-    }
-
-    /* Header Styling */
-    .card-header-custom {
-        background: var(--theme-gradient);
-        padding: 2.5rem 2rem 4rem; /* Padding bottom lớn để tạo không gian cho avatar đè lên */
-        position: relative;
-        color: white;
-    }
-
-        .card-header-custom::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -10%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            filter: blur(50px);
-        }
-
-    /* Action Buttons in Header */
-    .btn-header {
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        color: white;
-        border-radius: 12px;
-        padding: 8px 20px;
-        font-weight: 500;
-        transition: all 0.3s;
-    }
-
-        .btn-header:hover {
-            background: white;
-            color: var(--theme-color-primary);
-            transform: translateY(-2px);
-        }
-
-        .btn-header.active {
-            background: white;
-            color: var(--theme-color-primary);
-            font-weight: 700;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-    /* Profile Avatar Area */
-    .profile-section {
-        margin-top: -3rem; /* Đẩy lên đè vào header */
-        text-align: center;
-        position: relative;
-        padding-bottom: 2rem;
-    }
-
-    .avatar-container {
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        border: 5px solid white;
-        box-shadow: 0 10px 25px rgba(0, 184, 148, 0.2);
-        background: white;
-        margin: 0 auto 1rem;
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .avatar-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .avatar-placeholder {
-        font-size: 4rem;
-        color: #e0e0e0;
-    }
-
-    /* Detail Grid */
-    .detail-item {
-        background: var(--bg-light);
-        padding: 1.2rem;
-        border-radius: 15px;
-        height: 100%;
-        border: 1px solid transparent;
-        transition: 0.3s;
-    }
-
-        .detail-item:hover {
-            background: white;
-            border-color: #eef2ff;
-            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.05);
-            transform: translateY(-2px);
-        }
-
-    .detail-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: rgba(0, 184, 148, 0.1);
-        color: var(--theme-color-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-    }
-
-    .detail-label {
-        font-size: 0.85rem;
-        color: #8898aa;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.3rem;
-        font-weight: 600;
-    }
-
-    .detail-value {
-        font-size: 1rem;
-        color: #32325d;
-        font-weight: 700;
-        word-break: break-word;
-    }
-
-    /* Money highlight */
-    .text-money {
-        background: var(--brand-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 1.2rem;
-    }
-</style>
-
-<div class="container py-5 animate__animated animate__fadeIn">
-    <div class="main-card">
-        <div class="card-header-custom">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <h5 class="mb-1 opacity-75">Hồ Sơ Khách Hàng</h5>
-                    <h2 class="fw-bold mb-0">Thông Tin Chi Tiết</h2>
-                </div>
-                <div class="d-flex gap-2">
-                    <a asp-action="Index" class="btn btn-header">
-                        <i class="fas fa-arrow-left me-1"></i> Quay lại
-                    </a>
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-header active">
-                        <i class="fas fa-pen me-1"></i> Chỉnh sửa
-                    </a>
-                </div>
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <img src="~/img/undraw_profile.svg" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px;" />
+                <h5 class="font-weight-bold text-dark">@Model.HoTen</h5>
+                <p class="text-muted mb-1">CCCD: <strong>@Model.SoCCCD</strong></p>
+                <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-secondary")">@Model.Status</span>
             </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">Giới tính: <span>@(Model.Gender ?? "N/A")</span></li>
+                <li class="list-group-item d-flex justify-content-between">Ngày sinh: <span>@Model.NgaySinh.ToString("dd/MM/yyyy")</span></li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Cập nhật hồ sơ
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Sửa</a>
+                </li>
+            </ul>
         </div>
-
-        <div class="card-body px-4 px-lg-5">
-            <div class="row">
-                <div class="col-lg-3 border-end-lg">
-                    <div class="profile-section">
-                        <div class="avatar-container animate__animated animate__zoomIn">
-                            @if (!string.IsNullOrEmpty(Model.HinhAnh))
-                            {
-                                <img src="~/images/khachthue/@Model.HinhAnh" class="avatar-img" alt="@Model.HoTen" />
-                            }
-                            else
-                            {
-                                <div class="avatar-placeholder">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                            }
-                        </div>
-
-                        <h3 class="fw-bold text-dark mb-1">@Model.HoTen</h3>
-                        <div class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-bold mt-2">
-                            <i class="fas fa-check-circle me-1"></i> Đang hoạt động
-                        </div>
-
-                        <div class="mt-4 text-start">
-                            <p class="text-muted small mb-1 text-center border-top pt-3">Mã khách hàng</p>
-                            <h5 class="text-center fw-bold text-secondary">#@Model.Id</h5>
-                        </div>
-                    </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header py-3 bg-white">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-info-circle"></i> Chi Tiết Liên Hệ & Thường Trú</h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3 border-bottom pb-2">
+                    <div class="col-sm-4 font-weight-bold text-secondary">SĐT Liên Hệ Chính:</div>
+                    <div class="col-sm-8 font-weight-bold text-dark"><i class="fas fa-phone-alt me-2 text-success"></i> @Model.SoDienThoai1</div>
                 </div>
-
-                <div class="col-lg-9 ps-lg-5 pt-4 pt-lg-0 pb-5">
-                    <h6 class="text-muted text-uppercase fw-bold mb-4 small letter-spacing-1">
-                        <i class="far fa-list-alt me-2"></i>Thông tin định danh & Liên hệ
-                    </h6>
-
-                    <div class="row g-3 g-lg-4">
-                        <div class="col-md-6 col-xl-4">
-                            <div class="detail-item">
-                                <div class="detail-icon"><i class="far fa-id-card"></i></div>
-                                <div class="detail-label">Số CCCD/CMND</div>
-                                <div class="detail-value">@Model.SoCCCD</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-xl-4">
-                            <div class="detail-item">
-                                <div class="detail-icon"><i class="fas fa-birthday-cake"></i></div>
-                                <div class="detail-label">Ngày sinh</div>
-                                <div class="detail-value">@Model.NgaySinh.ToString("dd/MM/yyyy")</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-xl-4">
-                            <div class="detail-item">
-                                <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
-                                <div class="detail-label">Quê quán</div>
-                                <div class="detail-value">@(string.IsNullOrEmpty(Model.NoiSinh) ? "Chưa cập nhật" : Model.NoiSinh)</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-xl-4">
-                            <div class="detail-item">
-                                <div class="detail-icon"><i class="fas fa-phone-alt"></i></div>
-                                <div class="detail-label">Số điện thoại</div>
-                                <div class="detail-value">@Model.SoDienThoai1</div>
-                                @if (!string.IsNullOrEmpty(Model.SoDienThoai2))
-                                {
-                                    <div class="small text-muted mt-1"><i class="fas fa-plus me-1"></i>@Model.SoDienThoai2</div>
-                                }
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-xl-4">
-                            <div class="detail-item">
-                                <div class="detail-icon"><i class="far fa-envelope"></i></div>
-                                <div class="detail-label">Email</div>
-                                <div class="detail-value text-break">@(string.IsNullOrEmpty(Model.Email) ? "Chưa cập nhật" : Model.Email)</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-xl-4">
-                            <div class="detail-item" style="background: rgba(255, 248, 225, 0.5);">
-                                <div class="detail-icon" style="background: rgba(255, 193, 7, 0.2); color: #ffb300;"><i class="fas fa-coins"></i></div>
-                                <div class="detail-label">Số tiền cọc</div>
-                                <div class="detail-value text-money">
-                                    @(Model.SoTienCoc.HasValue? Model.SoTienCoc.Value.ToString("N0") : "0") <small>VNĐ</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="detail-item">
-                                <div class="d-flex align-items-start">
-                                    <div class="detail-icon mb-0 me-3"><i class="fas fa-home"></i></div>
-                                    <div>
-                                        <div class="detail-label">Địa chỉ thường trú</div>
-                                        <div class="detail-value fw-normal">@(string.IsNullOrEmpty(Model.DiaChiThuongTru) ? "Chưa có thông tin địa chỉ chi tiết" : Model.DiaChiThuongTru)</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="row mb-3 border-bottom pb-2">
+                    <div class="col-sm-4 font-weight-bold text-secondary">SĐT Phụ Zalo:</div>
+                    <div class="col-sm-8">@Model.SoDienThoai2</div>
+                </div>
+                <div class="row mb-3 border-bottom pb-2">
+                    <div class="col-sm-4 font-weight-bold text-secondary">Email:</div>
+                    <div class="col-sm-8">@Model.Email</div>
+                </div>
+                <div class="row mb-3 border-bottom pb-2">
+                    <div class="col-sm-4 font-weight-bold text-secondary">Địa Chỉ Thường Trú:</div>
+                    <div class="col-sm-8">@Model.DiaChiThuongTru</div>
+                </div>
+                <div class="row mb-3 border-bottom pb-2">
+                    <div class="col-sm-4 font-weight-bold text-secondary">Nơi Sinh:</div>
+                    <div class="col-sm-8">@Model.NoiSinh</div>
+                </div>
+                
+                <div class="text-end mt-4">
+                    <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Quay Lại Danh Sách</a>
                 </div>
             </div>
         </div>

@@ -1,352 +1,252 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using do_an_tot_nghiep.Models;
+﻿using do_an_tot_nghiep.Filters;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using System.Text;
+using do_an_tot_nghiep.ViewModels;
+using do_an_tot_nghiep.Models;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace do_an_tot_nghiep.Controllers
 {
-    // BFF Controller - Orchestrator between Razor View and Backend API
+    [RequireRole(Roles.Admin)]
     public class UsersController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<UsersController> _logger;
+        private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonOptions;
 
-        private readonly JsonSerializerOptions _jsonOptions = new()
+        public UsersController(IHttpClientFactory httpClientFactory)
         {
-            PropertyNameCaseInsensitive = true
-        };
-
-        public UsersController(IHttpClientFactory httpClientFactory, ILogger<UsersController> logger)
-        {
-            _httpClientFactory = httpClientFactory;
-            _logger = logger;
+            _httpClient = httpClientFactory.CreateClient("ApiClient");
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
-        #region Helpers
-
-        private HttpClient CreateClientWithToken()
-        {
-            var client = _httpClientFactory.CreateClient("BackendApi");
-
-            var token = User?.FindFirst("access_token")?.Value;
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new UnauthorizedAccessException("JWT Token not found in user claims");
-            }
-
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return client;
-        }
-
-        private async Task MapApiErrorsToModelState(HttpResponseMessage response)
-        {
-            var content = await response.Content.ReadAsStringAsync();
-
-            try
-            {
-                var problem = JsonSerializer.Deserialize<ValidationProblemDetails>(content, _jsonOptions);
-                if (problem?.Errors != null)
-                {
-                    foreach (var kv in problem.Errors)
-                    {
-                        foreach (var msg in kv.Value)
-                        {
-                            ModelState.AddModelError(kv.Key, msg);
-                        }
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Dữ liệu không hợp lệ từ hệ thống backend.");
-                }
-            }
-            catch
-            {
-                ModelState.AddModelError("", "Lỗi nghiệp vụ từ hệ thống backend.");
-            }
-        }
-
-        #endregion
-
-        // ========================= LIST =========================
+        // GET: Users
         public async Task<IActionResult> Index()
         {
             try
             {
-                var client = CreateClientWithToken();
-                var response = await client.GetAsync("api/users");
-
+                var response = await _httpClient.GetAsync("api/users");
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogError("API Error {Status} when calling GET api/users", response.StatusCode);
-                    return View("Error");
+                    TempData["Error"] = "Không thể tải danh sách tài khoản hệ thống.";
+                    return View(new List<UserListItemViewModel>());
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
-                var users = JsonSerializer.Deserialize<List<User>>(json, _jsonOptions) ?? new List<User>();
+                var data = JsonSerializer.Deserialize<List<User>>(json, _jsonOptions) ?? new List<User>();
 
-                return View(users);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return RedirectToAction("Login", "Auth");
+                var viewModels = data.Where(u => !u.IsDeleted).Select(u => new UserListItemViewModel
+                {
+                    Id = u.Id,
+                    Username = u.Username,
+                    FullName = u.FullName,
+                    RoleName = u.Role?.RoleName ?? "Unknown",
+                    IsActive = u.IsActive,
+                    LastLoginAt = u.LastLoginAt
+                }).OrderByDescending(x => x.Id).ToList();
+
+                return View(viewModels);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception in UsersController.Index");
-                return View("Error");
+                TempData["Error"] = $"Lỗi kết nối Server: {ex.Message}";
+                return View(new List<UserListItemViewModel>());
             }
         }
 
-        // ========================= DETAILS =========================
+        // GET: Users/Details/5
         public async Task<IActionResult> Details(int id)
         {
             try
             {
-                var client = CreateClientWithToken();
-                var response = await client.GetAsync($"api/users/{id}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    _logger.LogError("API Error {Status} when calling GET api/users/{Id}", response.StatusCode, id);
-                    return View("Error");
-                }
+                var response = await _httpClient.GetAsync($"api/users/{id}");
+                if (!response.IsSuccessStatusCode) return NotFound();
 
                 var json = await response.Content.ReadAsStringAsync();
                 var user = JsonSerializer.Deserialize<User>(json, _jsonOptions);
 
-                return View(user);
+                if (user == null || user.IsDeleted) return NotFound();
+
+                return View(new UserListItemViewModel
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    FullName = user.FullName,
+                    RoleName = user.Role?.RoleName ?? "Unknown",
+                    IsActive = user.IsActive,
+                    LastLoginAt = user.LastLoginAt
+                });
             }
-            catch (UnauthorizedAccessException)
+            catch
             {
-                return RedirectToAction("Login", "Auth");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception in UsersController.Details");
-                return View("Error");
+                TempData["Error"] = "Đã xảy ra lỗi khi tải hồ sơ tài khoản.";
+                return RedirectToAction(nameof(Index));
             }
         }
 
-        // ========================= CREATE =========================
+        // GET: Users/Create
         public IActionResult Create()
         {
-            return View(new User());
+            return View(new UserFormViewModel());
         }
 
+        // POST: Users/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(User model)
+        public async Task<IActionResult> Create(UserFormViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
 
             try
             {
-                var client = CreateClientWithToken();
-
-                var jsonBody = JsonSerializer.Serialize(model, _jsonOptions);
-                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-                var response = await client.PostAsync("api/users", content);
-
-                if (response.IsSuccessStatusCode)
+                if (string.IsNullOrWhiteSpace(model.Password))
                 {
-                    return RedirectToAction(nameof(Index));
-                }
-
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest ||
-                    response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
-                {
-                    await MapApiErrorsToModelState(response);
+                    ModelState.AddModelError("Password", "Mật khẩu không được để trống khi tạo mới.");
                     return View(model);
                 }
 
-                _logger.LogError("API Error {Status} when POST api/users", response.StatusCode);
-                return View("Error");
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return RedirectToAction("Login", "Auth");
+                var apiModel = new User
+                {
+                    Username = model.Username,
+                    Password = model.Password, // Lưu ý: Ở production cần mã hóa BCrypt
+                    FullName = model.FullName,
+                    Email = model.Email,
+                    Phone = model.Phone,
+                    RoleName = model.RoleName,
+                    IsActive = model.IsActive
+                };
+
+                var content = new StringContent(JsonSerializer.Serialize(apiModel), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("api/users", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Quản lý đã tạo tài khoản thành công!";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                TempData["Error"] = "Thất bại khi gửi lệnh tạo lên API.";
+                return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception in UsersController.Create");
-                return View("Error");
+                ModelState.AddModelError("", $"Lỗi kết nối Backend: {ex.Message}");
+                return View(model);
             }
         }
 
-        // ========================= EDIT =========================
+        // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                var client = CreateClientWithToken();
-                var response = await client.GetAsync($"api/users/{id}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    _logger.LogError("API Error {Status} GET api/users/{Id}", response.StatusCode, id);
-                    return View("Error");
-                }
+                var response = await _httpClient.GetAsync($"api/users/{id}");
+                if (!response.IsSuccessStatusCode) return NotFound();
 
                 var json = await response.Content.ReadAsStringAsync();
                 var user = JsonSerializer.Deserialize<User>(json, _jsonOptions);
 
-                return View(user);
+                if (user == null || user.IsDeleted) return NotFound();
+
+                var formModel = new UserFormViewModel
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    RoleName = user.Role?.RoleName ?? "Staff",
+                    IsActive = user.IsActive,
+                    Password = "" // Khuyên trống để báo hiệu không đổi pass
+                };
+
+                return View(formModel);
             }
-            catch (UnauthorizedAccessException)
+            catch
             {
-                return RedirectToAction("Login", "Auth");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception in UsersController.Edit(GET)");
-                return View("Error");
+                TempData["Error"] = "Không lấy được thông tin tài khoản.";
+                return RedirectToAction(nameof(Index));
             }
         }
 
+        // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User model)
+        public async Task<IActionResult> Edit(int id, UserFormViewModel model)
         {
-            if (id != model.Id)
-                return BadRequest();
-
-            if (!ModelState.IsValid)
-                return View(model);
+            if (id != model.Id) return BadRequest();
+            if (!ModelState.IsValid) return View(model);
 
             try
             {
-                var client = CreateClientWithToken();
-
-                var jsonBody = JsonSerializer.Serialize(model, _jsonOptions);
-                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-                var response = await client.PutAsync($"api/users/{id}", content);
-
-                if (response.IsSuccessStatusCode)
+                // Gọi cấu hình update profile
+                var profileRequest = new
                 {
-                    return RedirectToAction(nameof(Index));
-                }
+                    Username = model.Username,
+                    Email = model.Email,
+                    Role = model.RoleName
+                };
 
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest ||
-                    response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
+                var contentProfile = new StringContent(JsonSerializer.Serialize(profileRequest), Encoding.UTF8, "application/json");
+                var responseProfile = await _httpClient.PutAsync($"api/users/{id}/profile", contentProfile);
+
+                if (!responseProfile.IsSuccessStatusCode)
                 {
-                    await MapApiErrorsToModelState(response);
+                    TempData["Error"] = "Lỗi khi cập nhật Profile/RBAC.";
                     return View(model);
                 }
 
-                _logger.LogError("API Error {Status} PUT api/users/{Id}", response.StatusCode, id);
-                return View("Error");
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception in UsersController.Edit(POST)");
-                return View("Error");
-            }
-        }
-
-        // ========================= LOCK =========================
-        [HttpPost]
-        public async Task<IActionResult> Lock(int id)
-        {
-            try
-            {
-                var client = CreateClientWithToken();
-                var response = await client.PostAsync($"api/users/{id}/lock", null);
-
-                if (!response.IsSuccessStatusCode)
+                // Nếu có nhập pass thì đổi pass
+                if (!string.IsNullOrWhiteSpace(model.Password))
                 {
-                    _logger.LogError("API Error {Status} POST api/users/{Id}/lock", response.StatusCode, id);
+                    var passReq = new { NewPassword = model.Password };
+                    var contentPass = new StringContent(JsonSerializer.Serialize(passReq), Encoding.UTF8, "application/json");
+                    await _httpClient.PostAsync($"api/users/{id}/reset-password", contentPass);
                 }
 
+                // Xử lý Active/Lock
+                if (model.IsActive)
+                    await _httpClient.PostAsync($"api/users/{id}/unlock", null);
+                else
+                    await _httpClient.PostAsync($"api/users/{id}/lock", null);
+
+                TempData["Success"] = "Cập nhật tài khoản, RBAC thành công!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception in UsersController.Lock");
-                return View("Error");
+                ModelState.AddModelError("", $"Lỗi xử lý API: {ex.Message}");
+                return View(model);
             }
         }
 
-        // ========================= UNLOCK =========================
-        [HttpPost]
-        public async Task<IActionResult> Unlock(int id)
+        // POST: Users/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                var client = CreateClientWithToken();
-                var response = await client.PostAsync($"api/users/{id}/unlock", null);
-
-                if (!response.IsSuccessStatusCode)
+                var response = await _httpClient.DeleteAsync($"api/users/{id}");
+                if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogError("API Error {Status} POST api/users/{Id}/unlock", response.StatusCode, id);
+                    TempData["Success"] = "Xóa Soft Delete tài khoản thành công.";
                 }
-
-                return RedirectToAction(nameof(Index));
+                else
+                {
+                    TempData["Error"] = "Có lỗi xảy ra, hệ thống từ chối xóa.";
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception in UsersController.Unlock");
-                return View("Error");
+                TempData["Error"] = $"Lỗi mất kết nối truy hồi: {ex.Message}";
             }
-        }
 
-        // ========================= RESET PASSWORD =========================
-        [HttpPost]
-        public async Task<IActionResult> ResetPassword(int id, string newPassword)
-        {
-            try
-            {
-                var client = CreateClientWithToken();
-
-                var body = JsonSerializer.Serialize(new { NewPassword = newPassword });
-                var content = new StringContent(body, Encoding.UTF8, "application/json");
-
-                var response = await client.PostAsync($"api/users/{id}/reset-password", content);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    _logger.LogError("API Error {Status} POST api/users/{Id}/reset-password", response.StatusCode, id);
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception in UsersController.ResetPassword");
-                return View("Error");
-            }
-        }
-
-        // ========================= DELETE =========================
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var client = CreateClientWithToken();
-                var response = await client.DeleteAsync($"api/users/{id}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    _logger.LogError("API Error {Status} DELETE api/users/{Id}", response.StatusCode, id);
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception in UsersController.Delete");
-                return View("Error");
-            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

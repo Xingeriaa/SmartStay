@@ -1,0 +1,47 @@
+@using do_an_tot_nghiep.ViewModels
+@model MeterReadingFormViewModel
+@* Shared form fields dùng trong Create + Edit *@
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Phòng <span class="text-danger">*</span></label>
+        <select asp-for="RoomId" asp-items="Model.AvailableRooms" class="form-select" required>
+            <option value="">-- Chọn phòng --</option>
+        </select>
+        <span asp-validation-for="RoomId" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Kỳ ghi (YYYY-MM) <span class="text-danger">*</span></label>
+        <input asp-for="MonthYear" class="form-control" placeholder="VD: 2025-01" />
+        <span asp-validation-for="MonthYear" class="text-danger small"></span>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <label class="form-label fw-semibold text-muted">⚡ Điện cũ (kWh)</label>
+        <input asp-for="OldElectricityIndex" class="form-control" type="number" min="0" />
+    </div>
+    <div class="col-6 col-md-3">
+        <label class="form-label fw-semibold text-warning">⚡ Điện mới (kWh) <span class="text-danger">*</span></label>
+        <input asp-for="NewElectricityIndex" class="form-control" type="number" min="0" />
+        <span asp-validation-for="NewElectricityIndex" class="text-danger small"></span>
+    </div>
+    <div class="col-6 col-md-3">
+        <label class="form-label fw-semibold text-muted">💧 Nước cũ (m³)</label>
+        <input asp-for="OldWaterIndex" class="form-control" type="number" min="0" />
+    </div>
+    <div class="col-6 col-md-3">
+        <label class="form-label fw-semibold text-info">💧 Nước mới (m³) <span class="text-danger">*</span></label>
+        <input asp-for="NewWaterIndex" class="form-control" type="number" min="0" />
+        <span asp-validation-for="NewWaterIndex" class="text-danger small"></span>
+    </div>
+
+    @if (Model.GetType().GetProperty("Note") != null)
+    {
+        <div class="col-12">
+            <label class="form-label fw-semibold">Ghi chú</label>
+            <textarea name="Note" class="form-control" rows="2" placeholder="Tuỳ chọn..."></textarea>
+        </div>
+    }
+</div>

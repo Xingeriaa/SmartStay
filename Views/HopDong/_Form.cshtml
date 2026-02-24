@@ -1,0 +1,129 @@
+@model do_an_tot_nghiep.ViewModels.HopDongFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
+
+<div class="row">
+    <!-- Cột 1: Thông số cơ bản (Ràng buộc phòng) -->
+    <div class="col-md-5 border-end pe-4">
+        <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-home"></i> Nền Tảng Tài Sản</h6>
+
+        <div class="mb-3">
+            <label asp-for="PhongTroId" class="form-label fw-bold"></label>
+            <select asp-for="PhongTroId" asp-items="Model.AvailableRooms" class="form-select bg-white">
+                <option value="">-- Chỉ hiển thị Phòng Trống (Vacant) --</option>
+            </select>
+            <span asp-validation-for="PhongTroId" class="text-danger"></span>
+            <small class="text-muted small mt-1 d-block"><i class="fas fa-exclamation-triangle"></i> Giá phòng cứng sẽ được hệ thống sao chép (Snapshot) chống can thiệp khi lập HĐ.</small>
+        </div>
+
+        <div class="mb-3 mt-4">
+            <label asp-for="TienCoc" class="form-label fw-bold text-warning"></label>
+            <div class="input-group">
+                <span class="input-group-text bg-warning text-dark border-warning">VNĐ</span>
+                <input asp-for="TienCoc" class="form-control" type="number" step="100000" />
+            </div>
+            <span asp-validation-for="TienCoc" class="text-danger"></span>
+        </div>
+        
+        <div class="mb-3">
+            <label asp-for="PaymentCycle" class="form-label fw-bold text-success"></label>
+            <div class="input-group">
+                <input asp-for="PaymentCycle" class="form-control text-center font-weight-bold" type="number" min="1" max="12" />
+                <span class="input-group-text bg-success text-white border-success">Tháng / Lần thanh toán</span>
+            </div>
+            <span asp-validation-for="PaymentCycle" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Cột 2: Danh tính cư dân thao tác -->
+    <div class="col-md-7 ps-4">
+        <h6 class="text-success fw-bold mb-3 border-bottom pb-2 border-success"><i class="fas fa-users-cog"></i> Người Ở & Chu Kỳ Thời Gian</h6>
+
+        <div class="mb-4">
+            <label asp-for="KhachThueIds" class="form-label fw-bold text-primary">Biên chế Cư Dân Vào Ở (Chọn nhiều)</label>
+            <select asp-for="KhachThueIds" asp-items="Model.AvailableTenants" class="form-control select2-multiple" multiple="multiple">
+            </select>
+            <span asp-validation-for="KhachThueIds" class="text-danger"></span>
+            <div class="mt-2 small bg-warning p-2 rounded text-dark">
+                <strong>QUAN TRỌNG CHỐT LUẬT:</strong> Cư dân đầu tiên bạn bấm chọn sẽ được Auto-Mapping với Data Vai trò là <code>CHU_HOP_DONG</code> (Người đại diện Pháp luật duy nhất). Những cư dân chọn sau là <code>CU_DAN</code> ở ghép.
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 mb-3">
+                <label asp-for="NgayBatDau" class="form-label fw-bold"></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    <input asp-for="NgayBatDau" class="form-control" />
+                </div>
+                <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+            </div>
+
+            <div class="col-6 mb-3">
+                <label asp-for="NgayKetThuc" class="form-label fw-bold"></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-times"></i></span>
+                    <input asp-for="NgayKetThuc" class="form-control" />
+                </div>
+                <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h6 class="text-info fw-bold mb-3 border-bottom pb-2 border-info"><i class="fas fa-plug"></i> Lựa Chọn Dịch Vụ Áp Dụng Đầu Vào (Tránh sai lệch Hóa Đơn - Rule 4.2)</h6>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm table-hover align-middle">
+                <thead class="table-info text-dark">
+                    <tr>
+                        <th width="50%">Tên Dịch Vụ & Đơn Giá Cũ</th>
+                        <th width="30%">Mô Hình Tính Giá</th>
+                        <th width="20%" class="text-center">Số Lượng Đăng Ký</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Services != null)
+                    {
+                        for (int i = 0; i < Model.Services.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="hidden" asp-for="Services[i].ServiceId" />
+                                    <input type="hidden" asp-for="Services[i].ServiceName" />
+                                    <input type="hidden" asp-for="Services[i].ChargeType" />
+                                    <input type="hidden" asp-for="Services[i].UnitPrice" />
+                                    
+                                    <div class="form-check d-inline-block ps-4">
+                                        <input class="form-check-input" type="checkbox" asp-for="Services[i].IsSelected" />
+                                        <label class="form-check-label fw-bold" asp-for="Services[i].IsSelected">@Model.Services[i].ServiceName</label>
+                                    </div>
+                                    <span class="d-block text-muted small ms-4">
+                                        <i class="fas fa-tag"></i> 
+                                        @Model.Services[i].UnitPrice.ToString("N0") VNĐ 
+                                        <span class="text-danger">(Sẽ lưu cứng Snapshot này)</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    @if(Model.Services[i].ChargeType == "PerRoom") { <span class="badge bg-secondary">Tính theo Phòng</span> }
+                                    else if(Model.Services[i].ChargeType == "PerPerson") { <span class="badge bg-primary">Nhân với số Sinh viên</span> }
+                                    else if(Model.Services[i].ChargeType == "PerQuantity") { <span class="badge bg-info text-dark">Lấy Tương Lai Trừ Quá Khứ</span> }
+                                    else { <span class="badge bg-dark">Cố Định Phao Cứu Sinh</span> }
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" asp-for="Services[i].Quantity" class="form-control text-center" min="1" />
+                                        <span class="input-group-text bg-light border-0">Suất/M2</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
