@@ -4,23 +4,104 @@
     ViewData["Title"] = "Cập Nhật Cư Dân";
 }
 
-<div class="card shadow mb-4 col-md-10 mx-auto border-left-warning">
-    <div class="card-header py-3 bg-white">
-        <h6 class="m-0 font-weight-bold text-warning"><i class="fas fa-user-edit"></i> Chỉnh Sửa Hồ Sơ: @Model.HoTen</h6>
+<div class="container-fluid px-0 py-2">
+    @* Page Header *@
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Cư dân</a></li>
+                    <li class="breadcrumb-item active fw-medium">Chỉnh sửa</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-1" style="font-size:1.75rem; letter-spacing: -0.5px;">Cập nhật hồ sơ</h1>
+            <p class="text-secondary mb-0">Đang chỉnh sửa thông tin của: <strong class="text-dark">@Model.HoTen</strong> <span class="badge bg-light text-dark border ms-1">#@Model.Id</span></p>
+        </div>
+        <a asp-action="Index" class="btn btn-light border shadow-sm rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
+        </a>
     </div>
-    <div class="card-body">
-        <form asp-action="Edit" method="post">
-            <input type="hidden" asp-for="Id" />
-            <partial name="_Form" model="Model" />
-            
-            <div class="mt-4 form-group text-end bg-light p-3 rounded">
-                <a asp-action="Index" class="btn btn-secondary me-2"><i class="fas fa-times"></i> Hủy Bỏ</a>
-                <button type="submit" class="btn btn-warning text-dark"><i class="fas fa-save"></i> Cập Nhật Lại</button>
+
+    @* Main Form Card *@
+    <div class="row justify-content-center">
+        <div class="col-xl-9 col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 animate-fade-up">
+
+                @* Card Header *@
+                <div class="card-header bg-white border-bottom p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-4 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                            <i class="fas fa-user-edit text-warning fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1 text-dark">Chỉnh sửa thông tin</h5>
+                            <small class="text-secondary">Thay đổi các thông tin bên dưới và nhấn Cập nhật để lưu lại</small>
+                        </div>
+                    </div>
+                </div>
+
+                @* Card Body *@
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Edit" method="post">
+
+                        @* Hidden ID is required for Edit POST *@
+                        <input type="hidden" asp-for="Id" />
+
+                        @* Form fields from partial view *@
+                        <div class="form-wrapper">
+                            <partial name="_Form" model="Model" />
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25">
+
+                        @* Action Buttons *@
+                        <div class="d-flex justify-content-end align-items-center gap-3 pt-2">
+                            <a asp-action="Index" class="btn btn-light border shadow-sm rounded-pill px-4 py-2 fw-medium text-secondary hover-dark">
+                                <i class="fas fa-times me-2"></i> Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-warning shadow-sm rounded-pill px-5 py-2 fw-bold text-dark">
+                                <i class="fas fa-save me-2"></i> Cập nhật lại
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        /* Tinh chỉnh nhẹ cho các input bên trong partial view _Form */
+        .form-wrapper .form-control,
+        .form-wrapper .form-select {
+            box-shadow: none !important;
+            border-color: #dee2e6;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.5rem;
+        }
+            /* Đổi màu focus sang vàng (warning) cho hợp tone trang Edit */
+            .form-wrapper .form-control:focus,
+            .form-wrapper .form-select:focus {
+                border-color: #ffc107;
+                box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+            }
+
+        .form-wrapper label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .hover-dark:hover {
+            color: #212529 !important;
+            background-color: #f8f9fa !important;
+        }
+    </style>
 }

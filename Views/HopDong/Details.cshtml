@@ -324,15 +324,15 @@
 
             <div class="section-card">
                 <div class="section-title"><i class="fas fa-sliders-h text-muted"></i>Thao tác</div>
-                <div class="d-grid gap-2">
+                <div class="d-flex flex-column gap-2">
                     @if (isActive)
                     {
-                        <a asp-action="Extend" asp-route-id="@Model.Id" class="action-btn btn-extend">
+                        <a asp-action="Extend" asp-route-id="@Model.Id" class="action-btn btn-extend w-100 text-center">
                             <i class="fas fa-calendar-plus"></i> Gia hạn hợp đồng
                         </a>
                         <a asp-controller="Liquidations" asp-action="Create"
                            asp-route-contractId="@Model.Id"
-                           class="action-btn btn-terminate">
+                           class="action-btn btn-terminate w-100 text-center">
                             <i class="fas fa-gavel"></i> Thanh lý hợp đồng
                         </a>
                     }
@@ -343,15 +343,15 @@
                             Hợp đồng @statusLabel — không thể thực hiện thao tác
                         </div>
                     }
-                    <hr class="my-1 opacity-25">
-                    <a asp-action="Index" class="action-btn btn-back">
+                    <hr class="my-2 opacity-25">
+                    <a asp-action="Index" class="action-btn btn-back w-100 text-center">
                         <i class="fas fa-arrow-left"></i> Quay lại danh sách
                     </a>
                     @if (isActive)
                     {
-                        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" id="deleteForm">
+                        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" id="deleteForm" class="w-100 m-0 p-0">
                             @Html.AntiForgeryToken()
-                            <button type="button" class="action-btn btn-delete w-100" onclick="confirmDelete()">
+                            <button type="button" class="action-btn btn-delete w-100 text-center" onclick="confirmDelete()">
                                 <i class="fas fa-trash-alt"></i> Hủy hợp đồng (Soft delete)
                             </button>
                         </form>

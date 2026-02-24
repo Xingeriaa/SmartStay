@@ -4,70 +4,148 @@
     ViewData["Title"] = "Gia Hạn Hợp Đồng";
 }
 
-<div class="card shadow mb-4 col-md-8 mx-auto border-left-info border-info">
-    <div class="card-header py-3 bg-white text-center">
-        <h5 class="m-0 font-weight-bold text-info"><i class="fas fa-file-contract"></i> Phụ Lục Gia Hạn Hợp Đồng</h5>
-        <span class="badge bg-secondary px-3 py-2 mt-2">Mã HĐ: @Model.ContractCode</span>
-    </div>
-    <div class="card-body">
-        
-        <div class="alert alert-warning border-start border-warning border-4 small">
-            <strong><i class="fas fa-info-circle"></i> Nguyên tắc Hệ thống Kế toán:</strong> 
-            Không chỉnh sửa trực tiếp Hợp đồng gốc theo quy định. Nghiệp vụ này sẽ tạo riêng 1 bản Phụ Lục (ContractExtension) để ghi nhận thay đổi về Thời hạn và Giá thuê Gốc dùng cho các chu kỳ tính báo cáo tiếp theo.
+<div class="container-fluid px-0 py-2">
+    @* Page Header *@
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Hợp đồng</a></li>
+                    <li class="breadcrumb-item active fw-medium">Gia hạn</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-1" style="font-size:1.75rem; letter-spacing: -0.5px;">Gia hạn hợp đồng</h1>
+            <p class="text-secondary mb-0">Tạo phụ lục gia hạn cho hợp đồng <span class="badge bg-light text-dark border ms-1">@Model.ContractCode</span></p>
         </div>
+        <a asp-action="Index" class="btn btn-light border shadow-sm rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i> Quay lại
+        </a>
+    </div>
 
-        <form asp-action="Extend" method="post">
-            <input type="hidden" asp-for="ContractId" />
-            <input type="hidden" asp-for="ContractCode" />
-            <input type="hidden" asp-for="OldEndDate" />
-            <input type="hidden" asp-for="OldRentPrice" />
+    @* Main Form Card *@
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 animate-fade-up">
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
-
-            <!-- Current States -->
-            <div class="row mb-4 bg-light p-3 rounded">
-                <div class="col-md-6">
-                    <label class="form-label text-muted fw-bold">Ngày Kết Thúc (Cũ)</label>
-                    <div class="form-control bg-white" readonly>@Model.OldEndDate.ToString("dd/MM/yyyy")</div>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label text-muted fw-bold">Giá Thuê Gốc (Cũ)</label>
-                    <div class="form-control bg-white text-success fw-bold" readonly>@Model.OldRentPrice.ToString("N0") VNĐ</div>
-                </div>
-            </div>
-
-            <!-- New Extensions States -->
-            <h6 class="text-info fw-bold mb-3 border-bottom border-info pb-2"><i class="fas fa-edit"></i> Thông Số Gia Hạn</h6>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="NewEndDate" class="form-label fw-bold text-dark"></label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-info text-white"><i class="fas fa-calendar-plus"></i></span>
-                        <input asp-for="NewEndDate" class="form-control font-weight-bold" />
+                @* Card Header *@
+                <div class="card-header bg-white border-bottom p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-info bg-opacity-10 p-3 rounded-4 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                            <i class="fas fa-calendar-plus text-info fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1 text-dark">Phụ lục Gia hạn Hợp đồng</h5>
+                            <small class="text-secondary">Ghi nhận thay đổi về thời hạn và giá thuê cho chu kỳ mới</small>
+                        </div>
                     </div>
-                    <span asp-validation-for="NewEndDate" class="text-danger"></span>
-                    <small class="text-muted d-block mt-1">Bắt buộc &gt; Ngày Kết Thúc Cũ</small>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="NewRentPrice" class="form-label fw-bold text-dark"></label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-warning text-dark fw-bold">VNĐ</span>
-                        <input asp-for="NewRentPrice" class="form-control text-success fw-bold" type="number" />
+                @* Card Body *@
+                <div class="card-body p-4 p-md-5">
+
+                    @* Alert Rules *@
+                    <div class="alert bg-warning bg-opacity-10 border-start border-warning border-4 text-dark mb-4 p-3 rounded-end-3 shadow-sm d-flex gap-3 align-items-start">
+                        <i class="fas fa-info-circle fs-5 text-warning mt-1"></i>
+                        <div>
+                            <strong class="d-block mb-1">Nguyên tắc Hệ thống Kế toán:</strong>
+                            <span class="small text-secondary" style="line-height: 1.6;">Không chỉnh sửa trực tiếp Hợp đồng gốc theo quy định. Nghiệp vụ này sẽ tạo riêng 1 bản Phụ Lục (ContractExtension) để ghi nhận thay đổi về Thời hạn và Giá thuê Gốc dùng cho các chu kỳ tính báo cáo tiếp theo.</span>
+                        </div>
                     </div>
-                    <span asp-validation-for="NewRentPrice" class="text-danger"></span>
-                    <small class="text-muted d-block mt-1">Bỏ trống (hoặc giữ nguyên) nếu giá không đổi</small>
+
+                    <form asp-action="Extend" method="post" class="form-wrapper">
+                        <input type="hidden" asp-for="ContractId" />
+                        <input type="hidden" asp-for="ContractCode" />
+                        <input type="hidden" asp-for="OldEndDate" />
+                        <input type="hidden" asp-for="OldRentPrice" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4 alert alert-danger border-0 shadow-sm rounded-3 p-3 small"></div>
+
+                        @* Current States *@
+                        <h6 class="fw-bold text-dark mb-3 text-uppercase small" style="letter-spacing: 0.5px;">Thông tin hiện tại</h6>
+                        <div class="row g-3 mb-5">
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-3 bg-light d-flex justify-content-between align-items-center">
+                                    <span class="text-secondary small fw-medium">Ngày kết thúc (Cũ)</span>
+                                    <span class="fw-bold text-dark">@Model.OldEndDate.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-3 bg-light d-flex justify-content-between align-items-center">
+                                    <span class="text-secondary small fw-medium">Giá thuê gốc (Cũ)</span>
+                                    <span class="fw-bold text-success">@Model.OldRentPrice.ToString("N0") <small class="fw-normal text-muted">đ</small></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* New Extensions States *@
+                        <h6 class="fw-bold text-info mb-3 text-uppercase small" style="letter-spacing: 0.5px;"><i class="fas fa-edit me-2"></i>Thông số gia hạn mới</h6>
+                        <div class="p-4 border border-info border-opacity-25 bg-info bg-opacity-10 rounded-4 mb-4">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label asp-for="NewEndDate" class="fw-semibold mb-2 text-dark">Ngày kết thúc mới <span class="text-danger">*</span></label>
+                                    <div class="input-group shadow-sm rounded-3">
+                                        <span class="input-group-text bg-white border-end-0 text-info"><i class="fas fa-calendar-alt"></i></span>
+                                        <input asp-for="NewEndDate" class="form-control border-start-0 shadow-none ps-0 fw-medium" />
+                                    </div>
+                                    <span asp-validation-for="NewEndDate" class="text-danger small mt-1 d-block"></span>
+                                    <small class="text-muted d-block mt-2"><i class="fas fa-angle-right me-1 text-info opacity-50"></i> Bắt buộc phải <strong>lớn hơn</strong> Ngày kết thúc cũ.</small>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="NewRentPrice" class="fw-semibold mb-2 text-dark">Giá thuê mới (nếu đổi)</label>
+                                    <div class="input-group shadow-sm rounded-3">
+                                        <input asp-for="NewRentPrice" class="form-control shadow-none text-success fw-bold" type="number" />
+                                        <span class="input-group-text bg-white text-secondary fw-medium">VNĐ</span>
+                                    </div>
+                                    <span asp-validation-for="NewRentPrice" class="text-danger small mt-1 d-block"></span>
+                                    <small class="text-muted d-block mt-2"><i class="fas fa-angle-right me-1 text-info opacity-50"></i> Bỏ trống (hoặc giữ nguyên) nếu giá không đổi.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25">
+
+                        @* Action Buttons *@
+                        <div class="d-flex justify-content-end align-items-center gap-3 pt-2">
+                            <a asp-action="Index" class="btn btn-light border shadow-sm rounded-pill px-4 py-2 fw-medium text-secondary hover-dark">
+                                <i class="fas fa-times me-2"></i> Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-info shadow-sm rounded-pill px-5 py-2 fw-bold text-white">
+                                <i class="fas fa-check-circle me-2"></i> Ban hành phụ lục
+                            </button>
+                        </div>
+
+                    </form>
                 </div>
             </div>
-            
-            <div class="mt-4 text-end bg-light p-3 rounded">
-                <a asp-action="Index" class="btn btn-secondary me-2"><i class="fas fa-times"></i> Hủy Bỏ</a>
-                <button type="submit" class="btn btn-info fw-bold text-white"><i class="fas fa-check-circle"></i> Đồng Ý Ban Hành Phụ Lục</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        .form-wrapper .form-control {
+            border-color: #dee2e6;
+            padding: 0.6rem 0.75rem;
+        }
+
+            .form-wrapper .form-control:focus {
+                border-color: #0dcaf0; /* Info color */
+                box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25) !important;
+            }
+
+        .input-group:focus-within .input-group-text {
+            border-color: #0dcaf0;
+        }
+
+        .hover-dark:hover {
+            color: #212529 !important;
+            background-color: #f8f9fa !important;
+        }
+    </style>
 }

@@ -1,183 +1,227 @@
 @model IEnumerable<do_an_tot_nghiep.ViewModels.HopDongListItemViewModel>
 @{
     ViewData["Title"] = "Quản lý Hợp Đồng";
-    var total      = Model?.Count() ?? 0;
-    var active     = Model?.Count(x => x.TrangThai == "Active" || x.TrangThai == "DangHieuLuc") ?? 0;
+    var total = Model?.Count() ?? 0;
+    var active = Model?.Count(x => x.TrangThai == "Active" || x.TrangThai == "DangHieuLuc") ?? 0;
     var terminated = Model?.Count(x => x.TrangThai == "Terminated" || x.TrangThai == "DaThanhLy") ?? 0;
-    var cancelled  = Model?.Count(x => x.TrangThai == "Cancelled" || x.TrangThai == "Huy") ?? 0;
+    var cancelled = Model?.Count(x => x.TrangThai == "Cancelled" || x.TrangThai == "Huy") ?? 0;
 }
 
-<div class="container-fluid px-0">
+<div class="container-fluid px-0 py-2">
 
-    {{-- Header --}}
-    <div class="d-flex justify-content-between align-items-end mb-4">
+    @* Header *@
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
         <div>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
+                <ol class="breadcrumb mb-2">
                     <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
-                    <li class="breadcrumb-item active">Hợp đồng</li>
+                    <li class="breadcrumb-item active fw-medium">Hợp đồng</li>
                 </ol>
             </nav>
-            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Quản lý hợp đồng thuê</h1>
-            <p class="text-muted mb-0 mt-1">Theo dõi toàn bộ hợp đồng trong hệ thống</p>
+            <h1 class="fw-bold mb-1" style="font-size:1.75rem; letter-spacing: -0.5px;">Quản lý hợp đồng thuê</h1>
+            <p class="text-secondary mb-0">Theo dõi toàn bộ hợp đồng trong hệ thống</p>
         </div>
-        <a asp-action="Create" class="btn btn-gradient-primary btn-custom shadow">
-            <i class="fas fa-pen-nib me-1"></i> Tạo hợp đồng mới
+        <a asp-action="Create" class="btn btn-gradient-primary btn-custom shadow-sm rounded-pill px-4">
+            <i class="fas fa-pen-nib me-2"></i> Tạo hợp đồng mới
         </a>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
-            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-4 fade show d-flex align-items-center">
+            <i class="fas fa-check-circle fs-5 me-3"></i>
+            <div>@TempData["Success"]</div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
-            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-4 fade show d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fs-5 me-3"></i>
+            <div>@TempData["Error"]</div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    {{-- Stat Cards --}}
-    <div class="row g-3 mb-4">
+    @* Stat Cards *@
+    <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-up" style="cursor:pointer" onclick="filterStatus('')">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div><div class="stat-label">TỔNG HỢP ĐỒNG</div><div class="stat-value text-gradient mt-1">@total</div></div>
-                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-file-signature"></i></div>
+            <div class="card border-0 shadow-sm rounded-4 stat-card animate-fade-up h-100 p-3" style="cursor:pointer" onclick="filterStatus('')">
+                <div class="card-body p-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted fw-semibold small mb-1">TỔNG HỢP ĐỒNG</div>
+                            <h3 class="fw-bold text-dark mb-0">@total</h3>
+                        </div>
+                        <div class="stat-icon-wrapper bg-light rounded-circle p-3 text-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-file-signature fs-5"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.1s" onclick="filterStatus('active')">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div><div class="stat-label">ĐANG HIỆU LỰC</div><div class="stat-value text-success mt-1">@active</div></div>
-                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-check-circle"></i></div>
+            <div class="card border-0 shadow-sm rounded-4 stat-card animate-fade-up h-100 p-3" style="cursor:pointer;animation-delay:.1s" onclick="filterStatus('active')">
+                <div class="card-body p-1">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <div class="text-muted fw-semibold small mb-1">ĐANG HIỆU LỰC</div>
+                            <h3 class="fw-bold text-success mb-0">@active</h3>
+                        </div>
+                        <div class="stat-icon-wrapper bg-success bg-opacity-10 text-success rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-check-circle fs-5"></i>
+                        </div>
+                    </div>
+                    <small class="text-success fw-bold d-block mt-2" style="font-size:0.75rem;">(Lọc)</small>
                 </div>
-                <small class="text-success fw-bold small">Click để lọc</small>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.2s" onclick="filterStatus('terminated')">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div><div class="stat-label">ĐÃ THANH LÝ</div><div class="stat-value mt-1" style="color:#e17055">@terminated</div></div>
-                    <div class="stat-icon-wrapper bg-icon-warning"><i class="fas fa-file-contract"></i></div>
+            <div class="card border-0 shadow-sm rounded-4 stat-card animate-fade-up h-100 p-3" style="cursor:pointer;animation-delay:.2s" onclick="filterStatus('terminated')">
+                <div class="card-body p-1">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <div class="text-muted fw-semibold small mb-1">ĐÃ THANH LÝ</div>
+                            <h3 class="fw-bold text-warning mb-0">@terminated</h3>
+                        </div>
+                        <div class="stat-icon-wrapper bg-warning bg-opacity-10 text-warning rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-file-contract fs-5"></i>
+                        </div>
+                    </div>
+                    <small class="text-warning fw-bold d-block mt-2" style="font-size:0.75rem;">(Lọc)</small>
                 </div>
-                <small class="text-warning fw-bold small">Click để lọc</small>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-up" style="animation-delay:.3s">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div><div class="stat-label">ĐÃ HỦY</div><div class="stat-value mt-1 text-danger">@cancelled</div></div>
-                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-ban"></i></div>
+            <div class="card border-0 shadow-sm rounded-4 stat-card animate-fade-up h-100 p-3" style="cursor:pointer;animation-delay:.3s" onclick="filterStatus('cancelled')">
+                <div class="card-body p-1">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <div class="text-muted fw-semibold small mb-1">ĐÃ HỦY</div>
+                            <h3 class="fw-bold text-danger mb-0">@cancelled</h3>
+                        </div>
+                        <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-ban fs-5"></i>
+                        </div>
+                    </div>
+                    <small class="text-danger fw-bold d-block mt-2" style="font-size:0.75rem;">(Lọc)</small>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Filter Bar --}}
-    <div class="main-card mb-3 p-4 animate-fade-up" style="animation-delay:.1s">
+    @* Filter Bar *@
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 animate-fade-up" style="animation-delay:.1s">
         <div class="row g-3 align-items-end">
             <div class="col-xl-4 col-md-6">
-                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-search me-1"></i>Tìm kiếm hợp đồng</label>
-                <div class="search-group">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" id="searchInput" placeholder="Mã HĐ, tên phòng, số tiền cọc..." oninput="applyFilters()">
+                <label class="fw-semibold small text-secondary mb-2 d-block"><i class="fas fa-search me-1"></i>Tìm kiếm hợp đồng</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control border-start-0 shadow-none ps-0" id="searchInput" placeholder="Mã HĐ, tên phòng, số tiền cọc..." oninput="applyFilters()">
                 </div>
             </div>
             <div class="col-xl-2 col-md-4">
-                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-circle me-1"></i>Trạng thái</label>
-                <select class="form-select" id="filterStatus" onchange="applyFilters()">
+                <label class="fw-semibold small text-secondary mb-2 d-block"><i class="fas fa-circle-notch me-1"></i>Trạng thái</label>
+                <select class="form-select shadow-none" id="filterStatus" onchange="applyFilters()">
                     <option value="">-- Tất cả --</option>
-                    <option value="active">Đang hiệu lực</option>
-                    <option value="terminated">Đã thanh lý</option>
-                    <option value="cancelled">Đã hủy</option>
+                    <option value="active">🟢 Đang hiệu lực</option>
+                    <option value="terminated">🟡 Đã thanh lý</option>
+                    <option value="cancelled">🔴 Đã hủy</option>
                 </select>
             </div>
             <div class="col-xl-2 col-md-4">
-                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-calendar me-1"></i>Từ ngày</label>
-                <input type="date" class="form-control" id="filterDateFrom" onchange="applyFilters()">
+                <label class="fw-semibold small text-secondary mb-2 d-block"><i class="fas fa-calendar me-1"></i>Từ ngày</label>
+                <input type="date" class="form-control shadow-none" id="filterDateFrom" onchange="applyFilters()">
             </div>
             <div class="col-xl-2 col-md-4">
-                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-calendar-check me-1"></i>Đến ngày</label>
-                <input type="date" class="form-control" id="filterDateTo" onchange="applyFilters()">
+                <label class="fw-semibold small text-secondary mb-2 d-block"><i class="fas fa-calendar-check me-1"></i>Đến ngày</label>
+                <input type="date" class="form-control shadow-none" id="filterDateTo" onchange="applyFilters()">
             </div>
             <div class="col-xl-1 col-md-3">
-                <label class="fw-semibold small text-muted mb-1 d-block">&nbsp;</label>
-                <button class="btn btn-light border w-100" onclick="resetFilters()" title="Xóa bộ lọc">
-                    <i class="fas fa-times text-muted"></i>
+                <label class="fw-semibold small text-secondary mb-2 d-block d-none d-md-block">&nbsp;</label>
+                <button class="btn btn-light border w-100 shadow-sm" onclick="resetFilters()" title="Xóa bộ lọc">
+                    <i class="fas fa-sync-alt text-muted"></i>
                 </button>
             </div>
         </div>
         <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
     </div>
 
-    {{-- Table --}}
-    <div class="main-card animate-fade-up" style="animation-delay:.2s">
-        <div class="card-header-styled">
+    @* Table *@
+    <div class="card border-0 shadow-sm rounded-4 animate-fade-up overflow-hidden" style="animation-delay:.2s">
+        <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-file-signature text-brand"></i>
-                <h5 class="fw-bold mb-0">Danh sách hợp đồng</h5>
-                <span class="badge bg-soft-brand text-brand"><span id="visibleCount">@total</span> / @total</span>
+                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+                <h5 class="fw-bold mb-0 ms-1">Danh sách hợp đồng</h5>
+                <span class="badge bg-light text-dark border ms-2 rounded-pill"><span id="visibleCount">@total</span> / @total</span>
             </div>
-            <button class="btn btn-light border btn-sm" onclick="location.reload()"><i class="fas fa-sync-alt text-muted"></i></button>
+            <button class="btn btn-light border shadow-sm btn-sm px-3 rounded-pill" onclick="location.reload()"><i class="fas fa-redo-alt text-secondary"></i></button>
         </div>
 
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" id="dataTable">
-                <thead class="table-light">
+                <thead class="table-light text-secondary text-uppercase small fw-bold" style="letter-spacing: 0.5px;">
                     <tr>
-                        <th style="cursor:pointer" onclick="sortTable(0)">Mã HĐ <i class="fas fa-sort ms-1 text-muted small"></i></th>
-                        <th>Phòng</th>
-                        <th>Ngày bắt đầu</th>
-                        <th>Ngày kết thúc</th>
-                        <th class="text-end">Tiền cọc</th>
-                        <th class="text-end">Giá thuê</th>
-                        <th class="text-center">Trạng thái</th>
-                        <th class="text-center" style="width:200px;">Hành động</th>
+                        <th style="cursor:pointer" onclick="sortTable(0)" class="py-3">Mã HĐ <i class="fas fa-sort ms-1 text-muted opacity-50"></i></th>
+                        <th class="py-3">Phòng</th>
+                        <th class="py-3">Ngày bắt đầu</th>
+                        <th class="py-3">Ngày kết thúc</th>
+                        <th class="text-end py-3">Tiền cọc</th>
+                        <th class="text-end py-3">Giá thuê</th>
+                        <th class="text-center py-3">Trạng thái</th>
+                        <th class="text-center py-3" style="width:160px;">Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="border-top-0">
                     @if (Model != null && Model.Any())
                     {
                         foreach (var item in Model)
                         {
                             string sCls = (item.TrangThai == "Active" || item.TrangThai == "DangHieuLuc") ? "active"
-                                        : (item.TrangThai == "Terminated" || item.TrangThai == "DaThanhLy") ? "terminated" : "cancelled";
-                            string badge = sCls == "active" ? "bg-success" : sCls == "terminated" ? "bg-warning text-dark" : "bg-danger";
+                            : (item.TrangThai == "Terminated" || item.TrangThai == "DaThanhLy") ? "terminated" : "cancelled";
+                            string badge = sCls == "active" ? "bg-success text-success" : sCls == "terminated" ? "bg-warning text-warning" : "bg-danger text-danger";
                             string label = sCls == "active" ? "Đang hiệu lực" : sCls == "terminated" ? "Đã thanh lý" : "Đã hủy";
                             string dateStart = item.NgayBatDau.ToString("yyyy-MM-dd");
-                            <tr data-status="@sCls" data-date="@dateStart">
+                            <tr class="bg-white" data-status="@sCls" data-date="@dateStart">
                                 <td>
-                                    <div class="fw-bold"><i class="fas fa-file-contract text-muted me-1"></i>@item.ContractCode</div>
+                                    <div class="fw-bold text-dark"><i class="fas fa-file-contract text-muted opacity-50 me-2"></i>@item.ContractCode</div>
                                 </td>
-                                <td class="fw-bold text-success">@item.TenPhong</td>
-                                <td><span class="badge bg-light border text-dark">@item.NgayBatDau.ToString("dd/MM/yyyy")</span></td>
+                                <td><span class="fw-bold text-primary">@item.TenPhong</span></td>
+                                <td><span class="badge bg-light border text-secondary px-2 py-1">@item.NgayBatDau.ToString("dd/MM/yyyy")</span></td>
                                 <td>
                                     @if (item.NgayKetThuc.HasValue)
                                     {
-                                        bool soonExpire = item.NgayKetThuc.Value <= DateTime.Now.AddDays(30);
-                                        <span class="badge @(soonExpire ? "bg-warning text-dark" : "bg-light border text-dark")">
+                                        bool soonExpire = item.NgayKetThuc.Value <= DateTime.Now.AddDays(30) && sCls == "active";
+                                        <span class="badge @(soonExpire ? "bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning" : "bg-light border text-secondary") px-2 py-1">
                                             @item.NgayKetThuc.Value.ToString("dd/MM/yyyy")
-                                            @if (soonExpire) { <i class="fas fa-exclamation-triangle ms-1"></i> }
+                                            @if (soonExpire)
+                                            {
+                                                <i class="fas fa-exclamation-triangle ms-1" title="Sắp hết hạn"></i>
+                                            }
                                         </span>
                                     }
-                                    else { <span class="text-muted small">Vô thời hạn</span> }
+                                    else
+                                    {
+
+                                        <span class="text-muted small px-2 py-1 bg-light rounded border">Vô thời hạn</span>
+                                    }
                                 </td>
-                                <td class="text-end fw-bold text-warning">@item.TienCoc.ToString("N0") đ</td>
-                                <td class="text-end fw-bold text-success">@item.GiaThue.ToString("N0") đ</td>
-                                <td class="text-center"><span class="badge @badge rounded-pill px-3">@label</span></td>
+                                <td class="text-end fw-bold text-dark">@item.TienCoc.ToString("N0") <small class="text-secondary fw-normal">đ</small></td>
+                                <td class="text-end fw-bold text-primary">@item.GiaThue.ToString("N0") <small class="text-secondary fw-normal">đ</small></td>
                                 <td class="text-center">
-                                    <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#e3f2fd;color:#1565c0;" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                                    <span class="badge @badge bg-opacity-10 border border-opacity-25 rounded-pill px-3 py-2">
+                                        <i class="fas fa-circle me-1" style="font-size: 8px; vertical-align: middle;"></i> @label
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light border text-primary rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;" title="Chi tiết"><i class="fas fa-eye"></i></a>
                                         @if (sCls == "active")
                                         {
-                                            <a asp-action="Extend" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#e8f5e9;color:#2e7d32;" title="Gia hạn"><i class="fas fa-calendar-plus"></i></a>
-                                            <a asp-action="Terminate" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#fff8e1;color:#f57f17;" title="Thanh lý"><i class="fas fa-handshake"></i></a>
+                                            <a asp-action="Extend" asp-route-id="@item.Id" class="btn btn-sm btn-light border text-success rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;" title="Gia hạn"><i class="fas fa-calendar-plus"></i></a>
+                                            <a asp-action="Terminate" asp-route-id="@item.Id" class="btn btn-sm btn-light border text-warning rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;" title="Thanh lý"><i class="fas fa-handshake"></i></a>
                                         }
                                     </div>
                                 </td>
@@ -188,9 +232,12 @@
                     {
                         <tr>
                             <td colspan="8" class="text-center py-5">
-                                <i class="fas fa-file-signature fa-3x text-muted opacity-25 d-block mb-3"></i>
-                                <h6 class="text-muted">Chưa có hợp đồng nào</h6>
-                                <a asp-action="Create" class="btn btn-gradient-primary btn-sm mt-2"><i class="fas fa-plus me-1"></i> Tạo hợp đồng</a>
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-file-signature fa-2x text-secondary opacity-50"></i>
+                                </div>
+                                <h6 class="text-dark fw-bold">Chưa có hợp đồng nào</h6>
+                                <p class="text-muted small mb-4">Hiện tại chưa có dữ liệu hợp đồng nào được tạo trong hệ thống.</p>
+                                <a asp-action="Create" class="btn btn-primary shadow-sm rounded-pill px-4 mt-2"><i class="fas fa-plus me-2"></i> Tạo hợp đồng</a>
                             </td>
                         </tr>
                     }
@@ -198,83 +245,103 @@
             </table>
         </div>
 
-        <div id="noResultsMsg" class="text-center py-4 d-none">
-            <i class="fas fa-search fa-2x text-muted opacity-25 d-block mb-2"></i>
-            <h6 class="text-muted">Không tìm thấy hợp đồng phù hợp</h6>
-            <button class="btn btn-sm btn-light border mt-1" onclick="resetFilters()"><i class="fas fa-times me-1"></i> Xóa bộ lọc</button>
+        <div id="noResultsMsg" class="text-center py-5 d-none bg-light">
+            <i class="fas fa-search fa-2x text-muted opacity-50 d-block mb-3"></i>
+            <h6 class="text-dark fw-bold">Không tìm thấy hợp đồng phù hợp</h6>
+            <p class="text-muted small">Hãy thử thay đổi điều kiện lọc hoặc từ khóa tìm kiếm</p>
+            <button class="btn btn-outline-secondary btn-sm shadow-sm rounded-pill px-4 mt-2" onclick="resetFilters()"><i class="fas fa-times me-1"></i> Xóa tất cả bộ lọc</button>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light rounded-bottom">
-            <span class="text-muted small">Hiển thị <strong><span id="footerCount">@total</span></strong> / @total hợp đồng</span>
-            <span class="small">
-                <span class="badge bg-success me-1">@active</span> HĐ &nbsp;
-                <span class="badge bg-warning text-dark me-1">@terminated</span> Thanh lý &nbsp;
-                <span class="badge bg-danger me-1">@cancelled</span> Hủy
-            </span>
+        <div class="px-4 py-4 border-top bg-light d-flex flex-wrap justify-content-between align-items-center">
+            <span class="text-secondary small">Hiển thị <strong class="text-dark" id="footerCount">@total</strong> / @total hợp đồng</span>
+            <div class="text-secondary small d-flex gap-3 mt-2 mt-md-0">
+                <span><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 me-1">@active</span> Đang hiệu lực</span>
+                <span><span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-2 me-1">@terminated</span> Thanh lý</span>
+                <span><span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 me-1">@cancelled</span> Hủy</span>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-<script>
-    const allRows = Array.from(document.querySelectorAll('#dataTable tbody tr[data-status]'));
-    let sortDir = {};
+    <script>
+        const allRows = Array.from(document.querySelectorAll('#dataTable tbody tr[data-status]'));
+        let sortDir = {};
 
-    function filterStatus(status) {
-        document.getElementById('filterStatus').value = status;
-        applyFilters();
-    }
+        function filterStatus(status) {
+            document.getElementById('filterStatus').value = status;
+            applyFilters();
+            document.getElementById('filterStatus').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
 
-    function applyFilters() {
-        const q       = document.getElementById('searchInput').value.toLowerCase().trim();
-        const status  = document.getElementById('filterStatus').value;
-        const dateFrom = document.getElementById('filterDateFrom').value;
-        const dateTo   = document.getElementById('filterDateTo').value;
+        function applyFilters() {
+            const q       = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status  = document.getElementById('filterStatus').value;
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo   = document.getElementById('filterDateTo').value;
 
-        let visible = 0;
-        allRows.forEach(row => {
-            const matchQ  = !q || row.textContent.toLowerCase().includes(q);
-            const matchSt = !status || row.dataset.status === status;
-            const d       = row.dataset.date;
-            const matchF  = !dateFrom || d >= dateFrom;
-            const matchT  = !dateTo   || d <= dateTo;
-            const show    = matchQ && matchSt && matchF && matchT;
-            row.style.display = show ? '' : 'none';
-            if (show) visible++;
-        });
+            let visible = 0;
+            allRows.forEach(row => {
+                const matchQ  = !q || row.textContent.toLowerCase().includes(q);
+                const matchSt = !status || row.dataset.status === status;
+                const d       = row.dataset.date;
+                const matchF  = !dateFrom || d >= dateFrom;
+                const matchT  = !dateTo   || d <= dateTo;
+                const show    = matchQ && matchSt && matchF && matchT;
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
 
-        ['visibleCount','footerCount'].forEach(id => document.getElementById(id).textContent = visible);
-        document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0 || allRows.length === 0);
-        renderTags(q, status, dateFrom, dateTo);
-    }
+            ['visibleCount','footerCount'].forEach(id => {
+                if(document.getElementById(id)) document.getElementById(id).textContent = visible;
+            });
+            document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0 || allRows.length === 0);
+            renderTags(q, status, dateFrom, dateTo);
+        }
 
-    function renderTags(q, status, from, to) {
-        const c = document.getElementById('filterTags');
-        c.innerHTML = '';
-        const tag = (label, clear) => c.innerHTML += `<span class="badge bg-soft-brand text-brand border px-3 py-2 rounded-pill" style="font-size:.8rem">${label} <span style="cursor:pointer;margin-left:6px" onclick="${clear}">✕</span></span>`;
-        if (q) tag(`🔍 "${q}"`, `document.getElementById('searchInput').value='';applyFilters()`);
-        const sl = {active:'Đang hiệu lực',terminated:'Đã thanh lý',cancelled:'Đã hủy'};
-        if (status) tag(`📄 ${sl[status]}`, `document.getElementById('filterStatus').value='';applyFilters()`);
-        if (from) tag(`📅 Từ: ${from}`, `document.getElementById('filterDateFrom').value='';applyFilters()`);
-        if (to)   tag(`📅 Đến: ${to}`,  `document.getElementById('filterDateTo').value='';applyFilters()`);
-    }
+        function renderTags(q, status, from, to) {
+            const c = document.getElementById('filterTags');
+            if (!c) return;
+            c.innerHTML = '';
+            const tag = (label, clear) => c.innerHTML += `<span class="badge bg-light text-secondary border px-3 py-2 rounded-pill shadow-sm d-inline-flex align-items-center" style="font-size:.8rem; font-weight: 500;">${label} <span class="ms-2 text-muted hover-danger" style="cursor:pointer;" onclick="${clear}"><i class="fas fa-times-circle"></i></span></span>`;
+            if (q) tag(`🔍 Từ khóa: "${q}"`, `document.getElementById('searchInput').value='';applyFilters()`);
 
-    function resetFilters() {
-        ['searchInput','filterStatus','filterDateFrom','filterDateTo'].forEach(id => document.getElementById(id).value = '');
-        applyFilters();
-    }
+            const sl = {active:'🟢 Đang hiệu lực', terminated:'🟡 Đã thanh lý', cancelled:'🔴 Đã hủy'};
+            if (status) tag(`${sl[status]}`, `document.getElementById('filterStatus').value='';applyFilters()`);
 
-    function sortTable(col) {
-        const tbody = document.querySelector('#dataTable tbody');
-        const rows  = Array.from(tbody.querySelectorAll('tr[data-status]'));
-        const asc   = !sortDir[col];
-        sortDir = {}; sortDir[col] = asc;
-        rows.sort((a,b) => {
-            const av = a.cells[col]?.textContent.trim() || '';
-            const bv = b.cells[col]?.textContent.trim() || '';
-            return asc ? av.localeCompare(bv,'vi') : bv.localeCompare(av,'vi');
-        });
-        rows.forEach(r => tbody.appendChild(r));
-    }
-</script>
+            if (from) tag(`📅 Từ: ${from.split('-').reverse().join('/')}`, `document.getElementById('filterDateFrom').value='';applyFilters()`);
+            if (to)   tag(`📅 Đến: ${to.split('-').reverse().join('/')}`,  `document.getElementById('filterDateTo').value='';applyFilters()`);
+        }
+
+        function resetFilters() {
+            ['searchInput','filterStatus','filterDateFrom','filterDateTo'].forEach(id => {
+                if(document.getElementById(id)) document.getElementById(id).value = '';
+            });
+            applyFilters();
+        }
+
+        function sortTable(col) {
+            const tbody = document.querySelector('#dataTable tbody');
+            const rows  = Array.from(tbody.querySelectorAll('tr[data-status]'));
+            const asc   = !sortDir[col];
+            sortDir = {}; sortDir[col] = asc;
+            rows.sort((a,b) => {
+                const av = a.cells[col]?.textContent.trim() || '';
+                const bv = b.cells[col]?.textContent.trim() || '';
+                return asc ? av.localeCompare(bv,'vi') : bv.localeCompare(av,'vi');
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        }
+    </script>
+    <style>
+        /* Add a small hover effect for rows */
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa !important;
+            transition: background-color 0.2s ease;
+        }
+        /* Small hover effect on cancel/close buttons inside pills */
+        .hover-danger:hover {
+            color: #dc3545 !important;
+        }
+    </style>
 }

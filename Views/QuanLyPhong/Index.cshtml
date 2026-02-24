@@ -3,130 +3,164 @@
     ViewData["Title"] = "Quản lý phòng trọ";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var totalRooms    = Model?.Count() ?? 0;
-    var vacantRooms   = Model?.Count(x => x.Status == "Vacant") ?? 0;
+    var totalRooms = Model?.Count() ?? 0;
+    var vacantRooms = Model?.Count(x => x.Status == "Vacant") ?? 0;
     var occupiedRooms = Model?.Count(x => x.Status == "Occupied") ?? 0;
-    var maintRooms    = Model?.Count(x => x.Status == "Maintenance") ?? 0;
-    var avgPrice      = (Model != null && Model.Any()) ? Model.Average(x => x.GiaPhong) : 0;
+    var maintRooms = Model?.Count(x => x.Status == "Maintenance") ?? 0;
+    var avgPrice = (Model != null && Model.Any()) ? Model.Average(x => x.GiaPhong) : 0;
 
     var nhaTroList = ViewBag.DanhSachNha as List<do_an_tot_nghiep.Models.NhaTro> ?? new();
     var selectedNhaId = ViewBag.SelectedNhaId as int?;
 }
 
-{{-- Select2 for enterprise building search --}}
+@* Select2 for enterprise building search *@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
-<div class="container-fluid px-0">
+<div class="container-fluid px-0 py-2">
 
-    {{-- Page Header --}}
-    <div class="d-flex justify-content-between align-items-end mb-4">
+    @* Page Header *@
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
         <div>
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
+                <ol class="breadcrumb mb-2">
                     <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
                     <li class="breadcrumb-item"><a asp-controller="QuanLyNha" asp-action="Index" class="text-muted text-decoration-none">Hệ thống nhà</a></li>
-                    <li class="breadcrumb-item active">Phòng trọ</li>
+                    <li class="breadcrumb-item active fw-medium">Phòng trọ</li>
                 </ol>
             </nav>
-            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Quản lý phòng trọ</h1>
-            <p class="text-muted mb-0 mt-1">
+            <h1 class="fw-bold mb-1" style="font-size:1.75rem; letter-spacing: -0.5px;">Quản lý phòng trọ</h1>
+            <p class="text-secondary mb-0">
                 @if (selectedNhaId != null)
                 {
                     var nh = nhaTroList.FirstOrDefault(n => n.Id == selectedNhaId);
-                    <span>Tòa nhà: <strong class="text-brand">@(nh?.TenNhaTro ?? "")</strong> — @totalRooms phòng</span>
+                    <span>Tòa nhà: <strong class="text-primary">@(nh?.TenNhaTro ?? "")</strong> — <span class="badge bg-light text-dark border">@totalRooms phòng</span></span>
                 }
-                else { <span>Toàn bộ @totalRooms phòng trong hệ thống</span> }
+                else
+                {
+
+                    <span>Toàn bộ <strong>@totalRooms</strong> phòng trong hệ thống</span>
+                }
             </p>
         </div>
         @if (selectedNhaId != null)
         {
-            <a asp-action="Create" asp-route-nhaId="@selectedNhaId" class="btn btn-gradient-primary btn-custom shadow">
-                <i class="fas fa-plus me-1"></i> Thêm phòng mới
+            <a asp-action="Create" asp-route-nhaId="@selectedNhaId" class="btn btn-gradient-primary btn-custom shadow-sm rounded-pill px-4">
+                <i class="fas fa-plus me-2"></i> Thêm phòng mới
             </a>
         }
         else
         {
-            <button class="btn btn-gradient-primary btn-custom shadow opacity-50" onclick="alertSelectHouseFirst()" style="cursor:not-allowed;">
-                <i class="fas fa-plus me-1"></i> Thêm phòng mới
+            <button class="btn btn-gradient-primary btn-custom shadow-sm rounded-pill px-4 opacity-50" onclick="alertSelectHouseFirst()" style="cursor:not-allowed;">
+                <i class="fas fa-plus me-2"></i> Thêm phòng mới
             </button>
         }
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
-            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-4 fade show d-flex align-items-center">
+            <i class="fas fa-check-circle fs-5 me-3"></i>
+            <div>@TempData["Success"]</div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
-            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+        <div class="alert alert-danger alert-dismissible border-0 shadow-sm rounded-3 mb-4 fade show d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fs-5 me-3"></i>
+            <div>@TempData["Error"]</div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    {{-- Stat Cards --}}
-    <div class="row g-3 mb-4">
+    @* Stat Cards *@
+    <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-up" style="cursor:pointer" onclick="filterByStatus('')">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div><div class="stat-label">TỔNG PHÒNG</div><div class="stat-value text-gradient mt-1">@totalRooms</div></div>
-                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-door-open"></i></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.1s" onclick="filterByStatus('Vacant')">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div><div class="stat-label">CÒN TRỐNG</div><div class="stat-value text-success mt-1">@vacantRooms</div></div>
-                    <div class="stat-icon-wrapper bg-icon-success"><i class="fas fa-check-circle"></i></div>
-                </div>
-                <div class="mt-2">
-                    @{var vPct = totalRooms > 0 ? vacantRooms * 100 / totalRooms : 0;}
-                    <div class="progress" style="height:4px;"><div class="progress-bar bg-success" style="width:@vPct%"></div></div>
-                    <small class="text-muted mt-1 d-block">@vPct% còn trống · <span class="text-success fw-bold small">Click để lọc</span></small>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-up" style="cursor:pointer;animation-delay:.2s" onclick="filterByStatus('Occupied')">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div><div class="stat-label">ĐANG THUÊ</div><div class="stat-value mt-1" style="color:#0984e3">@occupiedRooms</div></div>
-                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-users"></i></div>
-                </div>
-                <div class="mt-2">
-                    @{var oPct = totalRooms > 0 ? occupiedRooms * 100 / totalRooms : 0;}
-                    <div class="progress" style="height:4px;"><div class="progress-bar" style="width:@oPct%;background:#0984e3"></div></div>
-                    <small class="text-muted mt-1 d-block">@oPct% đang thuê · <span class="text-primary fw-bold small">Click để lọc</span></small>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card animate-fade-up" style="animation-delay:.3s">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div style="min-width:0">
-                        <div class="stat-label">GIÁ TB / PHÒNG</div>
-                        <div class="stat-value mt-1" style="font-size:1.3rem;">@avgPrice.ToString("N0") <small class="fs-6 text-muted fw-normal">đ</small></div>
+            <div class="card border-0 shadow-sm rounded-4 stat-card animate-fade-up h-100 p-3" style="cursor:pointer" onclick="filterByStatus('')">
+                <div class="card-body p-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted fw-semibold small mb-1">TỔNG PHÒNG</div>
+                            <h3 class="fw-bold text-dark mb-0">@totalRooms</h3>
+                        </div>
+                        <div class="stat-icon-wrapper bg-light rounded-circle p-3 text-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-door-open fs-5"></i>
+                        </div>
                     </div>
-                    <div class="stat-icon-wrapper bg-icon-warning"><i class="fas fa-coins"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 stat-card animate-fade-up h-100 p-3" style="cursor:pointer;animation-delay:.1s" onclick="filterByStatus('Vacant')">
+                <div class="card-body p-1">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <div class="text-muted fw-semibold small mb-1">CÒN TRỐNG</div>
+                            <h3 class="fw-bold text-success mb-0">@vacantRooms</h3>
+                        </div>
+                        <div class="stat-icon-wrapper bg-success bg-opacity-10 text-success rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-check-circle fs-5"></i>
+                        </div>
+                    </div>
+                    @{
+                        var vPct = totalRooms > 0 ? vacantRooms * 100 / totalRooms : 0;
+                    }
+                    <div class="progress rounded-pill bg-success bg-opacity-10" style="height:6px;">
+                        <div class="progress-bar bg-success rounded-pill" style="width:@vPct%"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">@vPct% còn trống <span class="text-success fw-bold ms-1" style="font-size:0.75rem;">(Lọc)</span></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 stat-card animate-fade-up h-100 p-3" style="cursor:pointer;animation-delay:.2s" onclick="filterByStatus('Occupied')">
+                <div class="card-body p-1">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <div class="text-muted fw-semibold small mb-1">ĐANG THUÊ</div>
+                            <h3 class="fw-bold mb-0" style="color:#0984e3">@occupiedRooms</h3>
+                        </div>
+                        <div class="stat-icon-wrapper rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: rgba(9, 132, 227, 0.1); color: #0984e3;">
+                            <i class="fas fa-users fs-5"></i>
+                        </div>
+                    </div>
+                    @{
+                        var oPct = totalRooms > 0 ? occupiedRooms * 100 / totalRooms : 0;
+                    }
+                    <div class="progress rounded-pill" style="height:6px; background-color: rgba(9, 132, 227, 0.1);">
+                        <div class="progress-bar rounded-pill" style="width:@oPct%; background-color:#0984e3"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">@oPct% đang thuê <span class="fw-bold ms-1" style="color:#0984e3; font-size:0.75rem;">(Lọc)</span></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 stat-card animate-fade-up h-100 p-3" style="animation-delay:.3s">
+                <div class="card-body p-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div style="min-width:0">
+                            <div class="text-muted fw-semibold small mb-1">GIÁ TB / PHÒNG</div>
+                            <h3 class="fw-bold text-dark mb-0">@avgPrice.ToString("N0") <small class="fs-6 text-muted fw-normal">đ</small></h3>
+                        </div>
+                        <div class="stat-icon-wrapper bg-warning bg-opacity-10 text-warning rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-coins fs-5"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- ============================== ENTERPRISE FILTER PANEL ============================== --}}
-    <div class="main-card mb-3 p-4 animate-fade-up" style="animation-delay:.1s">
+    @* ============================== ENTERPRISE FILTER PANEL ============================== *@
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 animate-fade-up" style="animation-delay:.1s">
         <div class="row g-3 align-items-end">
-
-            {{-- 1. Building Search - Select2 với search box tích hợp (phù hợp 100+ tòa) --}}
+            @* 1. Building Search *@
             <div class="col-xl-4 col-md-6">
-                <label class="fw-semibold small text-muted mb-1 d-block">
+                <label class="fw-semibold small text-secondary mb-2 d-block">
                     <i class="fas fa-building me-1"></i>Tòa nhà
-                    <span class="badge bg-soft-brand text-brand ms-1">@nhaTroList.Count tòa</span>
+                    <span class="badge bg-soft-brand text-brand ms-1 rounded-pill">@nhaTroList.Count tòa</span>
                 </label>
-                <select class="form-select" id="select2Building" style="width:100%">
+                <select class="form-select shadow-none" id="select2Building" style="width:100%">
                     <option value="">-- Tất cả tòa nhà --</option>
                     @foreach (var nha in nhaTroList)
                     {
@@ -140,30 +174,30 @@
                         }
                     }
                 </select>
-                <div class="text-muted" style="font-size:.72rem;margin-top:4px;">
+                <div class="text-muted mt-1" style="font-size:.75rem;">
                     Gõ để tìm theo tên hoặc địa chỉ tòa nhà
                 </div>
             </div>
 
-            {{-- 2. Text search in room name + floor --}}
+            @* 2. Text search *@
             <div class="col-xl-3 col-md-6">
-                <label class="fw-semibold small text-muted mb-1 d-block">
+                <label class="fw-semibold small text-secondary mb-2 d-block">
                     <i class="fas fa-search me-1"></i>Tìm kiếm phòng
                 </label>
-                <div class="search-group">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" id="searchInput"
-                           placeholder="Tên phòng, tầng, nội thất..."
+                <div class="input-group">
+                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control border-start-0 shadow-none ps-0" id="searchInput"
+                           placeholder="Tên, tầng, nội thất..."
                            oninput="applyFilters()">
                 </div>
             </div>
 
-            {{-- 3. Status quick filter --}}
+            @* 3. Status quick filter *@
             <div class="col-xl-2 col-md-4">
-                <label class="fw-semibold small text-muted mb-1 d-block">
-                    <i class="fas fa-circle me-1"></i>Trạng thái
+                <label class="fw-semibold small text-secondary mb-2 d-block">
+                    <i class="fas fa-circle-notch me-1"></i>Trạng thái
                 </label>
-                <select class="form-select" id="filterStatus" onchange="applyFilters()">
+                <select class="form-select shadow-none" id="filterStatus" onchange="applyFilters()">
                     <option value="">-- Tất cả --</option>
                     <option value="Vacant">🟢 Còn trống</option>
                     <option value="Occupied">🔵 Đang thuê</option>
@@ -171,12 +205,12 @@
                 </select>
             </div>
 
-            {{-- 4. Price range --}}
+            @* 4. Price range *@
             <div class="col-xl-2 col-md-4">
-                <label class="fw-semibold small text-muted mb-1 d-block">
+                <label class="fw-semibold small text-secondary mb-2 d-block">
                     <i class="fas fa-tags me-1"></i>Khoảng giá
                 </label>
-                <select class="form-select" id="filterPrice" onchange="applyFilters()">
+                <select class="form-select shadow-none" id="filterPrice" onchange="applyFilters()">
                     <option value="">-- Tất cả --</option>
                     <option value="0-2000000">Dưới 2 triệu</option>
                     <option value="2000000-4000000">2 – 4 triệu</option>
@@ -185,60 +219,62 @@
                 </select>
             </div>
 
-            {{-- 5. Reset --}}
+            @* 5. Reset *@
             <div class="col-xl-1 col-md-4">
-                <label class="fw-semibold small text-muted mb-1 d-block">&nbsp;</label>
-                <button class="btn btn-light border w-100" onclick="resetFilters()" title="Xóa bộ lọc">
-                    <i class="fas fa-times text-muted"></i>
+                <label class="fw-semibold small text-secondary mb-2 d-block d-none d-md-block">&nbsp;</label>
+                <button class="btn btn-light border w-100 shadow-sm" onclick="resetFilters()" title="Xóa bộ lọc">
+                    <i class="fas fa-sync-alt text-muted"></i>
                 </button>
             </div>
         </div>
 
-        {{-- Active filter tags --}}
+        @* Active filter tags *@
         <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
     </div>
 
-    {{-- Main Table --}}
-    <div class="main-card animate-fade-up" style="animation-delay:.2s">
-        <div class="card-header-styled">
+    @* Main Table *@
+    <div class="card border-0 shadow-sm rounded-4 animate-fade-up overflow-hidden" style="animation-delay:.2s">
+        <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-door-open text-brand"></i>
-                <h5 class="fw-bold mb-0">Danh sách phòng</h5>
-                <span class="badge bg-soft-brand text-brand">
+                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3">
+                    <i class="fas fa-list-ul"></i>
+                </div>
+                <h5 class="fw-bold mb-0 ms-1">Danh sách phòng</h5>
+                <span class="badge bg-light text-dark border ms-2 rounded-pill">
                     <span id="visibleCount">@totalRooms</span> / @totalRooms phòng
                 </span>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn btn-light border btn-sm" onclick="location.reload()"><i class="fas fa-sync-alt text-muted"></i></button>
-                <button class="btn btn-outline-danger btn-sm" onclick="deleteSelected()"><i class="fas fa-trash me-1"></i> Xóa đã chọn</button>
+                <button class="btn btn-light border shadow-sm btn-sm px-3 rounded-pill" onclick="location.reload()"><i class="fas fa-redo-alt text-secondary"></i></button>
+                <button class="btn btn-outline-danger shadow-sm btn-sm px-3 rounded-pill" onclick="deleteSelected()"><i class="fas fa-trash me-1"></i> Xóa đã chọn</button>
             </div>
         </div>
 
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" id="dataTable">
-                <thead class="table-light">
+                <thead class="table-light text-secondary text-uppercase small fw-bold" style="letter-spacing: 0.5px;">
                     <tr>
-                        <th style="width:44px" class="text-center">
-                            <input class="form-check-input" type="checkbox" id="checkAll" onclick="toggleAll(this)">
+                        <th style="width:50px" class="text-center py-3">
+                            <input class="form-check-input shadow-none" type="checkbox" id="checkAll" onclick="toggleAll(this)">
                         </th>
-                        <th style="cursor:pointer" onclick="sortTable(1)">Phòng <i class="fas fa-sort ms-1 text-muted small"></i></th>
-                        <th class="text-center" style="cursor:pointer" onclick="sortTable(2)">Tầng <i class="fas fa-sort ms-1 text-muted small"></i></th>
-                        <th class="text-center">Diện tích</th>
-                        <th class="text-end" style="cursor:pointer" onclick="sortTable(4)">Giá thuê <i class="fas fa-sort ms-1 text-muted small"></i></th>
-                        <th class="text-center">Trạng thái</th>
-                        <th class="text-center">Sức chứa</th>
-                        <th>Nội thất</th>
-                        <th class="text-center" style="width:190px;">Hành động</th>
+                        <th style="cursor:pointer" onclick="sortTable(1)" class="py-3">Phòng <i class="fas fa-sort ms-1 text-muted opacity-50"></i></th>
+                        <th class="text-center py-3" style="cursor:pointer" onclick="sortTable(2)">Tầng <i class="fas fa-sort ms-1 text-muted opacity-50"></i></th>
+                        <th class="text-center py-3">Diện tích</th>
+                        <th class="text-end py-3" style="cursor:pointer" onclick="sortTable(4)">Giá thuê <i class="fas fa-sort ms-1 text-muted opacity-50"></i></th>
+                        <th class="text-center py-3">Trạng thái</th>
+                        <th class="text-center py-3">Sức chứa</th>
+                        <th class="py-3">Nội thất</th>
+                        <th class="text-center py-3" style="width:190px;">Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="border-top-0">
                     @if (Model != null && Model.Any())
                     {
                         foreach (var item in Model)
                         {
                             string statusClass = item.Status switch { "Vacant" => "bg-success", "Occupied" => "bg-primary", "Maintenance" => "bg-warning text-dark", _ => "bg-secondary" };
                             string statusLabel = item.Status switch { "Vacant" => "Trống", "Occupied" => "Đang thuê", "Maintenance" => "Bảo trì", _ => item.Status ?? "—" };
-                            <tr class="room-row"
+                            <tr class="room-row bg-white"
                                 data-status="@item.Status"
                                 data-name="@Html.Raw(item.TenPhong?.ToLower())"
                                 data-floor="@item.Tang"
@@ -246,52 +282,60 @@
                                 data-nha="@item.NhaTroId"
                                 data-noithat="@item.NoiThat?.ToLower()">
                                 <td class="text-center">
-                                    <input type="checkbox" class="form-check-input room-checkbox" value="@item.Id">
+                                    <input type="checkbox" class="form-check-input shadow-none room-checkbox" value="@item.Id">
                                 </td>
                                 <td>
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div class="d-flex align-items-center gap-3">
                                         @if (!string.IsNullOrEmpty(item.AnhPhong))
                                         {
-                                            <img src="@item.AnhPhong" class="rounded-2 border" style="width:48px;height:38px;object-fit:cover;"
-                                                 onerror="this.src='https://placehold.co/48x38?text=No+Img'">
+                                            <img src="@item.AnhPhong" class="rounded-3 shadow-sm" style="width:48px;height:48px;object-fit:cover;"
+                                                 onerror="this.src='https://placehold.co/48x48?text=No+Img'">
                                         }
                                         else
                                         {
-                                            <div class="rounded-2 bg-light border d-flex align-items-center justify-content-center text-muted" style="width:48px;height:38px;flex-shrink:0;">
-                                                <i class="fas fa-image small"></i>
+                                            <div class="rounded-3 bg-light border d-flex align-items-center justify-content-center text-muted shadow-sm" style="width:48px;height:48px;flex-shrink:0;">
+                                                <i class="fas fa-image fs-6"></i>
                                             </div>
                                         }
                                         <div>
-                                            <div class="fw-bold text-dark">@item.TenPhong</div>
-                                            <small class="text-muted">ID: @item.Id</small>
+                                            <div class="fw-bold text-dark fs-6">@item.TenPhong</div>
+                                            <small class="text-secondary">ID: @item.Id</small>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="text-center"><span class="badge bg-light border text-dark fw-medium">T@item.Tang</span></td>
-                                <td class="text-center"><span class="text-muted small">@item.DienTich m²</span></td>
+                                <td class="text-center"><span class="badge bg-light text-dark border px-2 py-1">Tầng @item.Tang</span></td>
+                                <td class="text-center"><span class="text-secondary fw-medium">@item.DienTich m²</span></td>
                                 <td class="text-end">
-                                    <span class="fw-bold text-gradient">@item.GiaPhong.ToString("N0") đ</span>
-                                    <small class="d-block text-muted fw-normal" style="font-size:.72rem;">Cọc: @(item.TienCoc > 0 ? item.TienCoc.ToString("N0") + " đ" : "Không")</small>
+                                    <span class="fw-bold text-dark d-block" style="font-size: 1.05rem;">@item.GiaPhong.ToString("N0") đ</span>
+                                    <small class="text-secondary" style="font-size:.75rem;"><i class="fas fa-shield-alt text-muted me-1"></i>Cọc: @(item.TienCoc > 0 ? item.TienCoc.ToString("N0") + " đ" : "Không")</small>
                                 </td>
-                                <td class="text-center"><span class="badge @statusClass rounded-pill px-3">@statusLabel</span></td>
-                                <td class="text-center"><span class="text-muted small">@item.SoLuongNguoi người</span></td>
+                                <td class="text-center">
+                                    <span class="badge @statusClass bg-opacity-10 border border-opacity-25 rounded-pill px-3 py-2" style="color: var(--bs-@(item.Status switch { "Vacant" => "success", "Occupied" => "primary", "Maintenance" => "warning", _ => "secondary" }));">
+                                        <i class="fas fa-circle me-1" style="font-size: 8px; vertical-align: middle;"></i> @statusLabel
+                                    </span>
+                                </td>
+                                <td class="text-center"><span class="text-secondary fw-medium">@item.SoLuongNguoi người</span></td>
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.NoiThat))
                                     {
-                                        <span class="badge badge-soft-brand"><i class="fas fa-couch me-1"></i>@item.NoiThat</span>
+                                        <span class="badge bg-light text-secondary border fw-normal px-2 py-1"><i class="fas fa-couch me-1 opacity-75"></i>@item.NoiThat</span>
                                     }
-                                    else { <span class="text-muted small">—</span> }
+                                    else
+                                    {
+
+                                        <span class="text-muted small">—</span>
+                                    }
                                 </td>
                                 <td class="text-center">
-                                    <div class="d-flex justify-content-center gap-1">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#e3f2fd;color:#1565c0;" title="Chi tiết"><i class="fas fa-eye"></i></a>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn btn-sm" style="background:#fff8e1;color:#f57f17;" title="Sửa"><i class="fas fa-edit"></i></a>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light border text-primary rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-light border text-warning rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;" title="Sửa"><i class="fas fa-pen"></i></a>
                                         <a asp-controller="HopDong" asp-action="Create" asp-route-roomId="@item.Id"
-                                           class="action-btn btn btn-sm @(item.Status != "Vacant" ? "opacity-40 pe-none" : "")"
-                                           style="background:#e8f5e9;color:#2e7d32;" title="Tạo hợp đồng">
+                                           class="btn btn-sm btn-light border text-success rounded-circle shadow-sm @(item.Status != "Vacant" ? "opacity-25 pe-none" : "")"
+                                           style="width: 32px; height: 32px; padding: 5px;" title="Tạo hợp đồng">
                                             <i class="fas fa-file-signature"></i>
                                         </a>
-                                        <button onclick="deletePhong(@item.Id, '@Html.Raw((item.TenPhong ?? "").Replace("'","\\'")); ')" class="action-btn btn btn-sm" style="background:#fce4ec;color:#c62828;" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+                                        <button onclick="deletePhong(@item.Id, '@Html.Raw((item.TenPhong ?? "").Replace("'", "\\'"));')" class="btn btn-sm btn-light border text-danger rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;" title="Xóa"><i class="fas fa-trash-alt"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -301,13 +345,15 @@
                     {
                         <tr>
                             <td colspan="9" class="text-center py-5">
-                                <i class="fas fa-door-open fa-3x text-muted opacity-25 d-block mb-3"></i>
-                                <h6 class="text-muted">Chưa có phòng nào</h6>
-                                <p class="text-muted small">@(selectedNhaId != null ? "Nhà trọ này chưa có phòng." : "Chọn tòa nhà để xem danh sách phòng.")</p>
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-door-open fa-2x text-secondary opacity-50"></i>
+                                </div>
+                                <h6 class="text-dark fw-bold">Chưa có phòng nào</h6>
+                                <p class="text-muted small mb-4">@(selectedNhaId != null ? "Nhà trọ này hiện chưa có phòng nào được tạo." : "Vui lòng chọn một tòa nhà cụ thể để xem danh sách phòng.")</p>
                                 @if (selectedNhaId != null)
                                 {
-                                    <a asp-action="Create" asp-route-nhaId="@selectedNhaId" class="btn btn-gradient-primary btn-sm">
-                                        <i class="fas fa-plus me-1"></i> Thêm phòng ngay
+                                    <a asp-action="Create" asp-route-nhaId="@selectedNhaId" class="btn btn-primary shadow-sm rounded-pill px-4">
+                                        <i class="fas fa-plus me-2"></i> Thêm phòng ngay
                                     </a>
                                 }
                             </td>
@@ -317,22 +363,23 @@
             </table>
         </div>
 
-        {{-- No results state --}}
-        <div id="noResultsMsg" class="text-center py-4 d-none">
-            <i class="fas fa-filter fa-2x text-muted opacity-25 d-block mb-2"></i>
-            <h6 class="text-muted">Không có phòng phù hợp với bộ lọc</h6>
-            <button class="btn btn-sm btn-light border mt-1" onclick="resetFilters()">
-                <i class="fas fa-times me-1"></i> Xóa bộ lọc
+        @* No results state *@
+        <div id="noResultsMsg" class="text-center py-5 d-none bg-light">
+            <i class="fas fa-filter fa-2x text-muted opacity-50 d-block mb-3"></i>
+            <h6 class="text-dark fw-bold">Không tìm thấy phòng phù hợp</h6>
+            <p class="text-muted small">Hãy thử thay đổi điều kiện lọc hoặc từ khóa tìm kiếm</p>
+            <button class="btn btn-outline-secondary btn-sm shadow-sm rounded-pill px-4 mt-2" onclick="resetFilters()">
+                <i class="fas fa-times me-1"></i> Xóa tất cả bộ lọc
             </button>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light rounded-bottom">
-            <span class="text-muted small">
-                <span class="badge bg-success me-1">@vacantRooms</span> Trống &nbsp;
-                <span class="badge bg-primary me-1">@occupiedRooms</span> Đang thuê &nbsp;
-                <span class="badge bg-warning text-dark me-1">@maintRooms</span> Bảo trì
-            </span>
-            <span class="text-muted small">Hiển thị: <strong><span id="footerCount">@totalRooms</span></strong> phòng</span>
+        <div class="d-flex flex-wrap justify-content-between align-items-center p-4 border-top bg-light">
+            <div class="text-secondary small d-flex gap-3">
+                <span><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 me-1">@vacantRooms</span> Trống</span>
+                <span><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 me-1">@occupiedRooms</span> Đang thuê</span>
+                <span><span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-2 me-1">@maintRooms</span> Bảo trì</span>
+            </div>
+            <span class="text-secondary small mt-2 mt-md-0">Đang hiển thị <strong class="text-dark" id="footerCount">@totalRooms</strong> phòng</span>
         </div>
     </div>
 </div>
@@ -343,154 +390,173 @@
 </form>
 
 @section Scripts {
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-$(document).ready(function () {
-    // ===== SELECT2 ENTERPRISE BUILDING PICKER =====
-    // Supports search, shows address subtitle, handles 100+ buildings
-    $('#select2Building').select2({
-        placeholder: '🔍 Gõ để tìm tòa nhà...',
-        allowClear: true,
-        language: {
-            noResults: () => 'Không tìm thấy tòa nhà',
-            searching: () => 'Đang tìm...'
-        },
-        templateResult: function (data) {
-            if (!data.id) return data.text;
-            const parts = data.text.split(' — ');
-            return $(`<div><div class="fw-bold small">${parts[0]}</div><div class="text-muted" style="font-size:.75rem">${parts[1] || ''}</div></div>`);
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            // ===== SELECT2 ENTERPRISE BUILDING PICKER =====
+            $('#select2Building').select2({
+                placeholder: '🔍 Gõ để tìm tòa nhà...',
+                allowClear: true,
+                language: {
+                    noResults: () => 'Không tìm thấy tòa nhà',
+                    searching: () => 'Đang tìm...'
+                },
+                templateResult: function (data) {
+                    if (!data.id) return data.text;
+                    const parts = data.text.split(' — ');
+                    return $(`<div><div class="fw-bold small text-dark">${parts[0]}</div><div class="text-muted" style="font-size:.75rem">${parts[1] || ''}</div></div>`);
+                }
+            });
+
+            $('#select2Building').on('change', function () {
+                const val = this.value;
+                if (val) {
+                    Swal.fire({ title: 'Đang tải dữ liệu...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    window.location.href = '/QuanLyPhong/Index?nhaId=' + val;
+                } else {
+                    window.location.href = '/QuanLyPhong/Index';
+                }
+            });
+        });
+
+        const allRows = Array.from(document.querySelectorAll('.room-row'));
+
+        // Click stat card to filter
+        function filterByStatus(status) {
+            document.getElementById('filterStatus').value = status;
+            applyFilters();
+            document.getElementById('filterStatus').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-    });
 
-    $('#select2Building').on('change', function () {
-        const val = this.value;
-        if (val) {
-            Swal.fire({ title: 'Đang tải phòng...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            window.location.href = '/QuanLyPhong/Index?nhaId=' + val;
-        } else {
-            window.location.href = '/QuanLyPhong/Index';
+        function applyFilters() {
+            const q      = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status = document.getElementById('filterStatus').value;
+            const priceRange = document.getElementById('filterPrice').value;
+
+            let [pMin, pMax] = priceRange ? priceRange.split('-').map(Number) : [0, Infinity];
+            if (!priceRange) { pMin = 0; pMax = Infinity; }
+
+            let visible = 0;
+            allRows.forEach(row => {
+                const matchQ    = !q || row.dataset.name?.includes(q) || row.dataset.noithat?.includes(q)
+                                      || ('tầng ' + row.dataset.floor).includes(q)
+                                      || row.dataset.floor?.toString().includes(q);
+                const matchSt   = !status || row.dataset.status === status;
+                const price     = parseInt(row.dataset.price) || 0;
+                const matchP    = price >= pMin && price <= pMax;
+
+                const show = matchQ && matchSt && matchP;
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            document.getElementById('visibleCount').textContent = visible;
+            document.getElementById('footerCount').textContent  = visible;
+            document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0 || allRows.length === 0);
+
+            renderFilterTags(q, status, priceRange);
         }
-    });
-});
 
-const allRows = Array.from(document.querySelectorAll('.room-row'));
-
-// Click stat card to filter
-function filterByStatus(status) {
-    document.getElementById('filterStatus').value = status;
-    applyFilters();
-    document.getElementById('filterStatus').scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-function applyFilters() {
-    const q      = document.getElementById('searchInput').value.toLowerCase().trim();
-    const status = document.getElementById('filterStatus').value;
-    const priceRange = document.getElementById('filterPrice').value;
-
-    let [pMin, pMax] = priceRange ? priceRange.split('-').map(Number) : [0, Infinity];
-    if (!priceRange) { pMin = 0; pMax = Infinity; }
-
-    let visible = 0;
-    allRows.forEach(row => {
-        const matchQ    = !q || row.dataset.name?.includes(q) || row.dataset.noithat?.includes(q)
-                              || ('tầng ' + row.dataset.floor).includes(q)
-                              || row.dataset.floor?.toString().includes(q);
-        const matchSt   = !status || row.dataset.status === status;
-        const price     = parseInt(row.dataset.price) || 0;
-        const matchP    = price >= pMin && price <= pMax;
-
-        const show = matchQ && matchSt && matchP;
-        row.style.display = show ? '' : 'none';
-        if (show) visible++;
-    });
-
-    document.getElementById('visibleCount').textContent = visible;
-    document.getElementById('footerCount').textContent  = visible;
-    document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0 || allRows.length === 0);
-
-    renderFilterTags(q, status, priceRange);
-}
-
-function renderFilterTags(q, status, priceRange) {
-    const c = document.getElementById('filterTags');
-    c.innerHTML = '';
-    const addTag = (label, clearFn) => {
-        c.innerHTML += `<span class="badge bg-soft-brand text-brand border px-3 py-2 rounded-pill" style="font-size:.8rem">${label} <span style="cursor:pointer;margin-left:6px;opacity:.7" onclick="${clearFn}">✕</span></span>`;
-    };
-    if (q) addTag(`🔍 "${q}"`, `document.getElementById('searchInput').value=''; applyFilters()`);
-    const sLabel = { 'Vacant': '🟢 Còn trống', 'Occupied': '🔵 Đang thuê', 'Maintenance': '🟡 Bảo trì' };
-    if (status) addTag(sLabel[status] || status, `document.getElementById('filterStatus').value=''; applyFilters()`);
-    const pLabel = { '0-2000000':'Dưới 2 triệu','2000000-4000000':'2–4 triệu','4000000-7000000':'4–7 triệu','7000000-99999999':'Trên 7 triệu' };
-    if (priceRange) addTag(`💰 ${pLabel[priceRange]}`, `document.getElementById('filterPrice').value=''; applyFilters()`);
-}
-
-function resetFilters() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('filterStatus').value = '';
-    document.getElementById('filterPrice').value  = '';
-    applyFilters();
-}
-
-// Sort table
-let sortDir = {};
-function sortTable(colIdx) {
-    const tbody = document.querySelector('#dataTable tbody');
-    const rows  = Array.from(tbody.querySelectorAll('tr.room-row'));
-    const asc   = !sortDir[colIdx];
-    sortDir = {};
-    sortDir[colIdx] = asc;
-
-    rows.sort((a, b) => {
-        const av = a.cells[colIdx]?.textContent.trim() || '';
-        const bv = b.cells[colIdx]?.textContent.trim() || '';
-        const an = parseFloat(av.replace(/[^0-9.]/g, ''));
-        const bn = parseFloat(bv.replace(/[^0-9.]/g, ''));
-        if (!isNaN(an) && !isNaN(bn)) return asc ? an - bn : bn - an;
-        return asc ? av.localeCompare(bv, 'vi') : bv.localeCompare(av, 'vi');
-    });
-    rows.forEach(r => tbody.appendChild(r));
-}
-
-function toggleAll(src) {
-    document.querySelectorAll('.room-checkbox').forEach(cb => cb.checked = src.checked);
-}
-
-function alertSelectHouseFirst() {
-    Swal.fire({ icon:'info', title:'Chưa chọn tòa nhà', text:'Tìm và chọn một tòa nhà từ dropdown phía trên.', confirmButtonColor:'#00b894', confirmButtonText:'Đã hiểu' });
-}
-
-function deletePhong(id, name) {
-    Swal.fire({
-        title: `Xóa phòng "${name}"?`, text:'Phòng đang có hợp đồng active không thể xóa.',
-        icon:'warning', showCancelButton:true,
-        confirmButtonColor:'#ef4444', cancelButtonColor:'#64748b',
-        confirmButtonText:'Xóa', cancelButtonText:'Hủy'
-    }).then(r => {
-        if (r.isConfirmed) {
-            document.getElementById('deletePhongId').value = id;
-            document.getElementById('deleteFormPhong').submit();
+        function renderFilterTags(q, status, priceRange) {
+            const c = document.getElementById('filterTags');
+            c.innerHTML = '';
+            const addTag = (label, clearFn) => {
+                c.innerHTML += `<span class="badge bg-light text-secondary border px-3 py-2 rounded-pill shadow-sm d-inline-flex align-items-center" style="font-size:.8rem; font-weight: 500;">${label} <span class="ms-2 text-muted hover-danger" style="cursor:pointer;" onclick="${clearFn}"><i class="fas fa-times-circle"></i></span></span>`;
+            };
+            if (q) addTag(`🔍 Từ khóa: "${q}"`, `document.getElementById('searchInput').value=''; applyFilters()`);
+            const sLabel = { 'Vacant': '🟢 Còn trống', 'Occupied': '🔵 Đang thuê', 'Maintenance': '🟡 Bảo trì' };
+            if (status) addTag(sLabel[status] || status, `document.getElementById('filterStatus').value=''; applyFilters()`);
+            const pLabel = { '0-2000000':'Dưới 2 triệu','2000000-4000000':'2–4 triệu','4000000-7000000':'4–7 triệu','7000000-99999999':'Trên 7 triệu' };
+            if (priceRange) addTag(`💰 ${pLabel[priceRange]}`, `document.getElementById('filterPrice').value=''; applyFilters()`);
         }
-    });
-}
 
-function deleteSelected() {
-    const ids = Array.from(document.querySelectorAll('.room-checkbox:checked')).map(cb => parseInt(cb.value));
-    if (!ids.length) { Swal.fire({icon:'info',title:'Chưa chọn phòng nào',confirmButtonColor:'#00b894'}); return; }
-    Swal.fire({
-        title:`Xóa ${ids.length} phòng đã chọn?`, icon:'warning',
-        showCancelButton:true, confirmButtonColor:'#ef4444', cancelButtonColor:'#64748b',
-        confirmButtonText:'Xóa', cancelButtonText:'Hủy'
-    }).then(r => {
-        if (!r.isConfirmed) return;
-        fetch('/QuanLyPhong/DeleteMultiple', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ids) })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) Swal.fire('Đã xóa!', data.message||'', 'success').then(() => location.reload());
-            else Swal.fire('Không thể xóa', data.message, 'error');
-        })
-        .catch(() => Swal.fire('Lỗi!', 'Không kết nối server.', 'error'));
-    });
-}
-</script>
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterPrice').value  = '';
+            applyFilters();
+        }
+
+        // Sort table
+        let sortDir = {};
+        function sortTable(colIdx) {
+            const tbody = document.querySelector('#dataTable tbody');
+            const rows  = Array.from(tbody.querySelectorAll('tr.room-row'));
+            const asc   = !sortDir[colIdx];
+            sortDir = {};
+            sortDir[colIdx] = asc;
+
+            rows.sort((a, b) => {
+                const av = a.cells[colIdx]?.textContent.trim() || '';
+                const bv = b.cells[colIdx]?.textContent.trim() || '';
+                const an = parseFloat(av.replace(/[^0-9.]/g, ''));
+                const bn = parseFloat(bv.replace(/[^0-9.]/g, ''));
+                if (!isNaN(an) && !isNaN(bn)) return asc ? an - bn : bn - an;
+                return asc ? av.localeCompare(bv, 'vi') : bv.localeCompare(av, 'vi');
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        }
+
+        function toggleAll(src) {
+            document.querySelectorAll('.room-checkbox').forEach(cb => cb.checked = src.checked);
+        }
+
+        function alertSelectHouseFirst() {
+            Swal.fire({ icon:'info', title:'Chưa chọn tòa nhà', text:'Vui lòng chọn một tòa nhà từ danh sách phía trên trước khi thêm phòng.', confirmButtonColor:'#0d6efd', confirmButtonText:'Đã hiểu' });
+        }
+
+        function deletePhong(id, name) {
+            Swal.fire({
+                title: `Xóa phòng "${name}"?`,
+                text: 'Lưu ý: Bạn không thể xóa phòng nếu đang có hợp đồng hoạt động.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-trash me-1"></i> Xóa phòng',
+                cancelButtonText: 'Hủy'
+            }).then(r => {
+                if (r.isConfirmed) {
+                    document.getElementById('deletePhongId').value = id;
+                    document.getElementById('deleteFormPhong').submit();
+                }
+            });
+        }
+
+        function deleteSelected() {
+            const ids = Array.from(document.querySelectorAll('.room-checkbox:checked')).map(cb => parseInt(cb.value));
+            if (!ids.length) { Swal.fire({icon:'info', title:'Chưa chọn phòng', text: 'Vui lòng tích chọn ít nhất một phòng để xóa.', confirmButtonColor:'#0d6efd'}); return; }
+
+            Swal.fire({
+                title: `Xóa ${ids.length} phòng đã chọn?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-trash me-1"></i> Xóa phòng',
+                cancelButtonText: 'Hủy'
+            }).then(r => {
+                if (!r.isConfirmed) return;
+                fetch('/QuanLyPhong/DeleteMultiple', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(ids) })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) Swal.fire('Thành công!', data.message||'Đã xóa các phòng được chọn.', 'success').then(() => location.reload());
+                    else Swal.fire('Lỗi', data.message, 'error');
+                })
+                .catch(() => Swal.fire('Lỗi kết nối!', 'Không thể kết nối đến máy chủ.', 'error'));
+            });
+        }
+    </script>
+    <style>
+        /* Add a small hover effect for rows */
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa !important;
+            transition: background-color 0.2s ease;
+        }
+        /* Small hover effect on cancel/close buttons inside pills */
+        .hover-danger:hover {
+            color: #dc3545 !important;
+        }
+    </style>
 }
