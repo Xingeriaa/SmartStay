@@ -27,6 +27,13 @@
                                                "linear-gradient(135deg,#636e72,#b2bec3)";
 
     var _ctrl = ViewContext.RouteData.Values["Controller"]?.ToString() ?? "";
+
+    bool isKhongGian = _ctrl == "QuanLyNha" || _ctrl == "NhaTro" || _ctrl == "QuanLyPhong" || _ctrl == "PhongTro";
+    bool isKinhDoanh = _ctrl == "KhachThue" || _ctrl == "HopDong" || _ctrl == "DichVu";
+    bool isTaiChinh = _ctrl == "MeterReadings" || _ctrl == "Invoices" || _ctrl == "Liquidations";
+    bool isTaiSan = _ctrl == "RoomAssets" || _ctrl == "Tickets" || _ctrl == "Notifications";
+    bool isQuanTri = _ctrl == "Users" || _ctrl == "SystemConfigs";
+    bool isCuDan = _ctrl == "TenantPortal" || _ctrl == "Tickets" || _ctrl == "Notifications";
 }
 
 <!DOCTYPE html>
@@ -41,13 +48,17 @@
     <link href="~/css/app.css" rel="stylesheet" />
     <link href="~/css/site.css" rel="stylesheet" />
     <style>
-        .sidebar-section-label {
-            font-size: .7rem; font-weight: 800; text-transform: uppercase;
-            letter-spacing: .06em; color: rgba(255,255,255,.35);
-            padding: .9rem 1.1rem .3rem;
-        }
         .sidebar { display: flex; flex-direction: column; }
         .sidebar-menu { flex: 1; }
+        .sidebar-section-label {
+            font-size: .7rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .06em; color: rgba(255,255,255,.6);
+            padding: .9rem 1.1rem .3rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+        }
+        .sidebar-section-label:hover { color: rgba(255,255,255,.9); }
+        .sidebar-section-label i.fa-chevron-down { font-size: 0.65rem; transition: transform 0.3s; }
+        .sidebar-section-label[aria-expanded="true"] i.fa-chevron-down { transform: rotate(180deg); }
+        .sidebar-submenu { border-left: 1px solid rgba(255,255,255,.1); margin-left: 1.25rem; padding-left: 0.25rem; }
     </style>
 </head>
 <body>
@@ -69,85 +80,123 @@
                     <i class="fas fa-chart-pie me-2"></i> Tổng quan
                 </a>
 
-                <div class="sidebar-section-label" style="color:#ff7675;">Quản lý không gian</div>
-                <a asp-controller="QuanLyNha" asp-action="Index"
-                   class="@(_ctrl == "QuanLyNha" || _ctrl == "NhaTro" ? "active" : "")">
-                    <i class="fa fa-building me-2"></i> Hệ thống nhà
-                </a>
-                <a asp-controller="QuanLyPhong" asp-action="Index"
-                   class="@(_ctrl == "QuanLyPhong" || _ctrl == "PhongTro" ? "active" : "")">
-                    <i class="fa fa-door-open me-2"></i> Danh sách phòng
-                </a>
+                <div class="sidebar-section-label" data-bs-toggle="collapse" data-bs-target="#menuKhongGian" aria-expanded="@(isKhongGian ? "true" : "false")">
+                    <span style="color:#ff7675;">Quản lý không gian</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="collapse sidebar-submenu @(isKhongGian ? "show" : "")" id="menuKhongGian">
+                    <a asp-controller="QuanLyNha" asp-action="Index"
+                       class="@(_ctrl == "QuanLyNha" || _ctrl == "NhaTro" ? "active" : "")">
+                        <i class="fa fa-building me-2"></i> Hệ thống nhà
+                    </a>
+                    <a asp-controller="QuanLyPhong" asp-action="Index"
+                       class="@(_ctrl == "QuanLyPhong" || _ctrl == "PhongTro" ? "active" : "")">
+                        <i class="fa fa-door-open me-2"></i> Danh sách phòng
+                    </a>
+                </div>
 
-                <div class="sidebar-section-label" style="color:#ff7675;">Kinh doanh &amp; Cư dân</div>
-                <a asp-controller="KhachThue" asp-action="Index"
-                   class="@(_ctrl == "KhachThue" ? "active" : "")">
-                    <i class="fa fa-users me-2"></i> Cư dân
-                </a>
-                <a asp-controller="HopDong" asp-action="Index"
-                   class="@(_ctrl == "HopDong" ? "active" : "")">
-                    <i class="fa fa-file-signature me-2"></i> Hợp đồng
-                </a>
-                <a asp-controller="DichVu" asp-action="Index"
-                   class="@(_ctrl == "DichVu" ? "active" : "")">
-                    <i class="fa fa-concierge-bell me-2"></i> Dịch vụ
-                </a>
+                <div class="sidebar-section-label" data-bs-toggle="collapse" data-bs-target="#menuKinhDoanh" aria-expanded="@(isKinhDoanh ? "true" : "false")">
+                    <span style="color:#ff7675;">Kinh doanh &amp; Cư dân</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="collapse sidebar-submenu @(isKinhDoanh ? "show" : "")" id="menuKinhDoanh">
+                    <a asp-controller="KhachThue" asp-action="Index"
+                       class="@(_ctrl == "KhachThue" ? "active" : "")">
+                        <i class="fa fa-users me-2"></i> Cư dân
+                    </a>
+                    <a asp-controller="HopDong" asp-action="Index"
+                       class="@(_ctrl == "HopDong" ? "active" : "")">
+                        <i class="fa fa-file-signature me-2"></i> Hợp đồng
+                    </a>
+                    <a asp-controller="DichVu" asp-action="Index"
+                       class="@(_ctrl == "DichVu" ? "active" : "")">
+                        <i class="fa fa-concierge-bell me-2"></i> Dịch vụ
+                    </a>
+                </div>
 
-                <div class="sidebar-section-label" style="color:#ff7675;">Tài chính</div>
-                <a asp-controller="MeterReadings" asp-action="Index"
-                   class="@(_ctrl == "MeterReadings" ? "active" : "")">
-                    <i class="fa fa-tachometer-alt me-2"></i> Điện nước
-                </a>
-                <a asp-controller="Invoices" asp-action="Index"
-                   class="@(_ctrl == "Invoices" ? "active" : "")">
-                    <i class="fa fa-file-invoice-dollar me-2"></i> Hóa đơn
-                </a>
-                <a asp-controller="Liquidations" asp-action="Index"
-                   class="@(_ctrl == "Liquidations" ? "active" : "")">
-                    <i class="fa fa-gavel me-2"></i> Thanh lý
-                </a>
+                <div class="sidebar-section-label" data-bs-toggle="collapse" data-bs-target="#menuTaiChinh" aria-expanded="@(isTaiChinh ? "true" : "false")">
+                    <span style="color:#ff7675;">Tài chính</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="collapse sidebar-submenu @(isTaiChinh ? "show" : "")" id="menuTaiChinh">
+                    <a asp-controller="MeterReadings" asp-action="Index"
+                       class="@(_ctrl == "MeterReadings" ? "active" : "")">
+                        <i class="fa fa-tachometer-alt me-2"></i> Điện nước
+                    </a>
+                    <a asp-controller="Invoices" asp-action="Index"
+                       class="@(_ctrl == "Invoices" ? "active" : "")">
+                        <i class="fa fa-file-invoice-dollar me-2"></i> Hóa đơn
+                    </a>
+                    <a asp-controller="Liquidations" asp-action="Index"
+                       class="@(_ctrl == "Liquidations" ? "active" : "")">
+                        <i class="fa fa-gavel me-2"></i> Thanh lý
+                    </a>
+                </div>
 
-                <div class="sidebar-section-label" style="color:#ff7675;">Tài sản &amp; Hỗ trợ</div>
-                <a asp-controller="RoomAssets" asp-action="Index"
-                   class="@(_ctrl == "RoomAssets" ? "active" : "")">
-                    <i class="fa fa-couch me-2"></i> Thiết bị phòng
-                </a>
-                <a asp-controller="Tickets" asp-action="Index"
-                   class="@(_ctrl == "Tickets" ? "active" : "") text-danger fw-bold">
-                    <i class="fa fa-headset me-2 text-danger"></i> Sự cố 24/7
-                </a>
+                <div class="sidebar-section-label" data-bs-toggle="collapse" data-bs-target="#menuTaiSan" aria-expanded="@(isTaiSan ? "true" : "false")">
+                    <span style="color:#ff7675;">Tài sản &amp; Hỗ trợ</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="collapse sidebar-submenu @(isTaiSan ? "show" : "")" id="menuTaiSan">
+                    <a asp-controller="RoomAssets" asp-action="Index"
+                       class="@(_ctrl == "RoomAssets" ? "active" : "")">
+                        <i class="fa fa-couch me-2"></i> Thiết bị phòng
+                    </a>
+                    <a asp-controller="Tickets" asp-action="Index"
+                       class="@(_ctrl == "Tickets" ? "active" : "") text-danger fw-bold">
+                        <i class="fa fa-headset me-2 text-danger"></i> Sự cố 24/7
+                    </a>
+                    <a asp-controller="Notifications" asp-action="Index"
+                       class="@(_ctrl == "Notifications" ? "active" : "")">
+                        <i class="fa fa-bell me-2 text-warning"></i> Thông báo
+                    </a>
+                </div>
             }
 
             @if (isAdmin)
             {
-                <div class="sidebar-section-label" style="color:#ff7675;">Quản trị hệ thống</div>
-                <a asp-controller="Users" asp-action="Index"
-                   class="@(_ctrl == "Users" ? "active" : "")">
-                    <i class="fa fa-user-shield me-2"></i> Phân quyền nhân sự
-                </a>
-                <a asp-controller="SystemConfigs" asp-action="Index"
-                   class="@(_ctrl == "SystemConfigs" ? "active" : "")">
-                    <i class="fa fa-cogs me-2"></i> Cài đặt vận hành
-                </a>
+                <div class="sidebar-section-label" data-bs-toggle="collapse" data-bs-target="#menuQuanTri" aria-expanded="@(isQuanTri ? "true" : "false")">
+                    <span style="color:#ff7675;">Quản trị hệ thống</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="collapse sidebar-submenu @(isQuanTri ? "show" : "")" id="menuQuanTri">
+                    <a asp-controller="Users" asp-action="Index"
+                       class="@(_ctrl == "Users" ? "active" : "")">
+                        <i class="fa fa-user-shield me-2"></i> Phân quyền nhân sự
+                    </a>
+                    <a asp-controller="SystemConfigs" asp-action="Index"
+                       class="@(_ctrl == "SystemConfigs" ? "active" : "")">
+                        <i class="fa fa-cogs me-2"></i> Cài đặt vận hành
+                    </a>
+                </div>
             }
 
             @if (isTenant)
             {
-                <div class="sidebar-section-label" style="color:#ff7675;">Cổng cư dân</div>
-                <a asp-controller="TenantPortal" asp-action="Index"
-                   class="@(_ctrl == "TenantPortal" ? "active" : "")">
-                    <i class="fa fa-home me-2"></i> Trang chủ cư dân
-                </a>
-                <a href="#" class="text-muted">
-                    <i class="fa fa-file-contract me-2"></i> Hợp đồng của tôi
-                </a>
-                <a href="#" class="text-muted">
-                    <i class="fa fa-file-invoice me-2"></i> Hóa đơn của tôi
-                </a>
-                <a asp-controller="Tickets" asp-action="Index"
-                   class="@(_ctrl == "Tickets" ? "active" : "")">
-                    <i class="fa fa-headset me-2"></i> Gửi phản ánh
-                </a>
+                <div class="sidebar-section-label" data-bs-toggle="collapse" data-bs-target="#menuCuDan" aria-expanded="@(isCuDan ? "true" : "false")">
+                    <span style="color:#ff7675;">Cổng cư dân</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="collapse sidebar-submenu @(isCuDan ? "show" : "")" id="menuCuDan">
+                    <a asp-controller="TenantPortal" asp-action="Index"
+                       class="@(_ctrl == "TenantPortal" ? "active" : "")">
+                        <i class="fa fa-home me-2"></i> Trang chủ cư dân
+                    </a>
+                    <a href="#" class="text-muted">
+                        <i class="fa fa-file-contract me-2"></i> Hợp đồng của tôi
+                    </a>
+                    <a href="#" class="text-muted">
+                        <i class="fa fa-file-invoice me-2"></i> Hóa đơn của tôi
+                    </a>
+                    <a asp-controller="Tickets" asp-action="Index"
+                       class="@(_ctrl == "Tickets" ? "active" : "")">
+                        <i class="fa fa-headset me-2"></i> Gửi phản ánh
+                    </a>
+                    <a asp-controller="Notifications" asp-action="Index"
+                       class="@(_ctrl == "Notifications" ? "active" : "")">
+                        <i class="fa fa-bell me-2"></i> Thông báo
+                    </a>
+                </div>
             }
 
         </div>
@@ -252,6 +301,21 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show');
         }
+
+        // Lưu giữ vị trí cuộn của Sidebar khi load lại trang
+        document.addEventListener('DOMContentLoaded', function() {
+            var sidebar = document.querySelector('.sidebar');
+            if(sidebar) {
+                var scrollPos = sessionStorage.getItem('sidebarScrollPos');
+                if(scrollPos) {
+                    sidebar.scrollTop = parseInt(scrollPos, 10);
+                }
+                
+                sidebar.addEventListener('scroll', function() {
+                    sessionStorage.setItem('sidebarScrollPos', sidebar.scrollTop);
+                });
+            }
+        });
     </script>
 </body>
 </html>

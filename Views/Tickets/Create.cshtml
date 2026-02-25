@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <form asp-action="Create" method="post" id="createForm">
+        <form asp-action="Create" method="post" id="createForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
@@ -63,6 +63,12 @@
                 <div class="field-label">Mô tả chi tiết</div>
                 <textarea name="Description" class="form-control" rows="4"
                           placeholder="Mô tả cụ thể vấn đề: thời điểm xảy ra, triệu chứng, mức độ ảnh hưởng..."></textarea>
+            </div>
+            
+            <div class="mb-3">
+                <div class="field-label">Hình ảnh đính kèm (không bắt buộc)</div>
+                <input type="file" name="files" class="form-control" accept="image/*" multiple />
+                <small class="text-muted d-block mt-1">Hỗ trợ định dạng jpg, png, jpeg. Chọn nhiều ảnh cùng lúc.</small>
             </div>
 
             <div class="mb-4">

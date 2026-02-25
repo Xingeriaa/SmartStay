@@ -143,6 +143,9 @@
             </h1>
             <p class="text-muted small mb-0">Quản lý toàn bộ phiếu yêu cầu từ cư dân</p>
         </div>
+        <a asp-action="Create" class="btn btn-create shadow-sm">
+            <i class="fas fa-plus me-2"></i>Tạo phiếu mới
+        </a>
     </div>
 
     @if (TempData["Error"] != null)

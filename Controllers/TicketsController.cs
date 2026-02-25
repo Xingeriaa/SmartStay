@@ -12,11 +12,13 @@ namespace do_an_tot_nghiep.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _jsonOptions;
+        private readonly IWebHostEnvironment _env;
 
-        public TicketsController(IHttpClientFactory httpClientFactory)
+        public TicketsController(IHttpClientFactory httpClientFactory, IWebHostEnvironment env)
         {
             _httpClient = httpClientFactory.CreateClient("ApiClient");
             _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            _env = env;
         }
 
         // GET: /Tickets/Index
@@ -155,21 +157,38 @@ namespace do_an_tot_nghiep.Controllers
         }
 
         // GET: /Tickets/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/phongtro");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var rooms = JsonSerializer.Deserialize<List<do_an_tot_nghiep.Models.PhongTro>>(json, _jsonOptions) ?? new();
+                    ViewBag.Rooms = rooms.Select(r => new SelectListItem
+                    {
+                        Value = r.Id.ToString(),
+                        Text = $"Phòng {r.TenPhong}"
+                    }).ToList();
+                }
+            }
+            catch { }
+
             return View();
         }
 
         // POST: /Tickets/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int roomId, string title, string? description, string priority)
+        public async Task<IActionResult> Create(int roomId, string title, string? description, string priority, List<IFormFile> files)
         {
             if (string.IsNullOrWhiteSpace(title) || title.Length < 5)
             {
                 TempData["Error"] = "Tiêu đề phải có ít nhất 5 ký tự.";
-                return View();
+                return RedirectToAction(nameof(Create));
             }
+
             var payload = new
             {
                 roomId,
@@ -177,19 +196,55 @@ namespace do_an_tot_nghiep.Controllers
                 description,
                 priority = priority ?? "Medium",
                 status = "Open",
-                createdBy = 1 // fallback; replace with session user
+                createdBy = HttpContext.Session.GetInt32("UserId") ?? 1 // Lấy Session thực tế
             };
+
             var content = new StringContent(
-                System.Text.Json.JsonSerializer.Serialize(payload),
-                System.Text.Encoding.UTF8, "application/json");
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8, "application/json");
+
             var response = await _httpClient.PostAsync("api/tickets", content);
             if (response.IsSuccessStatusCode)
             {
+                var createdStr = await response.Content.ReadAsStringAsync();
+                var createdTicket = JsonSerializer.Deserialize<do_an_tot_nghiep.Models.Ticket>(createdStr, _jsonOptions);
+
+                // Upload Images
+                if (createdTicket != null && files != null && files.Count > 0)
+                {
+                    string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "tickets");
+                    Directory.CreateDirectory(uploadsFolder);
+
+                    foreach (var file in files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(fileStream);
+                            }
+
+                            var imgPayload = new
+                            {
+                                ticketId = createdTicket.Id,
+                                imageUrl = "/uploads/tickets/" + uniqueFileName
+                            };
+                            var imgContent = new StringContent(
+                                JsonSerializer.Serialize(imgPayload),
+                                Encoding.UTF8, "application/json");
+
+                            await _httpClient.PostAsync($"api/tickets/{createdTicket.Id}/images", imgContent);
+                        }
+                    }
+                }
+
                 TempData["Success"] = "Đã tạo phiếu sự cố thành công.";
                 return RedirectToAction(nameof(Index));
             }
             TempData["Error"] = "Lỗi tạo phiếu: " + await response.Content.ReadAsStringAsync();
-            return View();
+            return RedirectToAction(nameof(Create));
         }
 
         // GET: /Tickets/Edit/5
