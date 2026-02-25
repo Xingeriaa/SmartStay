@@ -34,6 +34,9 @@ namespace do_an_tot_nghiep.Controllers
         {
             if (ModelState.IsValid)
             {
+                model.IsActive = true;
+                model.IsDeleted = false;
+
                 await _dichVuService.CreateAsync(model);
 
                 return RedirectToAction(nameof(Index)); // Dùng nameof để tránh viết sai chuỗi

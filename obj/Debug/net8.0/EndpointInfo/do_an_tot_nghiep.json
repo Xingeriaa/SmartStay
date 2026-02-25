@@ -4389,9 +4389,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "service": {
-            "$ref": "#/components/schemas/DichVu"
-          },
           "quantity": {
             "type": "number",
             "format": "double"
@@ -4446,6 +4443,7 @@
       },
       "DichVu": {
         "required": [
+          "donGia",
           "loaiDichVu",
           "ten"
         ],

@@ -1,0 +1,8 @@
+﻿C:\Program Files\dotnet\sdk\10.0.100\Microsoft.Common.CurrentVersion.targets(5381,5): error MSB3027: Could not copy "C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\apphost.exe" to "bin\Debug\net8.0\do_an_tot_nghiep.exe". Exceeded retry count of 10. Failed. The file is locked by: "do_an_tot_nghiep (17580)" [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Program Files\dotnet\sdk\10.0.100\Microsoft.Common.CurrentVersion.targets(5381,5): error MSB3021: Unable to copy file "C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\apphost.exe" to "bin\Debug\net8.0\do_an_tot_nghiep.exe". The process cannot access the file 'C:\Users\toduc\Downloads\SmartStay\bin\Debug\net8.0\do_an_tot_nghiep.exe' because it is being used by another process. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+
+Build FAILED.
+    10 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:15.52

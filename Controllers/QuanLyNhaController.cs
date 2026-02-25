@@ -90,11 +90,35 @@ namespace do_an_tot_nghiep.Controllers
             }
         }
 
+        private async Task PopulateDichVuList()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/dichvu");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var services = JsonSerializer.Deserialize<List<DichVu>>(json, _jsonOptions)
+                                   ?? new List<DichVu>();
+                    ViewBag.ListDichVu = services.Where(s => !s.IsDeleted && s.IsActive).ToList();
+                }
+                else
+                {
+                    ViewBag.ListDichVu = new List<DichVu>();
+                }
+            }
+            catch
+            {
+                ViewBag.ListDichVu = new List<DichVu>();
+            }
+        }
+
         // ─────────────────────────────────────────────────────────────────────
         // CREATE – GET
         // ─────────────────────────────────────────────────────────────────────
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            await PopulateDichVuList();
             return View(new NhaTro());
         }
 
@@ -105,7 +129,11 @@ namespace do_an_tot_nghiep.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(NhaTro model, int[] DichVuSelect)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                await PopulateDichVuList();
+                return View(model);
+            }
 
             // Lưu danh sách dịch vụ
             if (DichVuSelect.Length > 0)
@@ -124,11 +152,13 @@ namespace do_an_tot_nghiep.Controllers
 
                 var error = await response.Content.ReadAsStringAsync();
                 TempData["Error"] = $"Lỗi lưu dữ liệu: {error}";
+                await PopulateDichVuList();
                 return View(model);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", $"Lỗi kết nối: {ex.Message}");
+                await PopulateDichVuList();
                 return View(model);
             }
         }
@@ -146,6 +176,7 @@ namespace do_an_tot_nghiep.Controllers
 
                 var json = await response.Content.ReadAsStringAsync();
                 var model = JsonSerializer.Deserialize<NhaTro>(json, _jsonOptions);
+                await PopulateDichVuList();
                 return View(model);
             }
             catch
@@ -163,7 +194,11 @@ namespace do_an_tot_nghiep.Controllers
         public async Task<IActionResult> Edit(int id, NhaTro model, int[] DichVuSelect)
         {
             if (id != model.Id) return BadRequest();
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                await PopulateDichVuList();
+                return View(model);
+            }
 
             if (DichVuSelect.Length > 0)
                 model.DanhSachDichVu = string.Join(",", DichVuSelect);
@@ -180,11 +215,13 @@ namespace do_an_tot_nghiep.Controllers
                 }
 
                 TempData["Error"] = "Cập nhật thất bại. Vui lòng thử lại.";
+                await PopulateDichVuList();
                 return View(model);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", $"Lỗi kết nối: {ex.Message}");
+                await PopulateDichVuList();
                 return View(model);
             }
         }

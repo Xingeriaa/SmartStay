@@ -13,6 +13,7 @@ namespace do_an_tot_nghiep.Models
 
         public int ServiceId { get; set; }
         [JsonIgnore]
+        [Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidateNever]
         public DichVu? Service { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
