@@ -26,7 +26,18 @@ namespace do_an_tot_nghiep.Controllers.Api
         [HttpGet]
         public async Task<ActionResult<List<NhaTro>>> GetAll()
         {
-            return await _context.NhaTros.ToListAsync();
+            var buildings = await _context.NhaTros.Where(n => !n.IsDeleted).ToListAsync();
+            var bIds = buildings.Select(b => b.Id).ToList();
+            var thumbs = await _context.Images
+                .Where(i => i.BuildingId != null && bIds.Contains(i.BuildingId.Value) && i.IsThumbnail)
+                .ToListAsync();
+
+            foreach (var b in buildings)
+            {
+                var t = thumbs.FirstOrDefault(x => x.BuildingId == b.Id);
+                if (t != null) b.AnhNhaTro = t.ImageUrl;
+            }
+            return buildings;
         }
 
         /// <summary>
@@ -36,7 +47,11 @@ namespace do_an_tot_nghiep.Controllers.Api
         public async Task<ActionResult<NhaTro>> GetById(int id)
         {
             var nha = await _context.NhaTros.FindAsync(id);
-            if (nha == null) return NotFound();
+            if (nha == null || nha.IsDeleted) return NotFound();
+
+            var thumb = await _context.Images.FirstOrDefaultAsync(i => i.BuildingId == id && i.IsThumbnail);
+            if (thumb != null) nha.AnhNhaTro = thumb.ImageUrl;
+
             return nha;
         }
 
@@ -56,14 +71,51 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// Cập nhật nhà trọ.
         /// </summary>
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, NhaTro nha)
+        public async Task<IActionResult> Update(int id, NhaTro model)
         {
-            if (id != nha.Id) return BadRequest();
+            if (id != model.Id) return BadRequest();
 
-            nha.DiaChiChiTiet = BuildAddress(nha);
-            _context.Entry(nha).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var nha = await _context.NhaTros.FindAsync(id);
+            if (nha == null || nha.IsDeleted) return NotFound();
+
+            nha.TenNhaTro = model.TenNhaTro;
+            nha.LoaiNha = model.LoaiNha;
+            nha.GiaThue = model.GiaThue;
+            nha.NgayThuTien = model.NgayThuTien;
+
+            // Address logic
+            nha.DiaChiChiTiet = BuildAddress(model);
+
+            nha.DanhSachDichVu = model.DanhSachDichVu;
+            nha.GhiChu = model.GhiChu; // triggers the logic UpdateDescription
+            nha.OperationDate = model.OperationDate;
+
+            // Safe zone new fields
+            nha.TotalFloors = model.TotalFloors;
+            nha.Latitude = model.Latitude;
+            nha.Longitude = model.Longitude;
+            nha.ElectricityProvider = model.ElectricityProvider;
+            nha.WaterProvider = model.WaterProvider;
+            nha.FireSafetyCertificateExpiry = model.FireSafetyCertificateExpiry;
+            nha.LastMaintenanceDate = model.LastMaintenanceDate;
+            nha.ManagerId = model.ManagerId;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!NhaTroExists(id)) return NotFound();
+                else throw;
+            }
+
             return NoContent();
+        }
+
+        private bool NhaTroExists(int id)
+        {
+            return _context.NhaTros.Any(e => e.Id == id);
         }
 
         private static string BuildAddress(NhaTro model)
@@ -93,9 +145,28 @@ namespace do_an_tot_nghiep.Controllers.Api
         public async Task<IActionResult> Delete(int id)
         {
             var nha = await _context.NhaTros.FindAsync(id);
-            if (nha == null) return NotFound();
 
-            _context.NhaTros.Remove(nha);
+            if (nha == null || nha.IsDeleted) return NotFound();
+
+            var roomIds = await _context.PhongTros
+                .Where(p => p.NhaTroId == id && !p.IsDeleted)
+                .Select(p => p.Id)
+                .ToListAsync();
+
+            bool hasActiveContract = await _context.HopDongs
+                .AnyAsync(h => roomIds.Contains(h.PhongTroId) && h.TrangThai == TrangThaiHopDong.DangHieuLuc);
+
+            if (hasActiveContract)
+                return BadRequest(new { message = "Không thể xóa tòa nhà vì còn hợp đồng Active." });
+
+            bool hasAssets = await _context.RoomAssets
+                .AnyAsync(ra => roomIds.Contains(ra.RoomId));
+
+            if (hasAssets)
+                return BadRequest(new { message = "Không thể xóa tòa nhà vì còn tài sản chưa thanh lý." });
+
+            nha.IsDeleted = true;
+            _context.Entry(nha).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return NoContent();
         }

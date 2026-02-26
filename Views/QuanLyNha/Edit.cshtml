@@ -165,11 +165,58 @@
                             <label class="fw-semibold mb-2 text-dark">Ghi chú / Nội quy</label>
                             <textarea asp-for="GhiChu" class="form-control shadow-none" rows="4" placeholder="Nhập ghi chú, nội quy riêng của nhà trọ..."></textarea>
                         </div>
+                        
+                        <div class="mt-4 pt-3 border-top">
+                            <h6 class="fw-bold mb-3 text-primary"><i class="fas fa-sliders-h me-2"></i>Thông số nâng cao</h6>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-medium">Tổng số tầng</label>
+                                    <input asp-for="TotalFloors" type="number" class="form-control" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-medium">ID Quản lý</label>
+                                    <input asp-for="ManagerId" type="number" class="form-control" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-medium">Vĩ độ (Lat)</label>
+                                    <input asp-for="Latitude" type="number" step="any" class="form-control" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-medium">Kinh độ (Long)</label>
+                                    <input asp-for="Longitude" type="number" step="any" class="form-control" />
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-medium">NCC Điện</label>
+                                    <input asp-for="ElectricityProvider" class="form-control" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-medium">NCC Nước</label>
+                                    <input asp-for="WaterProvider" class="form-control" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-medium">Hạn PCCC</label>
+                                    <input asp-for="FireSafetyCertificateExpiry" type="date" class="form-control" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-medium">Ngày bảo trì</label>
+                                    <input asp-for="LastMaintenanceDate" type="date" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- IMAGE UPLOADER PORTION -->
+                @{
+                    ViewData["EntityType"] = "building";
+                    ViewData["EntityId"] = Model.Id;
+                }
+                @await Html.PartialAsync("_ImageUploader")
+                <!-- END IMAGE UPLOADER -->
+
                 @* Submit *@
-                <div class="d-flex gap-3 mb-4 animate-fade-up" style="animation-delay:.3s">
+                <div class="d-flex gap-3 mt-4 mb-4 animate-fade-up" style="animation-delay:.3s">
                     <a asp-action="Index" class="btn btn-light border shadow-sm rounded-pill px-4 py-2">
                         <i class="fas fa-times me-2"></i> Hủy bỏ
                     </a>

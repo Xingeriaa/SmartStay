@@ -4,9 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var totalRooms = Model?.Count() ?? 0;
-    var vacantRooms = Model?.Count(x => x.Status == "Vacant") ?? 0;
-    var occupiedRooms = Model?.Count(x => x.Status == "Occupied") ?? 0;
-    var maintRooms = Model?.Count(x => x.Status == "Maintenance") ?? 0;
+    var vacantRooms = Model?.Count(x => x.Status == 1) ?? 0;
+    var occupiedRooms = Model?.Count(x => x.Status == 2) ?? 0;
+    var maintRooms = Model?.Count(x => x.Status == 3) ?? 0;
     var avgPrice = (Model != null && Model.Any()) ? Model.Average(x => x.GiaPhong) : 0;
 
     var nhaTroList = ViewBag.DanhSachNha as List<do_an_tot_nghiep.Models.NhaTro> ?? new();
@@ -272,8 +272,8 @@
                     {
                         foreach (var item in Model)
                         {
-                            string statusClass = item.Status switch { "Vacant" => "bg-success", "Occupied" => "bg-primary", "Maintenance" => "bg-warning text-dark", _ => "bg-secondary" };
-                            string statusLabel = item.Status switch { "Vacant" => "Trống", "Occupied" => "Đang thuê", "Maintenance" => "Bảo trì", _ => item.Status ?? "—" };
+                            string statusClass = item.Status switch { 1 => "bg-success", 2 => "bg-primary", 3 => "bg-warning text-dark", _ => "bg-secondary" };
+                            string statusLabel = item.Status switch { 1 => "Trống", 2 => "Đang thuê", 3 => "Bảo trì", _ => item.Status.ToString() };
                             <tr class="room-row bg-white"
                                 data-status="@item.Status"
                                 data-name="@Html.Raw(item.TenPhong?.ToLower())"
@@ -310,7 +310,7 @@
                                     <small class="text-secondary" style="font-size:.75rem;"><i class="fas fa-shield-alt text-muted me-1"></i>Cọc: @(item.TienCoc > 0 ? item.TienCoc.ToString("N0") + " đ" : "Không")</small>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge @statusClass bg-opacity-10 border border-opacity-25 rounded-pill px-3 py-2" style="color: var(--bs-@(item.Status switch { "Vacant" => "success", "Occupied" => "primary", "Maintenance" => "warning", _ => "secondary" }));">
+                                    <span class="badge @statusClass bg-opacity-10 border border-opacity-25 rounded-pill px-3 py-2" style="color: var(--bs-@(item.Status switch { 1 => "success", 2 => "primary", 3 => "warning", _ => "secondary" }));">
                                         <i class="fas fa-circle me-1" style="font-size: 8px; vertical-align: middle;"></i> @statusLabel
                                     </span>
                                 </td>
@@ -331,7 +331,7 @@
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light border text-primary rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;" title="Chi tiết"><i class="fas fa-eye"></i></a>
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-light border text-warning rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;" title="Sửa"><i class="fas fa-pen"></i></a>
                                         <a asp-controller="HopDong" asp-action="Create" asp-route-roomId="@item.Id"
-                                           class="btn btn-sm btn-light border text-success rounded-circle shadow-sm @(item.Status != "Vacant" ? "opacity-25 pe-none" : "")"
+                                           class="btn btn-sm btn-light border text-success rounded-circle shadow-sm @(item.Status != 1 ? "opacity-25 pe-none" : "")"
                                            style="width: 32px; height: 32px; padding: 5px;" title="Tạo hợp đồng">
                                             <i class="fas fa-file-signature"></i>
                                         </a>

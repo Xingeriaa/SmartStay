@@ -208,9 +208,16 @@
                                 <td class="text-center"><input class="form-check-input row-checkbox" type="checkbox" value="@item.Id"></td>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
-                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px; flex-shrink:0;">
-                                            <i class="fas fa-building text-secondary"></i>
-                                        </div>
+                                        @if (!string.IsNullOrEmpty(item.AnhNhaTro))
+                                        {
+                                            <img src="@item.AnhNhaTro" class="rounded-circle object-fit-cover shadow-sm border" style="width:40px;height:40px;flex-shrink:0;" alt="Ảnh" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm text-secondary" style="width:40px;height:40px; flex-shrink:0;">
+                                                <i class="fas fa-building"></i>
+                                            </div>
+                                        }
                                         <div>
                                             <div class="fw-bold text-dark">@item.TenNhaTro</div>
                                             <small class="text-muted">ID: #@item.Id</small>

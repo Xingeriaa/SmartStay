@@ -36,10 +36,19 @@ namespace do_an_tot_nghiep.Models
         public DbSet<TenantBalance> TenantBalances { get; set; } = null!;
         public DbSet<TenantBalanceTransaction> TenantBalanceTransactions { get; set; } = null!;
         public DbSet<PaymentWebhookLog> PaymentWebhookLogs { get; set; } = null!;
+        public DbSet<AssetMaintenanceLog> AssetMaintenanceLogs { get; set; } = null!;
+        public DbSet<Image> Images { get; set; } = null!;
+        public DbSet<RoomAnalyticsSnapshot> RoomAnalyticsSnapshots { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema("dbo");
             base.OnModelCreating(modelBuilder);
+
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
 
             modelBuilder.Entity<PhongTro>()
                 .HasIndex(r => new { r.NhaTroId, r.TenPhong })
@@ -96,6 +105,12 @@ namespace do_an_tot_nghiep.Models
                 .HasOne<Ticket>()
                 .WithMany(t => t.Images)
                 .HasForeignKey(i => i.TicketId);
+
+            modelBuilder.Entity<Image>()
+                .ToTable("Images", t => t.HasCheckConstraint("CK_Images_OnlyOneFK",
+                "([BuildingId] IS NOT NULL AND [RoomId] IS NULL AND [AssetId] IS NULL) OR " +
+                "([BuildingId] IS NULL AND [RoomId] IS NOT NULL AND [AssetId] IS NULL) OR " +
+                "([BuildingId] IS NULL AND [RoomId] IS NULL AND [AssetId] IS NOT NULL)"));
         }
 
         private static string ToContractStatus(TrangThaiHopDong status)

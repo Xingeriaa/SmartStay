@@ -282,7 +282,7 @@ namespace do_an_tot_nghiep.Controllers.Api
 
                 // 6. Giải phóng phòng → Vacant
                 if (contract.PhongTro != null)
-                    contract.PhongTro.Status = "Vacant";
+                    contract.PhongTro.Status = 1;
 
                 // 7. AuditLog — BẮT BUỘC theo rule VIII
                 _context.AuditLogs.Add(new AuditLog

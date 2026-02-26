@@ -58,7 +58,7 @@ namespace do_an_tot_nghiep.Controllers
                 var rooms = JsonSerializer.Deserialize<List<Models.PhongTro>>(rmJson, _jsonOptions) ?? new List<Models.PhongTro>();
 
                 model.AvailableRooms = rooms
-                    .Where(r => r.Status == "Vacant" && !r.IsDeleted) // Chỉ lấy phòng trống
+                    .Where(r => r.Status == 1 && !r.IsDeleted) // Chỉ lấy phòng trống
                     .Select(r => new SelectListItem
                     {
                         Value = r.Id.ToString(),

@@ -853,6 +853,54 @@
                                 </label>
                             </div>
                         </div>
+
+                        <div class="col-12 mt-3">
+                            <label class="form-label mb-3">Thông số bổ sung</label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="Balcony" id="BalconyCheck">
+                                        <label class="form-check-label" for="BalconyCheck">Có ban công</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="HasPrivateBathroom" id="PrivateBathroomCheck" checked>
+                                        <label class="form-check-label" for="PrivateBathroomCheck">Có WC riêng</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Hướng phòng</label>
+                                        <select asp-for="Orientation" class="form-select-sm form-control-custom">
+                                            <option value="">Không xác định</option>
+                                            <option value="Đông">Đông</option>
+                                            <option value="Tây">Tây</option>
+                                            <option value="Nam">Nam</option>
+                                            <option value="Bắc">Bắc</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mt-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Điểm chất lượng</label>
+                                        <input asp-for="ConditionScore" type="number" min="0" max="100" class="form-control-custom" placeholder="Ví dụ: 95">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mt-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Độ ồn (1-10)</label>
+                                        <input asp-for="NoiseLevelRating" type="number" min="1" max="10" class="form-control-custom" placeholder="Ví dụ: 5">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mt-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Ngày kiểm tra sửa chữa</label>
+                                        <input asp-for="LastInspectionDate" type="date" class="form-control-custom">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="app-card mb-4 shadow-lg border-0 animate-fade-in" style="animation-delay: 0.4s; border-radius: 20px;">

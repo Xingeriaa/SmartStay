@@ -634,41 +634,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/HopDong"
+                "$ref": "#/components/schemas/CreateContractRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/HopDong"
+                "$ref": "#/components/schemas/CreateContractRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/HopDong"
+                "$ref": "#/components/schemas/CreateContractRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/HopDong"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HopDong"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HopDong"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
@@ -741,7 +724,115 @@
         "tags": [
           "HopDongApi"
         ],
-        "summary": "Xóa hợp đồng.",
+        "summary": "Xóa hợp đồng. (Soft Delete)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/images/{entityType}/{entityId}": {
+      "get": {
+        "tags": [
+          "ImagesApi"
+        ],
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/images/upload/{entityType}/{entityId}": {
+      "post": {
+        "tags": [
+          "ImagesApi"
+        ],
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/images/{id}": {
+      "delete": {
+        "tags": [
+          "ImagesApi"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/images/{id}/set-thumbnail": {
+      "post": {
+        "tags": [
+          "ImagesApi"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2317,6 +2408,75 @@
             }
           },
           {
+            "name": "NhaTro.TotalFloors",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.Latitude",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "NhaTro.Longitude",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "NhaTro.ElectricityProvider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.WaterProvider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.FireSafetyCertificateExpiry",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NhaTro.LastMaintenanceDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NhaTro.AnhNhaTro",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.TotalRooms",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
             "name": "NhaTro.Description",
             "in": "query",
             "schema": {
@@ -2337,7 +2497,8 @@
             "name": "Status",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           },
           {
@@ -2349,6 +2510,51 @@
           },
           {
             "name": "CreatedAt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Balcony",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "HasPrivateBathroom",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Orientation",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConditionScore",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NoiseLevelRating",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "LastInspectionDate",
             "in": "query",
             "schema": {
               "type": "string",
@@ -2663,6 +2869,75 @@
             }
           },
           {
+            "name": "NhaTro.TotalFloors",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NhaTro.Latitude",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "NhaTro.Longitude",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "NhaTro.ElectricityProvider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.WaterProvider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.FireSafetyCertificateExpiry",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NhaTro.LastMaintenanceDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "NhaTro.AnhNhaTro",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NhaTro.TotalRooms",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
             "name": "NhaTro.Description",
             "in": "query",
             "schema": {
@@ -2683,7 +2958,8 @@
             "name": "Status",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           },
           {
@@ -2695,6 +2971,51 @@
           },
           {
             "name": "CreatedAt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Balcony",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "HasPrivateBathroom",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Orientation",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConditionScore",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NoiseLevelRating",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "LastInspectionDate",
             "in": "query",
             "schema": {
               "type": "string",
@@ -2954,24 +3275,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RoomAsset"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RoomAsset"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RoomAsset"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
@@ -3073,6 +3377,60 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/room-status/{roomId}": {
+      "get": {
+        "tags": [
+          "RoomStatusApi"
+        ],
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/room-status/transition": {
+      "post": {
+        "tags": [
+          "RoomStatusApi"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransitionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransitionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransitionRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -4400,6 +4758,41 @@
         },
         "additionalProperties": false
       },
+      "CreateContractRequest": {
+        "type": "object",
+        "properties": {
+          "phongTroId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ngayBatDau": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ngayKetThuc": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "paymentCycle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tienCoc": {
+            "type": "number",
+            "format": "double"
+          },
+          "khachThueIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CreateInvoiceRequest": {
         "type": "object",
         "properties": {
@@ -5107,6 +5500,47 @@
             "type": "string",
             "format": "date-time"
           },
+          "totalFloors": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "electricityProvider": {
+            "type": "string",
+            "nullable": true
+          },
+          "waterProvider": {
+            "type": "string",
+            "nullable": true
+          },
+          "fireSafetyCertificateExpiry": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastMaintenanceDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "anhNhaTro": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalRooms": {
+            "type": "integer",
+            "format": "int32"
+          },
           "description": {
             "type": "string",
             "nullable": true
@@ -5291,8 +5725,8 @@
             "nullable": true
           },
           "status": {
-            "type": "string",
-            "nullable": true
+            "type": "integer",
+            "format": "int32"
           },
           "isDeleted": {
             "type": "boolean"
@@ -5300,6 +5734,31 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "balcony": {
+            "type": "boolean"
+          },
+          "hasPrivateBathroom": {
+            "type": "boolean"
+          },
+          "orientation": {
+            "type": "string",
+            "nullable": true
+          },
+          "conditionScore": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "noiseLevelRating": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "lastInspectionDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           },
           "imageFile": {
             "type": "string",
@@ -5399,6 +5858,29 @@
           "warrantyExpiry": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          },
+          "conditionScore": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "lastMaintenanceDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "maintenanceCycleMonths": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isUnderWarranty": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "locationNote": {
+            "type": "string",
             "nullable": true
           },
           "createdAt": {
@@ -5583,6 +6065,31 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "TransitionRequest": {
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newStatus": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "autoGenerated": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
       },
       "UpdateInvoiceStatusRequest": {
         "type": "object",

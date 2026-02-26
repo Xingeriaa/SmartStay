@@ -55,9 +55,17 @@ namespace do_an_tot_nghiep.Models
 
         public ICollection<HopDong> HopDongs { get; set; } = new List<HopDong>();
 
-        public string Status { get; set; } = "Vacant";
+        public byte Status { get; set; } = 1; // 1 = Vacant, 2 = Occupied, 3 = Maintenance
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // --- Cột nâng cấp SAFE ---
+        public bool Balcony { get; set; } = false;
+        public bool HasPrivateBathroom { get; set; } = false;
+        public string? Orientation { get; set; }
+        public int? ConditionScore { get; set; }
+        public int? NoiseLevelRating { get; set; }
+        public DateTime? LastInspectionDate { get; set; }
 
         [NotMapped]
         public IFormFile? ImageFile { get; set; }

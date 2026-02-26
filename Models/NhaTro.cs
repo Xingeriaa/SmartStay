@@ -88,6 +88,34 @@ namespace do_an_tot_nghiep.Models
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        // --- Cột nâng cấp SAFE ---
+        [Column("TotalFloors")]
+        public int? TotalFloors { get; set; }
+
+        [Column("Latitude", TypeName = "decimal(9,6)")]
+        public decimal? Latitude { get; set; }
+
+        [Column("Longitude", TypeName = "decimal(9,6)")]
+        public decimal? Longitude { get; set; }
+
+        [Column("ElectricityProvider")]
+        public string? ElectricityProvider { get; set; }
+
+        [Column("WaterProvider")]
+        public string? WaterProvider { get; set; }
+
+        [Column("FireSafetyCertificateExpiry")]
+        public DateTime? FireSafetyCertificateExpiry { get; set; }
+
+        [Column("LastMaintenanceDate")]
+        public DateTime? LastMaintenanceDate { get; set; }
+
+        [NotMapped]
+        public string? AnhNhaTro { get; set; }
+
+        [NotMapped]
+        public int TotalRooms { get; set; } // Giả lập từ vw_BuildingRoomCount
+
         [Column("Description")]
         public string? Description
         {

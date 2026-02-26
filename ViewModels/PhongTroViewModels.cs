@@ -28,7 +28,7 @@ namespace do_an_tot_nghiep.ViewModels
         public int SoLuongNguoi { get; set; }
 
         [Display(Name = "Trạng Thái")]
-        public string Status { get; set; } = "Vacant";
+        public byte Status { get; set; } = 1;
     }
 
     public class PhongTroFormViewModel
@@ -65,7 +65,7 @@ namespace do_an_tot_nghiep.ViewModels
         public string? DoiTuong { get; set; } = "Standard";
 
         [Display(Name = "Trạng Thái")]
-        public string Status { get; set; } = "Vacant";
+        public byte Status { get; set; } = 1;
 
         // Mấy cái ở DB bạn [NotMapped] -> để UI xài tạm hoặc mốt tính sau
         [Display(Name = "Tiền Cọc (Gợi Ý)")]
@@ -76,5 +76,24 @@ namespace do_an_tot_nghiep.ViewModels
 
         [Display(Name = "Ghi Chú Vận Hành")]
         public string? GhiChu { get; set; }
+
+        [Display(Name = "Có ban công")]
+        public bool Balcony { get; set; } = false;
+
+        [Display(Name = "Có WC riêng")]
+        public bool HasPrivateBathroom { get; set; } = false;
+
+        [Display(Name = "Hướng phòng")]
+        public string? Orientation { get; set; }
+
+        [Display(Name = "Điểm chất lượng phòng (1-100)")]
+        public int? ConditionScore { get; set; }
+
+        [Display(Name = "Độ ồn (1-10)")]
+        public int? NoiseLevelRating { get; set; }
+
+        [Display(Name = "Ngày kiểm tra gần nhất")]
+        [DataType(DataType.Date)]
+        public DateTime? LastInspectionDate { get; set; }
     }
 }

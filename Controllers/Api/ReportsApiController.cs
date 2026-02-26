@@ -69,7 +69,7 @@ namespace do_an_tot_nghiep.Controllers.Api
         public async Task<ActionResult<VacancyReport>> GetVacancy()
         {
             var totalRooms = await _context.PhongTros.CountAsync();
-            var vacantRooms = await _context.PhongTros.CountAsync(x => x.Status == "Vacant");
+            var vacantRooms = await _context.PhongTros.CountAsync(x => x.Status == 1);
 
             return new VacancyReport
             {

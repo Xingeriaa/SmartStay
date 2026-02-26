@@ -1,0 +1,172 @@
+<div class="card border-0 shadow-sm rounded-4 animate-fade-up mt-4" style="animation-delay:.2s">
+    <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0 text-dark"><i class="fas fa-images me-2 text-primary"></i>Quản lý Hình ảnh</h6>
+        <div class="file-upload-wrapper">
+            <input type="file" id="imageUploadInput" multiple accept="image/*" class="d-none">
+            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-medium" onclick="document.getElementById('imageUploadInput').click()">
+                <i class="fas fa-cloud-upload-alt me-2"></i>Tải ảnh lên
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div id="imageGallery" class="row g-3">
+            <!-- Images will be rendered here via JS -->
+            <div class="col-12 text-center text-muted py-5" id="noImageGallery">
+                <i class="fas fa-camera fa-3x mb-3 opacity-25"></i>
+                <p class="mb-0">Chưa có hình ảnh nào. Hãy tải lên!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.img-wrap {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    aspect-ratio: 4/3;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+.img-wrap:hover img {
+    transform: scale(1.05);
+}
+.img-wrap .img-actions {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.img-wrap:hover .img-actions {
+    opacity: 1;
+}
+.thumb-badge {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: var(--bs-primary);
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const entityType = '@ViewData["EntityType"]'; // 'building' or 'room'
+    const entityId = @ViewData["EntityId"];
+
+    loadImages();
+
+    document.getElementById('imageUploadInput').addEventListener('change', async function(e) {
+        if (!e.target.files || e.target.files.length === 0) return;
+        
+        const loader = document.getElementById('noImageGallery');
+        if(loader) loader.innerHTML = '<i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2 text-muted">Đang tải biểu mẫu...</p>';
+
+        const formData = new FormData();
+        for (let i = 0; i < e.target.files.length; i++) {
+            formData.append('files', e.target.files[i]);
+        }
+
+        try {
+            const res = await fetch(`/api/images/upload/${entityType}/${entityId}`, {
+                method: 'POST',
+                body: formData
+            });
+            if (res.ok) {
+                alert('Tải ảnh thành công!');
+                loadImages();
+            } else {
+                alert('Có lỗi xảy ra khi tải ảnh.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Lỗi kết nối.');
+        } finally {
+            e.target.value = ''; // reset input
+        }
+    });
+
+    async function loadImages() {
+        try {
+            const res = await fetch(`/api/images/${entityType}/${entityId}`);
+            if (!res.ok) return;
+            const images = await res.json();
+            
+            const gallery = document.getElementById('imageGallery');
+            if (images.length === 0) {
+                gallery.innerHTML = `
+                    <div class="col-12 text-center text-muted py-5" id="noImageGallery">
+                        <i class="fas fa-camera fa-3x mb-3 opacity-25"></i>
+                        <p class="mb-0">Chưa có hình ảnh nào. Hãy tải lên để không gian sinh động hơn!</p>
+                    </div>`;
+                return;
+            }
+
+            gallery.innerHTML = '';
+            images.forEach(img => {
+                const isThumb = img.isThumbnail ? '<div class="thumb-badge"><i class="fas fa-star text-warning me-1"></i>Ảnh bìa</div>' : '';
+                
+                gallery.innerHTML += `
+                    <div class="col-6 col-md-4 col-lg-3 fade-in-up">
+                        <div class="img-wrap">
+                            ${isThumb}
+                            <img src="${img.imageUrl}" alt="Ảnh">
+                            <div class="img-actions">
+                                <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm" onclick="setThumbnail(${img.id})" title="Đặt làm ảnh bìa" ${img.isThumbnail ? 'disabled style="opacity:0.5"' : ''}>
+                                    <i class="fas fa-star text-warning"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger rounded-circle shadow-sm" onclick="deleteImage(${img.id})" title="Xóa ảnh">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+        } catch (error) {
+            console.error('Error loading images:', error);
+        }
+    }
+
+    window.deleteImage = async function(id) {
+        if (!confirm('Bạn có chắc chắn muốn xóa ảnh này không?')) return;
+        try {
+            const res = await fetch(`/api/images/${id}`, { method: 'DELETE' });
+            if (res.ok) loadImages();
+            else alert('Lỗi khi xóa.');
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    window.setThumbnail = async function(id) {
+        try {
+            const res = await fetch(`/api/images/${id}/set-thumbnail`, { method: 'POST' });
+            if (res.ok) loadImages();
+            else alert('Lỗi khi thiết lập ảnh bìa.');
+        } catch (error) {
+            console.error(error);
+        }
+    };
+});
+</script>

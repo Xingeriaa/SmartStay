@@ -43,8 +43,8 @@
                 }
                 <div class="p-4">
                     @{
-                        string sCls = Model?.Status switch { "Vacant" => "bg-success", "Occupied" => "bg-primary", "Maintenance" => "bg-warning text-dark", _ => "bg-secondary" };
-                        string sLbl = Model?.Status switch { "Vacant" => "Còn trống", "Occupied" => "Đang thuê", "Maintenance" => "Đang bảo trì", _ => Model?.Status ?? "—" };
+                        string sCls = Model?.Status switch { 1 => "bg-success", 2 => "bg-primary", 3 => "bg-warning text-dark", _ => "bg-secondary" };
+                        string sLbl = Model?.Status switch { 1 => "Còn trống", 2 => "Đang thuê", 3 => "Đang bảo trì", _ => Model?.Status.ToString() };
                     }
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span class="badge @sCls rounded-pill px-3 py-2">@sLbl</span>
@@ -57,6 +57,14 @@
                     </div>
                 </div>
             </div>
+
+            <!-- IMAGE GALLERY PORTION -->
+            @{
+                ViewData["EntityType"] = "room";
+                ViewData["EntityId"] = Model.Id;
+            }
+            @await Html.PartialAsync("_ImageGallery")
+            <!-- END IMAGE GALLERY -->
         </div>
 
         <div class="col-xl-8">
@@ -115,7 +123,7 @@
             <div class="main-card mt-3 animate-fade-up p-4" style="animation-delay:.2s">
                 <h6 class="fw-bold mb-3"><i class="fas fa-bolt text-brand me-2"></i>Thao tác nhanh</h6>
                 <div class="d-flex flex-wrap gap-2">
-                    @if (Model?.Status == "Vacant")
+                    @if (Model?.Status == 1)
                     {
                         <a asp-controller="HopDong" asp-action="Create" asp-route-roomId="@Model.Id" class="btn btn-gradient-primary btn-custom">
                             <i class="fas fa-file-signature me-1"></i> Tạo hợp đồng thuê

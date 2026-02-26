@@ -109,7 +109,7 @@
             Lấy hợp đồng theo id.
             </summary>
         </member>
-        <member name="M:do_an_tot_nghiep.Controllers.Api.HopDongApiController.Create(do_an_tot_nghiep.Models.HopDong)">
+        <member name="M:do_an_tot_nghiep.Controllers.Api.HopDongApiController.Create(do_an_tot_nghiep.Controllers.Api.CreateContractRequest)">
             <summary>
             Tạo hợp đồng mới.
             </summary>
@@ -121,7 +121,7 @@
         </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.HopDongApiController.Delete(System.Int32)">
             <summary>
-            Xóa hợp đồng.
+            Xóa hợp đồng. (Soft Delete)
             </summary>
         </member>
         <member name="T:do_an_tot_nghiep.Controllers.Api.InvoicesApiController">
@@ -771,6 +771,42 @@
             <inheritdoc />
         </member>
         <member name="M:do_an_tot_nghiep.Migrations.MakeFieldsOptional.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:do_an_tot_nghiep.Migrations.UpgradeDataSchema">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.UpgradeDataSchema.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.UpgradeDataSchema.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.UpgradeDataSchema.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:do_an_tot_nghiep.Migrations.AddRoomAnalyticsSnapshot">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddRoomAnalyticsSnapshot.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddRoomAnalyticsSnapshot.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddRoomAnalyticsSnapshot.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:do_an_tot_nghiep.Migrations.AddImagesTable">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddImagesTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddImagesTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddImagesTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="M:do_an_tot_nghiep.Services.IAccountService.RegisterAsync(System.String,System.String,System.String,System.String,System.String)">

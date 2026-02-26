@@ -45,6 +45,11 @@ namespace do_an_tot_nghiep.Controllers.Api
                                    Status = ra.Status,
                                    PurchaseDate = ra.PurchaseDate,
                                    WarrantyExpiry = ra.WarrantyExpiry,
+                                   ConditionScore = ra.ConditionScore,
+                                   LastMaintenanceDate = ra.LastMaintenanceDate,
+                                   MaintenanceCycleMonths = ra.MaintenanceCycleMonths,
+                                   IsUnderWarranty = ra.IsUnderWarranty,
+                                   LocationNote = ra.LocationNote,
                                    CreatedAt = ra.CreatedAt
                                }).ToListAsync();
 
@@ -72,6 +77,11 @@ namespace do_an_tot_nghiep.Controllers.Api
                                    Status = ra.Status,
                                    PurchaseDate = ra.PurchaseDate,
                                    WarrantyExpiry = ra.WarrantyExpiry,
+                                   ConditionScore = ra.ConditionScore,
+                                   LastMaintenanceDate = ra.LastMaintenanceDate,
+                                   MaintenanceCycleMonths = ra.MaintenanceCycleMonths,
+                                   IsUnderWarranty = ra.IsUnderWarranty,
+                                   LocationNote = ra.LocationNote,
                                    CreatedAt = ra.CreatedAt
                                }).FirstOrDefaultAsync();
 
@@ -83,12 +93,20 @@ namespace do_an_tot_nghiep.Controllers.Api
         /// Tao thiet bi moi.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<RoomAsset>> Create(RoomAsset asset)
+        public async Task<IActionResult> Create(RoomAsset asset)
         {
             var resolvedAssetId = await ResolveAssetIdAsync(asset.AssetId, asset.AssetName);
             if (resolvedAssetId == null)
             {
                 return BadRequest("AssetId hoac AssetName la bat buoc.");
+            }
+
+            // BR-A3: SerialNumber UNIQUE toàn hệ thống
+            if (!string.IsNullOrWhiteSpace(asset.SerialNumber))
+            {
+                var serialExists = await _context.RoomAssets.AnyAsync(a => a.SerialNumber == asset.SerialNumber);
+                if (serialExists)
+                    return BadRequest(new { message = $"Mã Serial '{asset.SerialNumber}' đã tồn tại trong hệ thống." });
             }
 
             asset.AssetId = resolvedAssetId.Value;
@@ -116,6 +134,14 @@ namespace do_an_tot_nghiep.Controllers.Api
                 return BadRequest("AssetId hoac AssetName la bat buoc.");
             }
 
+            // BR-A3: SerialNumber UNIQUE toàn hệ thống
+            if (!string.IsNullOrWhiteSpace(asset.SerialNumber))
+            {
+                var serialExists = await _context.RoomAssets.AnyAsync(a => a.SerialNumber == asset.SerialNumber && a.Id != id);
+                if (serialExists)
+                    return BadRequest(new { message = $"Mã Serial '{asset.SerialNumber}' đã tồn tại trong hệ thống." });
+            }
+
             existing.RoomId = asset.RoomId;
             existing.AssetId = resolvedAssetId.Value;
             existing.SerialNumber = asset.SerialNumber;
@@ -123,6 +149,11 @@ namespace do_an_tot_nghiep.Controllers.Api
             existing.Status = asset.Status;
             existing.PurchaseDate = asset.PurchaseDate;
             existing.WarrantyExpiry = asset.WarrantyExpiry;
+            existing.ConditionScore = asset.ConditionScore;
+            existing.LastMaintenanceDate = asset.LastMaintenanceDate;
+            existing.MaintenanceCycleMonths = asset.MaintenanceCycleMonths;
+            existing.IsUnderWarranty = asset.IsUnderWarranty;
+            existing.LocationNote = asset.LocationNote;
 
             await _context.SaveChangesAsync();
             return NoContent();
@@ -136,6 +167,11 @@ namespace do_an_tot_nghiep.Controllers.Api
         {
             var asset = await _context.RoomAssets.FindAsync(id);
             if (asset == null) return NotFound();
+
+            // BR-A1: Không xóa Asset nếu có MaintenanceHistory.
+            var hasMaintenanceLog = await _context.AssetMaintenanceLogs.AnyAsync(l => l.RoomAssetId == id);
+            if (hasMaintenanceLog)
+                return BadRequest(new { message = "Không thể xóa tài sản vì đã có lịch sử bảo trì (Maintenance Log)." });
 
             _context.RoomAssets.Remove(asset);
             await _context.SaveChangesAsync();

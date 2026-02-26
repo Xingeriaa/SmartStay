@@ -19,6 +19,14 @@ namespace do_an_tot_nghiep.Models
         public int? WarrantyMonths { get; set; }
         public string? Description { get; set; }
 
+        // --- Cột nâng cấp SAFE ---
+        public string? Category { get; set; }
+        public int? DepreciationYears { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? UnitPrice { get; set; }
+        public string? Supplier { get; set; }
+        public string? QRCode { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

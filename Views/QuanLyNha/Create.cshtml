@@ -606,6 +606,69 @@
                             <label class="custom-label">Ghi chú / Nội quy</label>
                             <textarea asp-for="GhiChu" class="custom-input" rows="4" placeholder="Nhập các ghi chú thêm..."></textarea>
                         </div>
+                        
+                        <div class="mt-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-sliders-h text-primary me-2"></i>Thông số nâng cao</h5>
+                            <div class="row g-4">
+                                <div class="col-md-3">
+                                    <label class="custom-label">Tổng số tầng</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-building input-icon-left"></i>
+                                        <input asp-for="TotalFloors" type="number" class="custom-input input-padding-left" placeholder="Ví dụ: 5" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="custom-label">ID Quản lý</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-user-tie input-icon-left"></i>
+                                        <input asp-for="ManagerId" type="number" class="custom-input input-padding-left" placeholder="ID User" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="custom-label">Vĩ độ (Lat)</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-map-marker-alt input-icon-left"></i>
+                                        <input asp-for="Latitude" type="number" step="any" class="custom-input input-padding-left" placeholder="10.762" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="custom-label">Kinh độ (Long)</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-map-marker-alt input-icon-left"></i>
+                                        <input asp-for="Longitude" type="number" step="any" class="custom-input input-padding-left" placeholder="106.660" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="custom-label">NCC Điện</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-bolt input-icon-left"></i>
+                                        <input asp-for="ElectricityProvider" class="custom-input input-padding-left" placeholder="EVN HCMC" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="custom-label">NCC Nước</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-tint input-icon-left"></i>
+                                        <input asp-for="WaterProvider" class="custom-input input-padding-left" placeholder="Sawaco" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="custom-label">Hạn PCCC</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-fire-extinguisher input-icon-left"></i>
+                                        <input asp-for="FireSafetyCertificateExpiry" type="date" class="custom-input input-padding-left" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="custom-label">Ngày bảo trì</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-tools input-icon-left"></i>
+                                        <input asp-for="LastMaintenanceDate" type="date" class="custom-input input-padding-left" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

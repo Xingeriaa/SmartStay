@@ -66,13 +66,27 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // 7. HttpClient
-builder.Services.AddHttpClient("ApiClient", client =>
+builder.Services.AddHttpClient("ApiClient", (sp, client) =>
 {
-    var baseUrl = builder.Configuration["ApiBaseUrl"];
-    if (!string.IsNullOrWhiteSpace(baseUrl))
+    var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+    if (httpContext != null)
     {
-        client.BaseAddress = new Uri(baseUrl);
+        // Tự động detect port/host của server đang chạy (chống timeout 2s)
+        client.BaseAddress = new Uri($"{httpContext.Request.Scheme}://{httpContext.Request.Host.Value}");
     }
+    else
+    {
+        var baseUrl = builder.Configuration["ApiBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(baseUrl))
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        }
+    }
+})
+.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+{
+    UseProxy = false, // Vô hiệu hóa proxy tự động (Fix triệt để delay 2s do WPAD)
+    PooledConnectionLifetime = TimeSpan.FromMinutes(2)
 });
 
 // 8. Dependency Injection

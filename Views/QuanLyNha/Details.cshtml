@@ -59,11 +59,11 @@
                             <div class="text-secondary small fw-medium">Tổng phòng</div>
                         </div>
                         <div class="col-4 border-end">
-                            <div class="fw-bold text-success" style="font-size:1.5rem;">@(dsPhong?.Count(p => p.Status == "Vacant") ?? 0)</div>
+                            <div class="fw-bold text-success" style="font-size:1.5rem;">@(dsPhong?.Count(p => p.Status == 1) ?? 0)</div>
                             <div class="text-secondary small fw-medium">Còn trống</div>
                         </div>
                         <div class="col-4">
-                            <div class="fw-bold text-primary" style="font-size:1.5rem;">@(dsPhong?.Count(p => p.Status == "Occupied") ?? 0)</div>
+                            <div class="fw-bold text-primary" style="font-size:1.5rem;">@(dsPhong?.Count(p => p.Status == 2) ?? 0)</div>
                             <div class="text-secondary small fw-medium">Đang thuê</div>
                         </div>
                     </div>
@@ -129,6 +129,14 @@
                     }
                 </div>
             </div>
+
+            <!-- IMAGE GALLERY PORTION -->
+            @{
+                ViewData["EntityType"] = "building";
+                ViewData["EntityId"] = Model.Id;
+            }
+            @await Html.PartialAsync("_ImageGallery")
+            <!-- END IMAGE GALLERY -->
         </div>
 
         @* Right column - Room list *@
@@ -173,8 +181,8 @@
                             <tbody class="border-top-0">
                                 @foreach (var p in dsPhong)
                                 {
-                                    string sCls = p.Status switch { "Vacant" => "bg-success text-success", "Occupied" => "bg-primary text-primary", "Maintenance" => "bg-warning text-warning", _ => "bg-secondary text-secondary" };
-                                    string sLbl = p.Status switch { "Vacant" => "Trống", "Occupied" => "Đang thuê", "Maintenance" => "Bảo trì", _ => p.Status };
+                                    string sCls = p.Status switch { 1 => "bg-success text-success", 2 => "bg-primary text-primary", 3 => "bg-warning text-warning", _ => "bg-secondary text-secondary" };
+                                    string sLbl = p.Status switch { 1 => "Trống", 2 => "Đang thuê", 3 => "Bảo trì", _ => p.Status.ToString() };
                                     <tr class="bg-white">
                                         <td class="px-4">
                                             <div class="d-flex align-items-center gap-3">

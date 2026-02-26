@@ -67,5 +67,31 @@ namespace do_an_tot_nghiep.ViewModels
         [Display(Name = "Ngày Bắt Đầu Vận Hành")]
         [DataType(DataType.Date)]
         public DateTime? OperationDate { get; set; }
+
+        [Display(Name = "Tổng số tầng")]
+        public int? TotalFloors { get; set; }
+
+        [Display(Name = "Vĩ độ (Latitude)")]
+        public decimal? Latitude { get; set; }
+
+        [Display(Name = "Kinh độ (Longitude)")]
+        public decimal? Longitude { get; set; }
+
+        [Display(Name = "Đơn vị cung cấp Điện")]
+        public string? ElectricityProvider { get; set; }
+
+        [Display(Name = "Đơn vị cung cấp Nước")]
+        public string? WaterProvider { get; set; }
+
+        [Display(Name = "Ngày hết hạn PCCC")]
+        [DataType(DataType.Date)]
+        public DateTime? FireSafetyCertificateExpiry { get; set; }
+
+        [Display(Name = "Ngày bảo trì gần nhất")]
+        [DataType(DataType.Date)]
+        public DateTime? LastMaintenanceDate { get; set; }
+
+        [Display(Name = "Người quản lý (Manager)")]
+        public int? ManagerId { get; set; }
     }
 }

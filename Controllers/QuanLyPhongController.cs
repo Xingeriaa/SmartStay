@@ -90,8 +90,20 @@ namespace do_an_tot_nghiep.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var updated = await _phongTroService.UpdateAsync(model);
-            if (!updated) return NotFound();
+            var result = await _phongTroService.UpdateAsync(model);
+            if (!result.Success)
+            {
+                if (result.ErrorMessage == "Không tìm thấy phòng.") return NotFound();
+                
+                ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Cập nhật lỗi.");
+                var data = await _phongTroService.GetEditDataAsync(model.Id);
+                if (data != null)
+                {
+                    ViewBag.DichVuCuaNha = data.DichVuCuaNha;
+                    ViewBag.ThongTinNha = data.NhaTro;
+                }
+                return View(model);
+            }
 
             return RedirectToAction(nameof(Index), new { nhaId = model.NhaTroId });
         }

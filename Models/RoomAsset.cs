@@ -23,10 +23,17 @@ namespace do_an_tot_nghiep.Models
 
         public int Quantity { get; set; } = 1;
 
-        public int Status { get; set; } = 1;
+        public byte Status { get; set; } = 1; // 1 = Tốt, 2 = Hỏng, 3 = Bảo trì
 
         public DateTime? PurchaseDate { get; set; }
         public DateTime? WarrantyExpiry { get; set; }
+
+        // --- Cột nâng cấp SAFE ---
+        public int? ConditionScore { get; set; }
+        public DateTime? LastMaintenanceDate { get; set; }
+        public int? MaintenanceCycleMonths { get; set; }
+        public bool? IsUnderWarranty { get; set; }
+        public string? LocationNote { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
