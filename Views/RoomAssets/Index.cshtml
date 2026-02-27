@@ -1,67 +1,229 @@
-@* RoomAssets/Index.cshtml — alias chuẩn cho RoomAssetsList *@
 @model List<do_an_tot_nghiep.Models.RoomAsset>
 @{
     ViewData["Title"] = "Thiết bị phòng";
     var roomId = ViewBag.RoomId;
+    var total = Model?.Count ?? 0;
+    var broken = Model?.Count(x => x.Status == 2 || x.Status == 3) ?? 0;
+    var active = Model?.Count(x => x.Status == 1) ?? 0;
 }
 
-<style>
-    .asset-page { max-width:960px; margin:0 auto; }
-    .asset-row { background:#fff; border:1px solid #e9ecef; border-radius:12px; padding:.85rem 1.2rem; margin-bottom:.55rem; display:flex; align-items:center; gap:1rem; transition:box-shadow .15s; }
-    .asset-row:hover { box-shadow:0 4px 14px rgba(0,0,0,.06); }
-    .status-badge { display:inline-block; padding:.2rem .7rem; border-radius:20px; font-size:.75rem; font-weight:700; }
-    .sb-1 { background:#d4edda; color:#155724; }
-    .sb-2 { background:#fff3cd; color:#856404; }
-    .sb-3 { background:#f8d7da; color:#721c24; }
-    .sb-4 { background:#e2e3e5; color:#495057; }
-</style>
-
-<div class="asset-page">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid px-0">
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-end mb-4">
         <div>
-            <h1 class="fw-bold mb-0" style="font-size:1.55rem;"><i class="fas fa-couch me-2 text-secondary"></i>Thiết bị phòng</h1>
-            <p class="text-muted small mb-0">Quản lý tài sản và thiết bị theo từng phòng trọ</p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Phong" asp-action="Index" class="text-muted text-decoration-none">Phòng trọ</a></li>
+                    <li class="breadcrumb-item active">Thiết bị</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Thiết bị & Tài sản</h1>
+            <p class="text-muted mb-0 mt-1">Quản lý cơ sở vật chất nội thất phòng #@roomId</p>
         </div>
-        <a asp-action="Create" asp-route-roomId="@roomId"
-           class="btn fw-bold text-white" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);border-radius:12px;padding:.6rem 1.4rem;">
-            <i class="fas fa-plus me-1"></i>Thêm thiết bị
-        </a>
+        <div class="d-flex gap-2">
+            <a asp-action="Create" asp-route-roomId="@roomId" class="btn btn-gradient-primary btn-custom shadow">
+                <i class="fas fa-plus me-1"></i> Thêm thiết bị
+            </a>
+        </div>
     </div>
 
-    @if (TempData["Error"]   != null) { <div class="alert alert-danger border-0 mb-3">@TempData["Error"]</div> }
-    @if (TempData["Success"] != null) { <div class="alert alert-success border-0 mb-3">@TempData["Success"]</div> }
-
-    @if (!Model.Any())
+    @* --- ALERTS --- *@
+    @if (TempData["Success"] != null)
     {
-        <div class="text-center py-5 text-muted">
-            <i class="fas fa-couch fa-3x mb-3 d-block opacity-40"></i>
-            <strong>Chưa có thiết bị nào</strong>
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
-    else
-    {
-        foreach (var item in Model)
-        {
-            string statusText  = item.Status switch { 1 => "Hoạt động", 2 => "Hư hỏng", 3 => "Hỏng", 4 => "Thanh lý", _ => "?" };
-            string statusClass = item.Status switch { 1 => "sb-1", 2 => "sb-2", 3 => "sb-3", _ => "sb-4" };
-            <div class="asset-row">
-                <div class="flex-grow-1 min-w-0">
-                    <div class="fw-semibold">@item.AssetName</div>
-                    <div class="text-muted small">SL: @item.Quantity
-                        @if (!string.IsNullOrEmpty(item.SerialNumber)) { <span class="ms-2">S/N: @item.SerialNumber</span> }
+
+    @* --- STAT CARDS --- *@
+    <div class="row g-3 mb-4">
+        <div class="col-xl-4 col-md-6">
+            <div class="stat-card animate-fade-up">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-label">TỔNG THIẾT BỊ</div>
+                        <div class="stat-value text-gradient mt-1">@total</div>
                     </div>
-                </div>
-                <span class="status-badge @statusClass">@statusText</span>
-                <div class="d-flex gap-1">
-                    <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-sm btn-light border">Xem</a>
-                    <a asp-action="Edit"   asp-route-id="@item.Id" class="btn btn-sm btn-primary">Sửa</a>
-                    <form asp-action="Delete" asp-route-id="@item.Id" asp-route-roomId="@item.RoomId" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                onclick="return confirm('Xóa thiết bị này?')">Xóa</button>
-                    </form>
+                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-couch"></i></div>
                 </div>
             </div>
-        }
-    }
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.1s">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-label">ĐANG SỬ DỤNG</div>
+                        <div class="stat-value text-success mt-1">@active</div>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-info text-success"><i class="fas fa-check-double"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.2s">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-label">CẦN BẢO TRÌ/HỎNG</div>
+                        <div class="stat-value text-danger mt-1">@broken</div>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-warning text-danger"><i class="fas fa-tools"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- FILTERS --- *@
+    <div class="main-card mb-3 p-4 animate-fade-up" style="animation-delay:.1s">
+        <div class="row g-3 align-items-end">
+            <div class="col-xl-6 col-md-8">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-search me-1"></i>Tìm nhanh</label>
+                <div class="search-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Tên thiết bị, số hiệu (S/N)..." oninput="applyFilters()">
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-4">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-filter me-1"></i>Trạng thái</label>
+                <select class="form-select" id="filterStatus" onchange="applyFilters()">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="hoạt động">Hoạt động tốt</option>
+                    <option value="hư hỏng">Đang hư hỏng</option>
+                    <option value="hỏng">Đã hỏng (Bỏ)</option>
+                    <option value="thanh lý">Đã thanh lý</option>
+                </select>
+            </div>
+            <div class="col-xl-2 col-md-12">
+                <button class="btn btn-light border w-100" onclick="resetFilters()"><i class="fas fa-times me-1"></i>Xóa lọc</button>
+            </div>
+        </div>
+        <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
+    </div>
+
+    @* --- DATA TABLE --- *@
+    <div class="main-card animate-fade-up" style="animation-delay:.2s">
+        <div class="card-header-styled">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-boxes text-brand"></i>
+                <h5 class="fw-bold mb-0">Danh sách tài sản nội thất</h5>
+                <span class="badge bg-soft-brand text-brand">Phòng @roomId</span>
+            </div>
+            <button class="btn btn-light border btn-sm" onclick="location.reload()"><i class="fas fa-sync-alt text-muted"></i></button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-center" id="dataTable">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start" style="cursor:pointer" onclick="sortTable(0)">Tên thiết bị <i class="fas fa-sort ms-1 small text-muted"></i></th>
+                        <th>S/N</th>
+                        <th>Số lượng</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end" style="width:180px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            string statusText = item.Status switch { 1 => "Hoạt động", 2 => "Hư hỏng", 3 => "Hỏng", 4 => "Thanh lý", _ => "Khác" };
+                            string statusBadge = item.Status switch
+                            {
+                                1 => "bg-soft-success text-success",
+                                2 => "bg-soft-warning text-warning",
+                                3 => "bg-soft-danger text-danger",
+                                _ => "bg-soft-secondary text-secondary"
+                            };
+
+                            <tr data-status="@statusText.ToLower()" data-name="@item.AssetName.ToLower()">
+                                <td class="text-start">
+                                    <div class="fw-bold">@item.AssetName</div>
+                                    <small class="text-muted">ID: #@item.Id</small>
+                                </td>
+                                <td><code class="small">@(string.IsNullOrEmpty(item.SerialNumber) ? "N/A" : item.SerialNumber)</code></td>
+                                <td><span class="fw-bold">@item.Quantity</span></td>
+                                <td>
+                                    <span class="badge @statusBadge rounded-pill px-3">
+                                        <i class="fas fa-circle me-1" style="font-size:0.5rem"></i> @statusText
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-light border-end" title="Chỉnh sửa">
+                                            <i class="fas fa-edit text-primary"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@item.Id" asp-route-roomId="@item.RoomId" method="post" class="d-inline"
+                                              onsubmit="return confirm('Xác nhận gỡ bỏ thiết bị này khỏi phòng?')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-light" title="Xóa">
+                                                <i class="fas fa-trash-alt text-danger"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <i class="fas fa-couch fa-3x text-muted opacity-25 d-block mb-3"></i>
+                                <h6 class="text-muted">Phòng này chưa được trang bị thiết bị</h6>
+                                <a asp-action="Create" asp-route-roomId="@roomId" class="btn btn-sm btn-gradient-primary mt-2">Thêm ngay</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="px-4 py-3 border-top bg-light rounded-bottom">
+            <span class="text-muted small">Quy tắc: Thiết bị hỏng (Mức 3) cần được cập nhật trạng thái để Ban quản lý lên kế hoạch thay mới.</span>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        const allRows = Array.from(document.querySelectorAll('#dataTable tbody tr[data-status]'));
+
+        function applyFilters() {
+            const q = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status = document.getElementById('filterStatus').value.toLowerCase();
+
+            allRows.forEach(row => {
+                const matchQ = !q || row.dataset.name?.includes(q) || row.innerText.toLowerCase().includes(q);
+                const matchS = !status || row.dataset.status === status;
+                row.style.display = (matchQ && matchS) ? '' : 'none';
+            });
+            renderTags(q, status);
+        }
+
+        function renderTags(q, status) {
+            const c = document.getElementById('filterTags'); c.innerHTML = '';
+            const tag = (l, cl) => c.innerHTML += `<span class="badge bg-soft-brand text-brand border px-3 py-2 rounded-pill" style="font-size:.8rem">${l} <span style="cursor:pointer;margin-left:6px" onclick="${cl}">✕</span></span>`;
+            if (q) tag(`🔍 "${q}"`, `document.getElementById('searchInput').value='';applyFilters()`);
+            if (status) tag(`📌 ${status}`, `document.getElementById('filterStatus').value='';applyFilters()`);
+        }
+
+        function resetFilters() {
+            ['searchInput', 'filterStatus'].forEach(id => document.getElementById(id).value = '');
+            applyFilters();
+        }
+
+        function sortTable(col) {
+            const tbody = document.querySelector('#dataTable tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr[data-status]'));
+            const asc = !this.asc; this.asc = asc;
+            rows.sort((a, b) => {
+                const av = a.cells[col].innerText;
+                const bv = b.cells[col].innerText;
+                return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        }
+    </script>
+}

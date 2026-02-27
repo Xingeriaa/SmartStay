@@ -809,6 +809,18 @@
         <member name="M:do_an_tot_nghiep.Migrations.AddImagesTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:do_an_tot_nghiep.Migrations.AddIsStarredToNotification">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddIsStarredToNotification.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddIsStarredToNotification.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:do_an_tot_nghiep.Migrations.AddIsStarredToNotification.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="M:do_an_tot_nghiep.Services.IAccountService.RegisterAsync(System.String,System.String,System.String,System.String,System.String)">
             <summary>
             Đăng ký tự do — luôn gán role "Tenant".

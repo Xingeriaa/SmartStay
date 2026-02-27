@@ -1,54 +1,231 @@
-@* Liquidations/Index.cshtml — danh sách lịch sử thanh lý *@
+@model IEnumerable<dynamic>
 @{
     ViewData["Title"] = "Lịch sử thanh lý hợp đồng";
-
     var items = ViewBag.Liquidations as List<dynamic> ?? new List<dynamic>();
+    var total = items.Count;
+    var totalAmount = items.Sum(x => (decimal)x.Amount);
+    var rooms = items.Select(x => (string)x.RoomName).Distinct().OrderBy(x => x).ToList();
 }
 
-<style>
-    .liq-row { background:#fff; border:1px solid #e9ecef; border-radius:12px; padding:.9rem 1.2rem; margin-bottom:.6rem; display:flex; align-items:center; gap:1rem; transition:box-shadow .15s; text-decoration:none; color:inherit; }
-    .liq-row:hover { box-shadow:0 4px 16px rgba(0,0,0,.07); border-color:#a29bfe; }
-    .outcome-badge { display:inline-block; padding:.2rem .75rem; border-radius:20px; font-size:.75rem; font-weight:700; }
-    .ob-refund { background:#d4edda; color:#155724; }
-    .ob-charge { background:#f8d7da; color:#721c24; }
-    .ob-zero   { background:#e2e3e5; color:#495057; }
-</style>
-
-<div style="max-width:1100px;margin:0 auto;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid px-0">
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-end mb-4">
         <div>
-            <h1 class="fw-bold mb-0" style="font-size:1.55rem;"><i class="fas fa-gavel me-2 text-danger"></i>Lịch sử thanh lý</h1>
-            <p class="text-muted small mb-0">Tất cả biên bản quyết toán hợp đồng đã được xử lý</p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Thanh lý</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-0" style="font-size:1.75rem;">Lịch sử thanh lý</h1>
+            <p class="text-muted mb-0 mt-1">Quản lý biên bản quyết toán · Actor: Ban quản lý</p>
         </div>
-        <a asp-controller="HopDong" asp-action="Index" class="btn btn-light border">
-            <i class="fas fa-file-contract me-1"></i>Quản lý hợp đồng
-        </a>
+        <div class="d-flex gap-2">
+            <a asp-controller="HopDong" asp-action="Index" class="btn btn-gradient-primary btn-custom shadow">
+                <i class="fas fa-plus me-1"></i> Thanh lý mới
+            </a>
+        </div>
     </div>
 
-    @if (TempData["Success"] != null) { <div class="alert alert-success border-0 mb-3">@TempData["Success"]</div> }
-    @if (TempData["Error"]   != null) { <div class="alert alert-danger border-0 mb-3">@TempData["Error"]</div> }
-
-    @if (!items.Any())
+    @* --- ALERTS --- *@
+    @if (TempData["Success"] != null)
     {
-        <div class="text-center py-5 text-muted">
-            <i class="fas fa-file-contract fa-3x mb-3 d-block opacity-40"></i>
-            <strong>Chưa có biên bản thanh lý nào</strong>
-            <p class="small">Kích hoạt thanh lý từ trang chi tiết hợp đồng.</p>
+        <div class="alert alert-success alert-dismissible border-0 shadow-sm rounded-3 mb-3 fade show">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
-    else
-    {
-        foreach (var item in items)
-        {
-            <div class="liq-row">
-                <div class="flex-grow-1 min-w-0">
-                    <div class="fw-bold">@item.ContractCode</div>
-                    <div class="text-muted small">@item.RoomName · Ngày lập @item.LiquidationDate</div>
-                </div>
-                <div class="text-end">
-                    <div class="fw-bold">@item.Amount đ</div>
+
+    <div class="alert alert-info border-start border-info border-4 small mb-4">
+        <i class="fas fa-exclamation-circle me-2"></i><strong>Điều kiện hậu quyết:</strong>
+        Hợp đồng thanh lý thành công thì phòng sẽ chuyển trạng thái <strong>"Trống"</strong>. Quyết toán bao gồm hoàn cọc và thu phí phát sinh.
+    </div>
+
+    @* --- STAT CARDS --- *@
+    <div class="row g-3 mb-4">
+        <div class="col-xl-6 col-md-6">
+            <div class="stat-card animate-fade-up">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-label">TỔNG BIÊN BẢN</div>
+                        <div class="stat-value text-gradient mt-1">@total</div>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-theme"><i class="fas fa-file-contract"></i></div>
                 </div>
             </div>
-        }
-    }
+        </div>
+        <div class="col-xl-6 col-md-6">
+            <div class="stat-card animate-fade-up" style="animation-delay:.1s">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-label">TỔNG TIỀN QUYẾT TOÁN</div>
+                        <div class="stat-value mt-1 @(totalAmount >= 0 ? "text-success" : "text-danger")">
+                            @totalAmount.ToString("N0")
+                        </div>
+                        <small class="text-muted">VNĐ</small>
+                    </div>
+                    <div class="stat-icon-wrapper bg-icon-info"><i class="fas fa-hand-holding-usd"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- FILTERS --- *@
+    <div class="main-card mb-3 p-4 animate-fade-up" style="animation-delay:.1s">
+        <div class="row g-3 align-items-end">
+            <div class="col-xl-4 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-search me-1"></i>Tìm kiếm</label>
+                <div class="search-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Mã hợp đồng, tên phòng..." oninput="applyFilters()">
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <label class="fw-semibold small text-muted mb-1 d-block"><i class="fas fa-door-open me-1"></i>Lọc theo phòng</label>
+                <select class="form-select" id="filterRoom" onchange="applyFilters()">
+                    <option value="">-- Tất cả phòng --</option>
+                    @foreach (var r in rooms)
+                    {
+                        <option value="@r.ToLower()">@r</option>
+                    }
+                </select>
+            </div>
+            <div class="col-xl-1">
+                <label class="fw-semibold small text-muted mb-1 d-block">&nbsp;</label>
+                <button class="btn btn-light border w-100" onclick="resetFilters()" title="Xóa bộ lọc"><i class="fas fa-times text-muted"></i></button>
+            </div>
+        </div>
+        <div id="filterTags" class="mt-3 d-flex flex-wrap gap-2"></div>
+    </div>
+
+    @* --- DATA TABLE --- *@
+    <div class="main-card animate-fade-up" style="animation-delay:.2s">
+        <div class="card-header-styled">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-history text-brand"></i>
+                <h5 class="fw-bold mb-0">Danh sách quyết toán</h5>
+                <span class="badge bg-soft-brand text-brand"><span id="visibleCount">@total</span> / @total</span>
+            </div>
+            <button class="btn btn-light border btn-sm" onclick="location.reload()"><i class="fas fa-sync-alt text-muted"></i></button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-center" id="dataTable">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start" style="cursor:pointer" onclick="sortTable(0)">Mã hợp đồng <i class="fas fa-sort ms-1 small text-muted"></i></th>
+                        <th style="cursor:pointer" onclick="sortTable(1)">Phòng <i class="fas fa-sort ms-1 small text-muted"></i></th>
+                        <th>Ngày thanh lý</th>
+                        <th>Nội dung quyết toán</th>
+                        <th class="text-end">Số tiền</th>
+                        <th class="text-center" style="width:100px;">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (items.Any())
+                    {
+                        foreach (var item in items)
+                        {
+                            <tr data-room="@item.RoomName.ToLower()" data-name="@item.ContractCode.ToLower()">
+                                <td class="text-start">
+                                    <div class="fw-bold text-brand">@item.ContractCode</div>
+                                    <small class="text-muted">ID: #@item.Id</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light border text-dark">
+                                        <i class="fas fa-door-open me-1 text-muted"></i>@item.RoomName
+                                    </span>
+                                </td>
+                                <td><small>@item.LiquidationDate</small></td>
+                                <td class="text-start">
+                                    <small class="d-block text-muted">Kết thúc hợp đồng & quyết toán</small>
+                                </td>
+                                <td class="text-end">
+                                    @{
+                                        bool isRefund = (decimal)item.Amount >= 0;
+                                    }
+                                    <span class="fw-bold @(isRefund ? "text-success" : "text-danger")">
+                                        @(isRefund ? "+" : "")@item.Amount.ToString("N0") đ
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-sm btn-light border rounded-pill">
+                                        <i class="fas fa-eye text-muted"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="py-5 text-center">
+                                <i class="fas fa-file-invoice fa-3x text-muted opacity-25 d-block mb-3"></i>
+                                <h6 class="text-muted">Chưa có biên bản thanh lý nào</h6>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noResultsMsg" class="text-center py-4 d-none">
+            <i class="fas fa-search fa-2x text-muted opacity-25 d-block mb-2"></i>
+            <h6 class="text-muted">Không tìm thấy dữ liệu phù hợp</h6>
+        </div>
+
+        <div class="px-4 py-3 border-top bg-light rounded-bottom d-flex justify-content-between">
+            <span class="text-muted small">Hiển thị <strong><span id="footerCount">@total</span></strong> biên bản</span>
+            <span class="small fw-bold text-brand">Hệ thống quản lý Actor: Ban quản lý</span>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        const allRows = Array.from(document.querySelectorAll('#dataTable tbody tr[data-room]'));
+        let sortDir = {};
+
+        function applyFilters() {
+            const q     = document.getElementById('searchInput').value.toLowerCase().trim();
+            const room  = document.getElementById('filterRoom').value.toLowerCase();
+
+            let visible = 0;
+            allRows.forEach(row => {
+                const matchQ = !q || row.dataset.name?.includes(q) || row.innerText.toLowerCase().includes(q);
+                const matchR = !room || row.dataset.room === room;
+                const show   = matchQ && matchR;
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            document.getElementById('visibleCount').textContent = visible;
+            document.getElementById('footerCount').textContent = visible;
+            document.getElementById('noResultsMsg').classList.toggle('d-none', visible > 0 || allRows.length === 0);
+            renderTags(q, room);
+        }
+
+        function renderTags(q, room) {
+            const c = document.getElementById('filterTags'); c.innerHTML = '';
+            const tag = (l, cl) => c.innerHTML += `<span class="badge bg-soft-brand text-brand border px-3 py-2 rounded-pill" style="font-size:.8rem">${l} <span style="cursor:pointer;margin-left:6px" onclick="${cl}">✕</span></span>`;
+            if (q) tag(`🔍 "${q}"`, `document.getElementById('searchInput').value='';applyFilters()`);
+            if (room) tag(`🚪 ${room}`, `document.getElementById('filterRoom').value='';applyFilters()`);
+        }
+
+        function resetFilters() {
+            ['searchInput', 'filterRoom'].forEach(id => document.getElementById(id).value = '');
+            applyFilters();
+        }
+
+        function sortTable(col) {
+            const tbody = document.querySelector('#dataTable tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr[data-room]'));
+            const asc = !sortDir[col]; sortDir = {}; sortDir[col] = asc;
+            rows.sort((a, b) => {
+                const av = a.cells[col]?.textContent.trim() || '';
+                const bv = b.cells[col]?.textContent.trim() || '';
+                return asc ? av.localeCompare(bv, 'vi') : bv.localeCompare(av, 'vi');
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        }
+    </script>
+}

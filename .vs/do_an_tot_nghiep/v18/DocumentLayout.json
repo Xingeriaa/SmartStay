@@ -1,0 +1,419 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\users\\_form.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\users\\_form.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\users\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\users\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\models\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:models\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\controllers\\notificationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:controllers\\notificationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\notifications\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\notifications\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\invoices\\generate.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\invoices\\generate.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\invoices\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\invoices\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Migrations\\20260227151538_AddIsStarredToNotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20260227151538_AddIsStarredToNotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Migrations\\20260227151317_AddIsStarredToNotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20260227151317_AddIsStarredToNotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\liquidations\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\liquidations\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\roomassets\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\roomassets\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\roomassets\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\roomassets\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\roomassets\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\roomassets\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\invoices\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\invoices\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\khachhangmain\\trangchinhtimnha.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\khachhangmain\\trangchinhtimnha.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\liquidations\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\liquidations\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\tenantportal\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\tenantportal\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\meterreadings\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\meterreadings\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\views\\meterreadings\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\meterreadings\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|d:\\hoctapsd21204\\pro2191.04_pro2191\\smartstay_new\\build_check.log||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:build_check.log||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{56df62a4-05a3-4e5b-aa1a-99371ccfb997}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_Form.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Users\\_Form.cshtml",
+              "RelativeDocumentMoniker": "Views\\Users\\_Form.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Users\\_Form.cshtml",
+              "RelativeToolTip": "Views\\Users\\_Form.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T15:26:05.049Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Users\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Views\\Users\\Edit.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Users\\Edit.cshtml",
+              "RelativeToolTip": "Views\\Users\\Edit.cshtml",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T15:26:02.526Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Users\\Create.cshtml",
+              "RelativeDocumentMoniker": "Views\\Users\\Create.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Users\\Create.cshtml",
+              "RelativeToolTip": "Views\\Users\\Create.cshtml",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T15:25:57.689Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Users\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Users\\Index.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Users\\Index.cshtml",
+              "RelativeToolTip": "Views\\Users\\Index.cshtml",
+              "ViewState": "AgIAAAsBAAAAAAAAAAAAABUBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T15:25:39.773Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-02-27T15:17:01.695Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "NotificationsController.cs",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Controllers\\NotificationsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\NotificationsController.cs",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Controllers\\NotificationsController.cs",
+              "RelativeToolTip": "Controllers\\NotificationsController.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAowCYAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-27T15:09:46.743Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Notification.cs",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Models\\Notification.cs",
+              "RelativeDocumentMoniker": "Models\\Notification.cs",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Models\\Notification.cs",
+              "RelativeToolTip": "Models\\Notification.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAADwvxoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-27T15:08:27.937Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Invoices\\Details.cshtml",
+              "RelativeDocumentMoniker": "Views\\Invoices\\Details.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Invoices\\Details.cshtml",
+              "RelativeToolTip": "Views\\Invoices\\Details.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:49:45.698Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Generate.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Invoices\\Generate.cshtml",
+              "RelativeDocumentMoniker": "Views\\Invoices\\Generate.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Invoices\\Generate.cshtml",
+              "RelativeToolTip": "Views\\Invoices\\Generate.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:49:46.677Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Notifications\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Notifications\\Index.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Notifications\\Index.cshtml",
+              "RelativeToolTip": "Views\\Notifications\\Index.cshtml",
+              "ViewState": "AgIAAMoAAAAAAAAAAAAowNsAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:49:37.33Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "20260227151317_AddIsStarredToNotification.cs",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Migrations\\20260227151317_AddIsStarredToNotification.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260227151317_AddIsStarredToNotification.cs",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Migrations\\20260227151317_AddIsStarredToNotification.cs",
+              "RelativeToolTip": "Migrations\\20260227151317_AddIsStarredToNotification.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAwBIAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-27T15:13:17.911Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "20260227151538_AddIsStarredToNotification.cs",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Migrations\\20260227151538_AddIsStarredToNotification.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260227151538_AddIsStarredToNotification.cs",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Migrations\\20260227151538_AddIsStarredToNotification.cs",
+              "RelativeToolTip": "Migrations\\20260227151538_AddIsStarredToNotification.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-27T15:15:38.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Liquidations\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Liquidations\\Index.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Liquidations\\Index.cshtml",
+              "RelativeToolTip": "Views\\Liquidations\\Index.cshtml",
+              "ViewState": "AgIAAMwAAAAAAAAAAAAowOYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:46:52.2Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Invoices\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Invoices\\Index.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Invoices\\Index.cshtml",
+              "RelativeToolTip": "Views\\Invoices\\Index.cshtml",
+              "ViewState": "AgIAAN4AAAAAAAAAAAAAAIIAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:49:47.527Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\RoomAssets\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\RoomAssets\\Index.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\RoomAssets\\Index.cshtml",
+              "RelativeToolTip": "Views\\RoomAssets\\Index.cshtml",
+              "ViewState": "AgIAAM0AAAAAAAAAAAAowOQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:53:10.048Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\RoomAssets\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Views\\RoomAssets\\Edit.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\RoomAssets\\Edit.cshtml",
+              "RelativeToolTip": "Views\\RoomAssets\\Edit.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:55:02.599Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "trangchinhtimnha.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\KhachHangMain\\trangchinhtimnha.cshtml",
+              "RelativeDocumentMoniker": "Views\\KhachHangMain\\trangchinhtimnha.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\KhachHangMain\\trangchinhtimnha.cshtml",
+              "RelativeToolTip": "Views\\KhachHangMain\\trangchinhtimnha.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:49:43.79Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\RoomAssets\\Details.cshtml",
+              "RelativeDocumentMoniker": "Views\\RoomAssets\\Details.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\RoomAssets\\Details.cshtml",
+              "RelativeToolTip": "Views\\RoomAssets\\Details.cshtml",
+              "ViewState": "AgIAAG8AAAAAAAAAAAAowJsAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:55:03.244Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Liquidations\\Create.cshtml",
+              "RelativeDocumentMoniker": "Views\\Liquidations\\Create.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\Liquidations\\Create.cshtml",
+              "RelativeToolTip": "Views\\Liquidations\\Create.cshtml",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:47:21.07Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\TenantPortal\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\TenantPortal\\Index.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\TenantPortal\\Index.cshtml",
+              "RelativeToolTip": "Views\\TenantPortal\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:47:07.316Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\MeterReadings\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\MeterReadings\\Index.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\MeterReadings\\Index.cshtml",
+              "RelativeToolTip": "Views\\MeterReadings\\Index.cshtml",
+              "ViewState": "AgIAAPAAAAAAAAAAAAAAAHcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:46:27.535Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\MeterReadings\\Create.cshtml",
+              "RelativeDocumentMoniker": "Views\\MeterReadings\\Create.cshtml",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Views\\MeterReadings\\Create.cshtml",
+              "RelativeToolTip": "Views\\MeterReadings\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-27T14:43:37.037Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "build_check.log",
+              "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\build_check.log",
+              "RelativeDocumentMoniker": "build_check.log",
+              "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\build_check.log",
+              "RelativeToolTip": "build_check.log",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-02-27T14:43:23.218Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
