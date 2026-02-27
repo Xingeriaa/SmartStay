@@ -14,14 +14,20 @@ namespace do_an_tot_nghiep.Models
         public int? UserId { get; set; }
 
         [Required]
+        [StringLength(100)]
         public string Action { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(100)]
         public string EntityName { get; set; } = string.Empty;
 
+        [StringLength(50)]
         public string? EntityId { get; set; }
+
         public string? OldValue { get; set; }
         public string? NewValue { get; set; }
+
+        [StringLength(45)]
         public string? IPAddress { get; set; }
         public string? UserAgent { get; set; }
 

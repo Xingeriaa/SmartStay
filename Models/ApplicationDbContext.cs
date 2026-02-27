@@ -74,6 +74,29 @@ namespace do_an_tot_nghiep.Models
                 .HasIndex(t => t.SoCCCD)
                 .IsUnique();
 
+            // ServicePriceHistory Configurations
+            modelBuilder.Entity<ServicePriceHistory>()
+                .HasIndex(s => new { s.ServiceId, s.EffectiveFrom })
+                .IsUnique();
+
+            modelBuilder.Entity<ServicePriceHistory>()
+                .HasIndex(s => new { s.ServiceId, s.IsActive });
+
+            modelBuilder.Entity<ServicePriceHistory>()
+                .ToTable(t => t.HasCheckConstraint("CK_ServicePriceHistory_EffectiveDates", "[EffectiveTo] >= [EffectiveFrom] OR [EffectiveTo] IS NULL"));
+
+            // AuditLogs Configurations
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(a => new { a.EntityName, a.EntityId });
+
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(a => a.CreatedAt)
+                .IsDescending();
+
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(a => new { a.UserId, a.CreatedAt })
+                .IsDescending(false, true);
+
             modelBuilder.Entity<HopDongKhachThue>()
                 .HasOne(x => x.HopDong)
                 .WithMany(x => x.HopDongKhachThues)

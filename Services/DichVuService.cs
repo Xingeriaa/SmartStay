@@ -34,8 +34,7 @@ namespace do_an_tot_nghiep.Services
             var serviceIds = services.Select(s => s.Id).ToList();
 
             var priceHistory = await _context.ServicePriceHistory
-                .Where(p => serviceIds.Contains(p.ServiceId) && p.EffectiveTo == null)
-                .OrderByDescending(p => p.EffectiveFrom)
+                .Where(p => serviceIds.Contains(p.ServiceId) && p.IsActive)
                 .ToListAsync();
 
             var latestPrices = priceHistory
@@ -78,7 +77,8 @@ namespace do_an_tot_nghiep.Services
                 {
                     ServiceId = model.Id,
                     UnitPrice = model.DonGia,
-                    EffectiveFrom = DateTime.Today
+                    EffectiveFrom = DateTime.Today,
+                    IsActive = true
                 };
                 _context.ServicePriceHistory.Add(price);
                 await _context.SaveChangesAsync();
@@ -91,8 +91,7 @@ namespace do_an_tot_nghiep.Services
             if (dichVu == null) return null;
 
             var latestPrice = await _context.ServicePriceHistory
-                .Where(p => p.ServiceId == dichVu.Id && p.EffectiveTo == null)
-                .OrderByDescending(p => p.EffectiveFrom)
+                .Where(p => p.ServiceId == dichVu.Id && p.IsActive)
                 .FirstOrDefaultAsync();
             dichVu.DonGia = latestPrice?.UnitPrice ?? 0;
 
@@ -110,22 +109,25 @@ namespace do_an_tot_nghiep.Services
             entity.IsDeleted = model.IsDeleted;
 
             var currentPrice = await _context.ServicePriceHistory
-                .Where(p => p.ServiceId == model.Id && p.EffectiveTo == null)
-                .OrderByDescending(p => p.EffectiveFrom)
+                .Where(p => p.ServiceId == model.Id && p.IsActive)
                 .FirstOrDefaultAsync();
 
             if (currentPrice == null || currentPrice.UnitPrice != model.DonGia)
             {
+                var newEffectiveDate = DateTime.Today;
+
                 if (currentPrice != null)
                 {
-                    currentPrice.EffectiveTo = DateTime.Today;
+                    currentPrice.EffectiveTo = newEffectiveDate.AddDays(-1);
+                    currentPrice.IsActive = false;
                 }
 
                 var newPrice = new ServicePriceHistory
                 {
                     ServiceId = model.Id,
                     UnitPrice = model.DonGia,
-                    EffectiveFrom = DateTime.Today
+                    EffectiveFrom = newEffectiveDate,
+                    IsActive = true
                 };
                 _context.ServicePriceHistory.Add(newPrice);
             }

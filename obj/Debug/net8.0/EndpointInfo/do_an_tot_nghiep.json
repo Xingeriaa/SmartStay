@@ -4657,14 +4657,18 @@
             "nullable": true
           },
           "action": {
-            "minLength": 1,
+            "maxLength": 100,
+            "minLength": 0,
             "type": "string"
           },
           "entityName": {
-            "minLength": 1,
+            "maxLength": 100,
+            "minLength": 0,
             "type": "string"
           },
           "entityId": {
+            "maxLength": 50,
+            "minLength": 0,
             "type": "string",
             "nullable": true
           },
@@ -4677,6 +4681,8 @@
             "nullable": true
           },
           "ipAddress": {
+            "maxLength": 45,
+            "minLength": 0,
             "type": "string",
             "nullable": true
           },
@@ -5953,6 +5959,9 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
           },
           "createdAt": {
             "type": "string",

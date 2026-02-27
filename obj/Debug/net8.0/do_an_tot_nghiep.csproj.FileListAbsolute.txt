@@ -148,7 +148,6 @@ C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\do_an_tot_nghiep.xml
 C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\do_an_tot_nghiep.pdb
 C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\do_an_tot_nghiep.genruntimeconfig.cache
 C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\ref\do_an_tot_nghiep.dll
-C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\bin\Debug\net8.0\appsettings.Development.json
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\bin\Debug\net8.0\appsettings.json
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\bin\Debug\net8.0\do_an_tot_nghiep.staticwebassets.runtime.json
@@ -300,3 +299,4 @@ D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\obj\Debug\net8.0\do_an_tot_ngh
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\obj\Debug\net8.0\do_an_tot_nghiep.pdb
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\obj\Debug\net8.0\do_an_tot_nghiep.genruntimeconfig.cache
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\obj\Debug\net8.0\ref\do_an_tot_nghiep.dll
+C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
