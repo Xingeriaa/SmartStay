@@ -299,4 +299,9 @@ D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\obj\Debug\net8.0\do_an_tot_ngh
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\obj\Debug\net8.0\do_an_tot_nghiep.pdb
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\obj\Debug\net8.0\do_an_tot_nghiep.genruntimeconfig.cache
 D:\HocTapSD21204\PRO2191.04_PRO2191\SmartStay_New\obj\Debug\net8.0\ref\do_an_tot_nghiep.dll
+C:\Users\toduc\Downloads\SmartStay\bin\Debug\net8.0\seed_res.json
+C:\Users\toduc\Downloads\SmartStay\bin\Debug\net8.0\seed_res_utf8.json
+C:\Users\toduc\Downloads\SmartStay\bin\Debug\net8.0\seed_last_error.json
+C:\Users\toduc\Downloads\SmartStay\bin\Debug\net8.0\seed_last_err_utf8.json
+C:\Users\toduc\Downloads\SmartStay\bin\Debug\net8.0\seed_last_err.json
 C:\Users\toduc\Downloads\SmartStay\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

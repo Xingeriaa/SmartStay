@@ -32,10 +32,10 @@ namespace do_an_tot_nghiep.Models
         [MaxLength(255)]
         public string? Note { get; set; }
 
-        [MaxLength(255)]
+        [NotMapped]
         public string? Reason { get; set; }
 
-        public int CreatedBy { get; set; } // FK to Users
+        public int? CreatedBy { get; set; } // FK to Users
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

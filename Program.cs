@@ -7,6 +7,11 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestHeadersTotalSize = 1048576; // 1 MB
+});
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
@@ -42,7 +47,11 @@ builder.Services.AddSession(options =>
 });
 
 // 5. MVC + API + SignalR
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSignalR();
 
@@ -73,6 +82,13 @@ builder.Services.AddHttpClient("ApiClient", (sp, client) =>
     {
         // Tự động detect port/host của server đang chạy (chống timeout 2s)
         client.BaseAddress = new Uri($"{httpContext.Request.Scheme}://{httpContext.Request.Host.Value}");
+
+        // Chuyển toàn bộ Cookies (bao gồm cả Cookie xác thực) sang API request
+        var cookies = httpContext.Request.Cookies.Select(c => $"{c.Key}={c.Value}");
+        if (cookies.Any())
+        {
+            client.DefaultRequestHeaders.Add("Cookie", string.Join("; ", cookies));
+        }
     }
     else
     {

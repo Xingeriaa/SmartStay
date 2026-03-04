@@ -215,6 +215,22 @@
   },
   {
     "ContainingType": "do_an_tot_nghiep.Controllers.Api.DashboardApiController",
+    "Method": "GetChartData",
+    "RelativePath": "api/dashboard/chart",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "monthYear",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "do_an_tot_nghiep.Controllers.Api.DashboardApiController",
     "Method": "GetSummary",
     "RelativePath": "api/dashboard/summary",
     "HttpMethod": "GET",
@@ -611,6 +627,22 @@
       {
         "Name": "request",
         "Type": "do_an_tot_nghiep.Controllers.Api.InvoicesApiController\u002BUpdateInvoiceStatusRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "do_an_tot_nghiep.Controllers.Api.InvoicesApiController",
+    "Method": "Generate",
+    "RelativePath": "api/invoices/generate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "do_an_tot_nghiep.Controllers.Api.InvoicesApiController\u002BGenerateInvoiceRequest",
         "IsRequired": true
       }
     ],
@@ -2153,6 +2185,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "do_an_tot_nghiep.Controllers.Api.SeedApiController",
+    "Method": "GenerateMockData",
+    "RelativePath": "api/seed/generate-mock-dashboard",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

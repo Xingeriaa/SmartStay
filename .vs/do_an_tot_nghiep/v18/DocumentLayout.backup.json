@@ -3,12 +3,15 @@
   "WorkspaceRootPath": "C:\\Users\\toduc\\Downloads\\SmartStay\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|c:\\users\\toduc\\downloads\\smartstay\\views\\users\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\users\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|c:\\users\\toduc\\downloads\\smartstay\\views\\users\\_form.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\users\\_form.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|c:\\users\\toduc\\downloads\\smartstay\\views\\users\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:views\\users\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|c:\\users\\toduc\\downloads\\smartstay\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -90,8 +93,8 @@
       "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:build_check.log||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|c:\\users\\toduc\\downloads\\smartstay\\migrations\\20260227151538_addisstarredtonotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B630F228-2B5C-E6C2-6DA4-93D49C2682FB}|do_an_tot_nghiep.csproj|solutionrelative:migrations\\20260227151538_addisstarredtonotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\toduc\\Downloads\\SmartStay\\Migrations\\20260227151538_AddIsStarredToNotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20260227151538_AddIsStarredToNotification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -101,7 +104,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -113,32 +116,44 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
+              "Title": "Microsoft.Common.CurrentVersion.targets",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeToolTip": "..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ViewState": "AgIAACYVAAAAAAAAAAAAwAQVAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-03-03T05:48:28.014Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "_Form.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Users\\_Form.cshtml",
               "RelativeDocumentMoniker": "Views\\Users\\_Form.cshtml",
               "ToolTip": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Users\\_Form.cshtml",
               "RelativeToolTip": "Views\\Users\\_Form.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABJAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-27T15:26:05.049Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-27T15:26:05.049Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Users\\Edit.cshtml",
               "RelativeDocumentMoniker": "Views\\Users\\Edit.cshtml",
               "ToolTip": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Users\\Edit.cshtml",
               "RelativeToolTip": "Views\\Users\\Edit.cshtml",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-27T15:26:02.526Z"
+              "WhenOpened": "2026-02-27T15:26:02.526Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Users\\Create.cshtml",
               "RelativeDocumentMoniker": "Views\\Users\\Create.cshtml",
@@ -150,7 +165,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Users\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Users\\Index.cshtml",
@@ -162,7 +177,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "appsettings.Development.json",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\appsettings.Development.json",
               "RelativeDocumentMoniker": "appsettings.Development.json",
@@ -174,7 +189,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "NotificationsController.cs",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Controllers\\NotificationsController.cs",
               "RelativeDocumentMoniker": "Controllers\\NotificationsController.cs",
@@ -186,7 +201,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Notification.cs",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Models\\Notification.cs",
               "RelativeDocumentMoniker": "Models\\Notification.cs",
@@ -198,7 +213,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Details.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Invoices\\Details.cshtml",
               "RelativeDocumentMoniker": "Views\\Invoices\\Details.cshtml",
@@ -210,7 +225,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Generate.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Invoices\\Generate.cshtml",
               "RelativeDocumentMoniker": "Views\\Invoices\\Generate.cshtml",
@@ -222,7 +237,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Notifications\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Notifications\\Index.cshtml",
@@ -234,7 +249,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "20260227151317_AddIsStarredToNotification.cs",
               "DocumentMoniker": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Migrations\\20260227151317_AddIsStarredToNotification.cs",
               "ToolTip": "D:\\HocTapSD21204\\PRO2191.04_PRO2191\\SmartStay_New\\Migrations\\20260227151317_AddIsStarredToNotification.cs",
@@ -244,7 +259,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "20260227151538_AddIsStarredToNotification.cs",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Migrations\\20260227151538_AddIsStarredToNotification.cs",
               "RelativeDocumentMoniker": "Migrations\\20260227151538_AddIsStarredToNotification.cs",
@@ -256,7 +271,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Liquidations\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Liquidations\\Index.cshtml",
@@ -268,7 +283,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Invoices\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Invoices\\Index.cshtml",
@@ -280,7 +295,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\RoomAssets\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\RoomAssets\\Index.cshtml",
@@ -292,7 +307,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\RoomAssets\\Edit.cshtml",
               "RelativeDocumentMoniker": "Views\\RoomAssets\\Edit.cshtml",
@@ -304,7 +319,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "trangchinhtimnha.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\KhachHangMain\\trangchinhtimnha.cshtml",
               "RelativeDocumentMoniker": "Views\\KhachHangMain\\trangchinhtimnha.cshtml",
@@ -316,7 +331,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "Details.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\RoomAssets\\Details.cshtml",
               "RelativeDocumentMoniker": "Views\\RoomAssets\\Details.cshtml",
@@ -328,7 +343,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\Liquidations\\Create.cshtml",
               "RelativeDocumentMoniker": "Views\\Liquidations\\Create.cshtml",
@@ -340,7 +355,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\TenantPortal\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\TenantPortal\\Index.cshtml",
@@ -352,7 +367,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\MeterReadings\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\MeterReadings\\Index.cshtml",
@@ -364,7 +379,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\Views\\MeterReadings\\Create.cshtml",
               "RelativeDocumentMoniker": "Views\\MeterReadings\\Create.cshtml",
@@ -376,7 +391,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "build_check.log",
               "DocumentMoniker": "C:\\Users\\toduc\\Downloads\\SmartStay\\build_check.log",
               "RelativeDocumentMoniker": "build_check.log",

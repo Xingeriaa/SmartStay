@@ -6,7 +6,7 @@ namespace do_an_tot_nghiep.Services
     public interface IDichVuService
     {
         Task<List<DichVu>> GetServicesAsync(string? searchString);
-        List<string> GetLoaiDichVuList();
+        List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> GetLoaiDichVuList();
         Task CreateAsync(DichVu model);
         Task<DichVu?> GetForEditAsync(int id);
         Task<bool> UpdateAsync(DichVu model);
@@ -61,9 +61,16 @@ namespace do_an_tot_nghiep.Services
             return services;
         }
 
-        public List<string> GetLoaiDichVuList()
+        public List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> GetLoaiDichVuList()
         {
-            return new List<string> { "Tiền điện", "Tiền nước", "Tiền rác", "Wifi", "Gửi xe" };
+            return new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
+            {
+                new() { Value = do_an_tot_nghiep.Models.Enums.ServiceChargeType.FixedPerRoom.ToString(), Text = "Cố định phòng (Wifi, Rác)" },
+                new() { Value = do_an_tot_nghiep.Models.Enums.ServiceChargeType.FixedPerTenant.ToString(), Text = "Theo số người (Bảo vệ)" },
+                new() { Value = do_an_tot_nghiep.Models.Enums.ServiceChargeType.Metered.ToString(), Text = "Theo đồng hồ (Điện, Nước)" },
+                new() { Value = do_an_tot_nghiep.Models.Enums.ServiceChargeType.UsageBased.ToString(), Text = "Theo lượt sử dụng (Máy giặt)" },
+                new() { Value = do_an_tot_nghiep.Models.Enums.ServiceChargeType.Membership.ToString(), Text = "Dịch vụ đăng ký (Gym, Hồ bơi)" }
+            };
         }
 
         public async Task CreateAsync(DichVu model)

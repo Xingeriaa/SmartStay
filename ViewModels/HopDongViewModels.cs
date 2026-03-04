@@ -50,7 +50,8 @@ namespace do_an_tot_nghiep.ViewModels
         [DataType(DataType.Date)]
         public DateTime NgayBatDau { get; set; } = DateTime.Today;
 
-        [Display(Name = "Ngày Kết Thúc (Nếu Có)")]
+        [Required(ErrorMessage = "Ngày kết thúc là bắt buộc theo quy định hợp đồng")]
+        [Display(Name = "Ngày Kết Thúc")]
         [DataType(DataType.Date)]
         public DateTime? NgayKetThuc { get; set; }
 

@@ -18,7 +18,13 @@ namespace do_an_tot_nghiep.Models
 
         [Required(ErrorMessage = "Vui lòng chọn loại dịch vụ")]
         [Column("ChargeType")]
-        public string LoaiDichVu { get; set; } = string.Empty;
+        public Enums.ServiceChargeType LoaiDichVu { get; set; }
+
+        [NotMapped]
+        public string? DonViTinh { get; set; }
+
+        [NotMapped]
+        public string? MoTa { get; set; }
 
         public bool IsActive { get; set; } = true;
         public bool IsDeleted { get; set; } = false;

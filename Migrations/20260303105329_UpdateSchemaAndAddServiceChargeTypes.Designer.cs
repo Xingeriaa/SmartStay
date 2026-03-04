@@ -12,15 +12,14 @@ using do_an_tot_nghiep.Models;
 namespace do_an_tot_nghiep.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260226022147_AddImagesTable")]
-    partial class AddImagesTable
+    [Migration("20260303105329_UpdateSchemaAndAddServiceChargeTypes")]
+    partial class UpdateSchemaAndAddServiceChargeTypes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("dbo")
                 .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -71,7 +70,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Assets", "dbo");
+                    b.ToTable("Assets");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.AssetMaintenanceLog", b =>
@@ -109,7 +108,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("RoomAssetId");
 
-                    b.ToTable("AssetMaintenanceLogs", "dbo");
+                    b.ToTable("AssetMaintenanceLogs");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.AuditLog", b =>
@@ -123,20 +122,24 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EntityId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("EntityName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("IPAddress")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)");
 
                     b.Property<string>("NewValue")
                         .HasColumnType("nvarchar(max)");
@@ -152,7 +155,15 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditLogs", "dbo");
+                    b.HasIndex("CreatedAt")
+                        .IsDescending();
+
+                    b.HasIndex("EntityName", "EntityId");
+
+                    b.HasIndex("UserId", "CreatedAt")
+                        .IsDescending(false, true);
+
+                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.ContractExtension", b =>
@@ -181,7 +192,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContractExtensions", "dbo");
+                    b.ToTable("ContractExtensions");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.ContractService", b =>
@@ -206,7 +217,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContractServices", "dbo");
+                    b.ToTable("ContractServices");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.DichVu", b =>
@@ -217,6 +228,11 @@ namespace do_an_tot_nghiep.Migrations
                         .HasColumnName("ServiceId");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DonViTinh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Unit");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -229,6 +245,11 @@ namespace do_an_tot_nghiep.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ChargeType");
 
+                    b.Property<string>("MoTa")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("Description");
+
                     b.Property<string>("Ten")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -236,7 +257,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Services", "dbo");
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.HopDong", b =>
@@ -301,7 +322,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("PhongTroId");
 
-                    b.ToTable("Contracts", "dbo");
+                    b.ToTable("Contracts");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.HopDongKhachThue", b =>
@@ -329,17 +350,17 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("KhachThueId");
 
-                    b.ToTable("ContractTenants", "dbo");
+                    b.ToTable("ContractTenants");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.Image", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("int")
                         .HasColumnName("ImageId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("AssetId")
                         .HasColumnType("int");
@@ -372,7 +393,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Images", "dbo", t =>
+                    b.ToTable("Images", null, t =>
                         {
                             t.HasCheckConstraint("CK_Images_OnlyOneFK", "([BuildingId] IS NOT NULL AND [RoomId] IS NULL AND [AssetId] IS NULL) OR ([BuildingId] IS NULL AND [RoomId] IS NOT NULL AND [AssetId] IS NULL) OR ([BuildingId] IS NULL AND [RoomId] IS NULL AND [AssetId] IS NOT NULL)");
                         });
@@ -429,7 +450,7 @@ namespace do_an_tot_nghiep.Migrations
                     b.HasIndex("InvoiceCode")
                         .IsUnique();
 
-                    b.ToTable("Invoices", "dbo");
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.InvoiceDetail", b =>
@@ -464,7 +485,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("InvoiceId");
 
-                    b.ToTable("InvoiceDetails", "dbo");
+                    b.ToTable("InvoiceDetails");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.KhachThue", b =>
@@ -524,7 +545,7 @@ namespace do_an_tot_nghiep.Migrations
                     b.HasIndex("SoCCCD")
                         .IsUnique();
 
-                    b.ToTable("Tenants", "dbo");
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.Liquidation", b =>
@@ -568,7 +589,7 @@ namespace do_an_tot_nghiep.Migrations
                     b.HasIndex("ContractId")
                         .IsUnique();
 
-                    b.ToTable("Liquidations", "dbo");
+                    b.ToTable("Liquidations");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.MeterReading", b =>
@@ -628,7 +649,43 @@ namespace do_an_tot_nghiep.Migrations
                     b.HasIndex("RoomId", "MonthYear")
                         .IsUnique();
 
-                    b.ToTable("MeterReadings", "dbo");
+                    b.ToTable("MeterReadings");
+                });
+
+            modelBuilder.Entity("do_an_tot_nghiep.Models.MonthlyServiceUsage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("MonthYear")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("MonthlyServiceUsages");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.NhaTro", b =>
@@ -700,7 +757,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Buildings", "dbo");
+                    b.ToTable("Buildings");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.Notification", b =>
@@ -731,7 +788,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notifications", "dbo");
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.PaymentTransaction", b =>
@@ -774,7 +831,7 @@ namespace do_an_tot_nghiep.Migrations
                     b.HasIndex("TransactionCode")
                         .IsUnique();
 
-                    b.ToTable("PaymentTransactions", "dbo");
+                    b.ToTable("PaymentTransactions");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.PaymentWebhookLog", b =>
@@ -812,7 +869,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentWebhookLogs", "dbo");
+                    b.ToTable("PaymentWebhookLogs");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.PhongTro", b =>
@@ -885,7 +942,7 @@ namespace do_an_tot_nghiep.Migrations
                     b.HasIndex("NhaTroId", "TenPhong")
                         .IsUnique();
 
-                    b.ToTable("Rooms", "dbo");
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.Role", b =>
@@ -908,7 +965,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", "dbo");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.RoomAnalyticsSnapshot", b =>
@@ -959,7 +1016,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("BuildingId");
 
-                    b.ToTable("RoomAnalyticsSnapshots", "dbo");
+                    b.ToTable("RoomAnalyticsSnapshots");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.RoomAsset", b =>
@@ -1013,7 +1070,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoomAssets", "dbo");
+                    b.ToTable("RoomAssets");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.RoomStatusHistory", b =>
@@ -1057,7 +1114,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomStatusHistories", "dbo");
+                    b.ToTable("RoomStatusHistories");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.ServicePriceHistory", b =>
@@ -1078,6 +1135,9 @@ namespace do_an_tot_nghiep.Migrations
                     b.Property<DateTime?>("EffectiveTo")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
@@ -1086,9 +1146,15 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ServiceId");
+                    b.HasIndex("ServiceId", "EffectiveFrom")
+                        .IsUnique();
 
-                    b.ToTable("ServicePriceHistory", "dbo");
+                    b.HasIndex("ServiceId", "IsActive");
+
+                    b.ToTable("ServicePriceHistory", t =>
+                        {
+                            t.HasCheckConstraint("CK_ServicePriceHistory_EffectiveDates", "[EffectiveTo] >= [EffectiveFrom] OR [EffectiveTo] IS NULL");
+                        });
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.SystemConfig", b =>
@@ -1106,7 +1172,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("SystemConfigs", "dbo");
+                    b.ToTable("SystemConfigs");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.TenantBalance", b =>
@@ -1134,7 +1200,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("TenantBalances", "dbo");
+                    b.ToTable("TenantBalances");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.TenantBalanceTransaction", b =>
@@ -1197,7 +1263,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("TenantBalanceTransactions", "dbo");
+                    b.ToTable("TenantBalanceTransactions");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.Ticket", b =>
@@ -1238,7 +1304,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tickets", "dbo");
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.TicketImage", b =>
@@ -1264,7 +1330,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("TicketImages", "dbo");
+                    b.ToTable("TicketImages");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.User", b =>
@@ -1317,7 +1383,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users", "dbo");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.UserPermission", b =>
@@ -1350,7 +1416,7 @@ namespace do_an_tot_nghiep.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserPermissions", "dbo");
+                    b.ToTable("UserPermissions");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.AssetMaintenanceLog", b =>
@@ -1436,6 +1502,25 @@ namespace do_an_tot_nghiep.Migrations
                         .IsRequired();
 
                     b.Navigation("Contract");
+                });
+
+            modelBuilder.Entity("do_an_tot_nghiep.Models.MonthlyServiceUsage", b =>
+                {
+                    b.HasOne("do_an_tot_nghiep.Models.HopDong", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("do_an_tot_nghiep.Models.DichVu", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("do_an_tot_nghiep.Models.PhongTro", b =>

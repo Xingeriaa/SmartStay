@@ -53,6 +53,11 @@ namespace do_an_tot_nghiep.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PhongTro phong)
         {
+            // Remove navigation properties from validation and ensure they are not tracked as new entities
+            ModelState.Remove(nameof(PhongTro.NhaTro));
+            ModelState.Remove(nameof(PhongTro.HopDongs));
+            ModelState.Remove(nameof(PhongTro.ImageFile));
+
             if (!ModelState.IsValid)
             {
                 var data = await _phongTroService.GetCreateDataAsync(phong.NhaTroId);
@@ -94,7 +99,7 @@ namespace do_an_tot_nghiep.Controllers
             if (!result.Success)
             {
                 if (result.ErrorMessage == "Không tìm thấy phòng.") return NotFound();
-                
+
                 ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Cập nhật lỗi.");
                 var data = await _phongTroService.GetEditDataAsync(model.Id);
                 if (data != null)

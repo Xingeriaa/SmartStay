@@ -1,0 +1,41 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,45): error CS0117: 'NhaTro' does not contain a definition for 'TenNha' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,82): error CS0117: 'NhaTro' does not contain a definition for 'DiaChi' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,126): error CS0117: 'NhaTro' does not contain a definition for 'QuanLyId' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,140): error CS0117: 'NhaTro' does not contain a definition for 'LoaiHinh' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,163): error CS0117: 'NhaTro' does not contain a definition for 'SoTang' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(73,95): error CS0117: 'KhachThue' does not contain a definition for 'SoDienThoai' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(73,158): error CS0117: 'KhachThue' does not contain a definition for 'QuocTich' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(73,175): error CS0117: 'KhachThue' does not contain a definition for 'GioiTinh' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(109,33): error CS0117: 'MeterReading' does not contain a definition for 'Status' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(113,33): error CS0117: 'MeterReading' does not contain a definition for 'ElectricityUsageType' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(117,33): error CS0117: 'MeterReading' does not contain a definition for 'WaterUsageType' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\Notifications\Index.cshtml(62,19): warning CS8604: Possible null reference argument for parameter 'source' in 'bool Enumerable.Any<Notification>(IEnumerable<Notification> source)'. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\QuanLyPhong\Details.cshtml(47,39): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\QuanLyPhong\Details.cshtml(64,40): warning CS8602: Dereference of a possibly null reference. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\QuanLyNha\Details.cshtml(136,40): warning CS8602: Dereference of a possibly null reference. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\QuanLyNha\Edit.cshtml(213,44): warning CS8602: Dereference of a possibly null reference. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+
+Build FAILED.
+
+C:\Users\toduc\Downloads\SmartStay\Views\Notifications\Index.cshtml(62,19): warning CS8604: Possible null reference argument for parameter 'source' in 'bool Enumerable.Any<Notification>(IEnumerable<Notification> source)'. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\QuanLyPhong\Details.cshtml(47,39): warning CS8600: Converting null literal or possible null value to non-nullable type. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\QuanLyPhong\Details.cshtml(64,40): warning CS8602: Dereference of a possibly null reference. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\QuanLyNha\Details.cshtml(136,40): warning CS8602: Dereference of a possibly null reference. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Views\QuanLyNha\Edit.cshtml(213,44): warning CS8602: Dereference of a possibly null reference. [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,45): error CS0117: 'NhaTro' does not contain a definition for 'TenNha' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,82): error CS0117: 'NhaTro' does not contain a definition for 'DiaChi' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,126): error CS0117: 'NhaTro' does not contain a definition for 'QuanLyId' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,140): error CS0117: 'NhaTro' does not contain a definition for 'LoaiHinh' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(32,163): error CS0117: 'NhaTro' does not contain a definition for 'SoTang' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(73,95): error CS0117: 'KhachThue' does not contain a definition for 'SoDienThoai' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(73,158): error CS0117: 'KhachThue' does not contain a definition for 'QuocTich' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(73,175): error CS0117: 'KhachThue' does not contain a definition for 'GioiTinh' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(109,33): error CS0117: 'MeterReading' does not contain a definition for 'Status' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(113,33): error CS0117: 'MeterReading' does not contain a definition for 'ElectricityUsageType' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+C:\Users\toduc\Downloads\SmartStay\Controllers\Api\SeedApiController.cs(117,33): error CS0117: 'MeterReading' does not contain a definition for 'WaterUsageType' [C:\Users\toduc\Downloads\SmartStay\do_an_tot_nghiep.csproj]
+    5 Warning(s)
+    11 Error(s)
+
+Time Elapsed 00:00:08.83

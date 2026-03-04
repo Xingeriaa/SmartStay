@@ -225,7 +225,7 @@ namespace do_an_tot_nghiep.Controllers.Api
                         {
                             TenantId = mainTenant.Id,
                             BalanceId = tenantBalance.Id,
-                            TransactionType = "DepositRefund",
+                            TransactionType = "Refund",
                             Amount = refund,
                             BalanceBefore = balanceBefore,
                             BalanceAfter = balanceAfter,
@@ -243,7 +243,7 @@ namespace do_an_tot_nghiep.Controllers.Api
                         {
                             TenantId = mainTenant.Id,
                             BalanceId = tenantBalance.Id,
-                            TransactionType = "LiquidationDebt",
+                            TransactionType = "ManualDeduct",
                             Amount = -addCharge,
                             BalanceBefore = balanceBefore,
                             BalanceAfter = balanceAfter,
@@ -261,7 +261,7 @@ namespace do_an_tot_nghiep.Controllers.Api
                         {
                             TenantId = mainTenant.Id,
                             BalanceId = tenantBalance.Id,
-                            TransactionType = "DepositOffset",
+                            TransactionType = "AutoOffset",
                             Amount = 0,
                             BalanceBefore = balanceBefore,
                             BalanceAfter = balanceAfter,
@@ -295,6 +295,9 @@ namespace do_an_tot_nghiep.Controllers.Api
                     NewValue = $"DaThanhLy | Refund={refund:N0} | AddCharge={addCharge:N0} | Reason={req.Reason}",
                     CreatedAt = now
                 });
+
+                // Cho phép sửa bảng TenantBalances trong transaction này bằng cách vượt qua trigger
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_set_session_context N'AllowBalanceUpdate', 1;");
 
                 await _context.SaveChangesAsync();
                 await tx.CommitAsync();

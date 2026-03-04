@@ -165,10 +165,16 @@ namespace do_an_tot_nghiep.Services
 
         public async Task CreateAsync(PhongTro phong)
         {
+            // Clear navigation properties to prevent EF Core from trying to save them as new entities or conflicting
+            phong.NhaTro = null;
+            phong.HopDongs = new List<HopDong>();
+
             if (string.IsNullOrWhiteSpace(phong.DoiTuong))
             {
                 phong.DoiTuong = "Standard";
             }
+
+            Image? imageEntity = null;
 
             if (phong.ImageFile != null)
             {
@@ -185,10 +191,24 @@ namespace do_an_tot_nghiep.Services
                 await phong.ImageFile.CopyToAsync(stream);
 
                 phong.AnhPhong = "/" + folder + fileName;
+
+                // Create image entity to be saved to DB
+                imageEntity = new Image
+                {
+                    Room = phong,
+                    ImageUrl = phong.AnhPhong,
+                    IsThumbnail = true,
+                    UploadedAt = DateTime.UtcNow
+                };
             }
 
             phong.Status = 1; // Default to Vacant
             _context.PhongTros.Add(phong);
+
+            if (imageEntity != null)
+            {
+                _context.Images.Add(imageEntity);
+            }
 
             // Log initial state
             _context.RoomStatusHistories.Add(new RoomStatusHistory

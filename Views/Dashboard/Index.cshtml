@@ -101,17 +101,17 @@
     </div>
 </div>
 
-<!-- Placeholder Chart UI để Đẹp Mắt / WOW Effect -->
+<!-- Chart UI để Đẹp Mắt / WOW Effect -->
 <div class="row">
     <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
-                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-chart-area"></i> Biểu đồ Dòng Tiền (Cash Flow) theo Chu kỳ</h6>
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-chart-area"></i> Biểu đồ Dòng Tiền (Cash Flow) theo Chu kỳ (6 Tháng)</h6>
             </div>
-            <div class="card-body text-center p-5 bg-light">
-                <i class="fas fa-chart-bar fa-5x text-muted opacity-25 mb-4"></i>
-                <h5 class="text-muted">Tính năng Chart.js Mapping đang đợi Render...</h5>
-                <p class="small text-muted">Dữ liệu hiện tại: Doanh Thu @Model.Revenue.ToString("N0") / Công Nợ @Model.Debt.ToString("N0")</p>
+            <div class="card-body bg-light">
+                <div class="chart-area" style="height: 350px;">
+                    <canvas id="cashFlowChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -141,3 +141,99 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Lấy tháng đang tra cứu để hiển thị chart (hoặc lấy mặc định nếu rỗng)
+            var currentMonthParam = '@ViewBag.CurrentMonth';
+
+            fetch(`/api/dashboard/chart?monthYear=${currentMonthParam}`)
+                .then(response => response.json())
+                .then(data => {
+                    var ctx = document.getElementById("cashFlowChart");
+                    var cashFlowChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels, // ["2023-05", "2023-06", ...]
+                            datasets: [{
+                                label: "Dòng Tiền Thu Về (Revenue)",
+                                backgroundColor: "rgba(28, 200, 138, 0.8)",
+                                hoverBackgroundColor: "rgba(28, 200, 138, 1)",
+                                borderColor: "#1cc88a",
+                                data: data.revenues,
+                            },
+                            {
+                                label: "Công Nợ (Debt)",
+                                backgroundColor: "rgba(231, 74, 59, 0.8)",
+                                hoverBackgroundColor: "rgba(231, 74, 59, 1)",
+                                borderColor: "#e74a3b",
+                                data: data.debts,
+                            }],
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            layout: {
+                                padding: { left: 10, right: 25, top: 25, bottom: 0 }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false
+                                    },
+                                    ticks: { maxTicksLimit: 6 }
+                                },
+                                y: {
+                                    ticks: {
+                                        maxTicksLimit: 5,
+                                        padding: 10,
+                                        callback: function(value, index, values) {
+                                            return value.toLocaleString('vi-VN') + ' đ';
+                                        }
+                                    },
+                                    grid: {
+                                        color: "rgb(234, 236, 244)",
+                                        zeroLineColor: "rgb(234, 236, 244)",
+                                        drawBorder: false,
+                                        borderDash: [2],
+                                        zeroLineBorderDash: [2]
+                                    }
+                                },
+                            },
+                            plugins: {
+                                legend: { display: true, position: 'top' },
+                                tooltip: {
+                                    backgroundColor: "rgb(255,255,255)",
+                                    bodyColor: "#858796",
+                                    titleColor: '#6e707e',
+                                    titleMarginBottom: 10,
+                                    borderColor: '#dddfeb',
+                                    borderWidth: 1,
+                                    xPadding: 15,
+                                    yPadding: 15,
+                                    displayColors: true,
+                                    intersect: false,
+                                    mode: 'index',
+                                    caretPadding: 10,
+                                    callbacks: {
+                                        label: function(context) {
+                                            var label = context.dataset.label || '';
+                                            if (label) { label += ': '; }
+                                            if (context.parsed.y !== null) {
+                                                label += context.parsed.y.toLocaleString('vi-VN') + ' đ';
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error("Error fetching chart data:", error));
+        });
+    </script>
+}

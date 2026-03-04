@@ -1,0 +1,9 @@
+﻿{
+    "message":  "🎉 Bơm dữ liệu giả lập thành công! Hãy Refresh lại Dashboard.",
+    "debug":  {
+                  "rooms_count":  3,
+                  "rooms_occupied":  3,
+                  "tenants_added":  2,
+                  "invoices_added":  1
+              }
+}

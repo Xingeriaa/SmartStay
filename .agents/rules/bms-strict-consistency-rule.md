@@ -2,165 +2,60 @@
 trigger: always_on
 ---
 
-You are working on the BMS (Building Management System).
+I. AGENT SKILL & TOOL PROTOCOL (BẮT BUỘC)
+RULE-01: AI MUST ưu tiên sử dụng các kỹ năng đã được định nghĩa sẵn trong thư mục .agent/skills.
 
-This is a production-grade property management platform with strict financial and RBAC requirements.
+RULE-02: Trước khi thực hiện bất kỳ hành động nào (Query DB, Generate Code, Call API), AI SHALL phân tích danh sách skill hiện có để đảm bảo không "tái phát minh bánh xe".
 
-You MUST follow ALL rules below permanently.
+RULE-03: Nếu một tác vụ có thể được giải quyết bằng Skill, AI MUST gọi Skill đó với đúng tham số kỹ thuật. Cấm tuyệt đối việc viết code thô (hard-coded) cho các tác vụ đã có Skill hỗ trợ.
 
----
+RULE-04: AI MUST tuân thủ các ràng buộc đầu vào/đầu ra của Skill. Nếu dữ liệu người dùng cung cấp thiếu để chạy Skill, AI SHALL yêu cầu bổ sung thay vì tự suy diễn.
 
-## I. ARCHITECTURE AWARENESS
+II. ARCHITECTURE & TECH STACK AWARENESS
+AS-01: Hệ thống là ASP.NET Core MVC + REST API + SQL Server. Code sinh ra MUST tuân thủ Pattern: Controller -> Service -> Repository -> Entity.
 
-The system includes:
+AS-02: RBAC Enforcement: Mọi Action trong Controller MUST có Attribute [Authorize] và check Role/Permission tương ứng (Admin, Staff, Tenant).
 
-- ASP.NET Core MVC Web App
-- REST API backend
-- SQL Server database
-- RBAC permission model
-- Financial ledger integrity
+AS-03: Financial Ledger Integrity: Mọi giao dịch tiền tệ MUST được ghi vào bảng TenantBalanceTransactions (Append-only). Cấm UPDATE trực tiếp cột Balance mà không có log.
 
-NEVER generate code that violates this architecture.
+III. DATA CONSISTENCY & INTEGRITY (CRITICAL)
+DI-01: Snapshot Rule: Khi tạo hóa đơn (Invoice), UnitPrice MUST được copy (Snapshot) từ ContractServices vào InvoiceDetails. Tuyệt đối không được Reference ngược lại bảng Service để tránh sai lệch khi giá dịch vụ thay đổi trong tương lai.
 
----
+DI-02: Meter Reading Safety: Chỉ số mới (NewIndex) MUST >= Chỉ số cũ (OldIndex). Ràng buộc UNIQUE(RoomId, MonthYear, Type) MUST được kiểm tra trước khi Insert.
 
-## II. DATA CONSISTENCY RULES (CRITICAL)
+DI-03: Contract Safety: Tại một thời điểm, một phòng (Unit) chỉ được phép có duy nhất một hợp đồng ở trạng thái Active. Việc gia hạn hợp đồng SHALL tạo bản ghi mới hoặc Update EndDate, không được phép làm sai lệch lịch sử giá cũ.
 
-You MUST always ensure:
+IV. FINANCIAL SAFETY & FORMULA
+FS-01: Công thức tính tiền là bất biến (Immutable):
+TotalAmount = Rent + Services + Electricity + Water + PreviousDebt - CreditBalance
 
-1. Snapshot Integrity
-   - InvoiceDetails.UnitPriceSnapshot MUST come from ContractServices
-   - NEVER read price from Services when generating invoices
+FS-02: Deposit Policy: Tiền cọc (Deposit) là khoản nợ phải trả (Liability), không được tính vào doanh thu (Revenue) cho đến khi hợp đồng thanh lý.
 
-2. Meter Reading Safety
-   - NewElectricityIndex >= OldElectricityIndex
-   - NewWaterIndex >= OldWaterIndex
-   - UNIQUE(RoomId, MonthYear) must be respected
+FS-03: Idempotency: Các tác vụ thanh toán MUST sử dụng Idempotency Key để ngăn chặn tình trạng một hóa đơn bị trừ tiền hai lần do lỗi mạng hoặc Double Click.
 
-3. Contract Safety
-   - One room can have ONLY ONE active contract
-   - Contract extension MUST NOT modify original contract
+V. SECURITY & SOFT DELETE POLICY
+SS-01: Soft Delete: Các bảng nghiệp vụ (Buildings, Rooms, Contracts, Invoices) MUST dùng IsDeleted = 1. AI SHALL thêm filter Where(x => !x.IsDeleted) vào tất cả các câu truy vấn mặc định.
 
-4. Tenant Balance Ledger
-   - ANY change to TenantBalances MUST create TenantBalanceTransactions
-   - NEVER update balance without ledger record
+SS-02: Audit Logs: Mọi thay đổi trạng thái tài chính, thay đổi giá, và thanh lý hợp đồng MUST tạo bản ghi trong AuditLogs kèm theo UserId và Timestamp.
 
----
+SS-03: Anti-Overposting: Luôn sử dụng DTO/ViewModel. MUST NOT binding trực tiếp Entity vào API Parameter để tránh lộ cấu trúc DB hoặc bị cập nhật các cột nhạy cảm (như Balance hoặc Role).
 
-## III. RBAC ENFORCEMENT
+VI. ANALYZING & RESPONSE PROTOCOL
+Khi tiếp nhận yêu cầu từ người dùng (Database schema, Use cases, Workflow), AI MUST thực hiện quy trình 3 bước:
 
-Always respect role scope:
+Cross-check: Kiểm tra sự mâu thuẫn giữa yêu cầu mới và các Rule tài chính/RBAC đã thiết lập.
 
-Admin:
+Conflict Detection: Cảnh báo ngay lập tức nếu yêu cầu vi phạm tính toàn vẹn dữ liệu (VD: Cho phép xóa lịch sử thanh toán).
 
-- system configuration
-- user & permission management
-- audit logs
-- global reports
+Actionable Fix: Đề xuất giải pháp sửa lỗi cụ thể dựa trên kiến trúc hệ thống, không đưa ra lời khuyên chung chung.
 
-Staff:
+Tone of Voice: Serious - Technical - Direct - Strict.
 
-- operational management
-- buildings, rooms, contracts, invoices
-- cannot override financial history
+🔍 RISK SUMMARY (TỔNG KẾT RỦI RO)
+CRITICAL: Vi phạm RULE-01 (Skill Protocol) dẫn đến việc AI hoạt động không đồng nhất với các công cụ tự động hóa đã tích hợp, gây rủi ro sai lệch logic khi triển khai Production.
 
-Tenant:
+CRITICAL: Vi phạm DI-01 (Snapshot Integrity) sẽ làm sai lệch toàn bộ báo cáo tài chính khi giá dịch vụ biến động.
 
-- self-service only
-- own invoices
-- own tickets
-- own profile
+HIGH: Vi phạm SS-01 (Soft Delete) có thể gây mất dữ liệu lịch sử phục vụ công tác thanh tra/audit sau này.
 
-NEVER generate code that bypasses RBAC.
-
----
-
-## IV. SOFT DELETE POLICY
-
-Business tables MUST use soft delete.
-
-Rules:
-
-- Use IsDeleted = 1 instead of physical delete
-- All queries MUST filter IsDeleted = 0
-- NEVER hard delete financial data
-
----
-
-## V. AUDIT LOG REQUIREMENT
-
-The following operations MUST generate AuditLogs:
-
-- contract changes
-- price changes
-- invoice changes
-- payment confirmation
-- liquidation
-
-If missing → you MUST flag it as an error.
-
----
-
-## VI. FINANCIAL SAFETY RULES
-
-Deposit is a LIABILITY, not revenue.
-
-Invoice formula MUST be:
-
-TotalAmount =
-Rent
-
-- Services
-- Electricity
-- Water
-- PreviousDebt
-
-* CreditBalance
-
-Never allow manual override of calculated totals.
-
----
-
-## VII. WHEN ANALYZING USER DATA
-
-When the user provides:
-
-- function list
-- database schema
-- use cases
-- APIs
-- workflows
-
-You MUST:
-
-1. Cross-check relationships
-2. Detect logical conflicts
-3. Detect missing constraints
-4. Detect financial risks
-5. Detect RBAC gaps
-6. Detect data integrity risks
-
-Be strict and precise.
-
-No fluff.
-No generic advice.
-Only actionable findings.
-
----
-
-## VIII. RESPONSE STYLE
-
-Tone must be:
-
-- serious
-- concise
-- technical
-- direct
-
-When issues exist, you MUST:
-
-- name the problem
-- explain the risk
-- propose the exact fix
-
-Always prioritize production safety.
+HIGH: Thiếu Audit Logs đồng nghĩa với việc không thể truy vết khi xảy ra tranh chấp tiền tệ với cư dân.

@@ -411,6 +411,27 @@
         }
       }
     },
+    "/api/dashboard/chart": {
+      "get": {
+        "tags": [
+          "DashboardApi"
+        ],
+        "parameters": [
+          {
+            "name": "monthYear",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/dichvu": {
       "get": {
         "tags": [
@@ -1017,6 +1038,38 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/invoices/generate": {
+      "post": {
+        "tags": [
+          "InvoicesApi"
+        ],
+        "summary": "Tạo hóa đơn tự động từ Hợp đồng + Chỉ số điện nước + Cấu hình dịch vụ (Snapshot)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInvoiceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInvoiceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInvoiceRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -3438,6 +3491,18 @@
         }
       }
     },
+    "/api/seed/generate-mock-dashboard": {
+      "post": {
+        "tags": [
+          "SeedApi"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/system-configs": {
       "get": {
         "tags": [
@@ -4857,8 +4922,15 @@
             "type": "string"
           },
           "loaiDichVu": {
-            "minLength": 1,
-            "type": "string"
+            "$ref": "#/components/schemas/ServiceChargeType"
+          },
+          "donViTinh": {
+            "type": "string",
+            "nullable": true
+          },
+          "moTa": {
+            "type": "string",
+            "nullable": true
           },
           "isActive": {
             "type": "boolean"
@@ -4880,6 +4952,24 @@
               "$ref": "#/components/schemas/ServicePriceHistory"
             },
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenerateInvoiceRequest": {
+        "type": "object",
+        "properties": {
+          "contractId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "monthYear": {
+            "type": "string",
+            "nullable": true
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -5935,6 +6025,17 @@
           }
         },
         "additionalProperties": false
+      },
+      "ServiceChargeType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "ServicePriceHistory": {
         "type": "object",

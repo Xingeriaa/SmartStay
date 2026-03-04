@@ -144,6 +144,11 @@
             Tạo hóa đơn mới (kèm chi tiết).
             </summary>
         </member>
+        <member name="M:do_an_tot_nghiep.Controllers.Api.InvoicesApiController.Generate(do_an_tot_nghiep.Controllers.Api.InvoicesApiController.GenerateInvoiceRequest)">
+            <summary>
+            Tạo hóa đơn tự động từ Hợp đồng + Chỉ số điện nước + Cấu hình dịch vụ (Snapshot)
+            </summary>
+        </member>
         <member name="M:do_an_tot_nghiep.Controllers.Api.InvoicesApiController.UpdateStatus(System.Int32,do_an_tot_nghiep.Controllers.Api.InvoicesApiController.UpdateInvoiceStatusRequest)">
             <summary>
             Cập nhật trạng thái hóa đơn (Unpaid/Paid/Overdue).
@@ -797,28 +802,16 @@
         <member name="M:do_an_tot_nghiep.Migrations.AddRoomAnalyticsSnapshot.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:do_an_tot_nghiep.Migrations.AddImagesTable">
+        <member name="T:do_an_tot_nghiep.Migrations.UpdateSchemaAndAddServiceChargeTypes">
             <inheritdoc />
         </member>
-        <member name="M:do_an_tot_nghiep.Migrations.AddImagesTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:do_an_tot_nghiep.Migrations.UpdateSchemaAndAddServiceChargeTypes.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:do_an_tot_nghiep.Migrations.AddImagesTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:do_an_tot_nghiep.Migrations.UpdateSchemaAndAddServiceChargeTypes.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:do_an_tot_nghiep.Migrations.AddImagesTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:do_an_tot_nghiep.Migrations.AddIsStarredToNotification">
-            <inheritdoc />
-        </member>
-        <member name="M:do_an_tot_nghiep.Migrations.AddIsStarredToNotification.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:do_an_tot_nghiep.Migrations.AddIsStarredToNotification.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:do_an_tot_nghiep.Migrations.AddIsStarredToNotification.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:do_an_tot_nghiep.Migrations.UpdateSchemaAndAddServiceChargeTypes.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="M:do_an_tot_nghiep.Services.IAccountService.RegisterAsync(System.String,System.String,System.String,System.String,System.String)">

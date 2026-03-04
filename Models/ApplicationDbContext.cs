@@ -39,11 +39,21 @@ namespace do_an_tot_nghiep.Models
         public DbSet<AssetMaintenanceLog> AssetMaintenanceLogs { get; set; } = null!;
         public DbSet<Image> Images { get; set; } = null!;
         public DbSet<RoomAnalyticsSnapshot> RoomAnalyticsSnapshots { get; set; } = null!;
+        public DbSet<MonthlyServiceUsage> MonthlyServiceUsages { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema("dbo");
             base.OnModelCreating(modelBuilder);
+
+            // Fix Schema resolution bug, force all tables to dbo schema
+            modelBuilder.HasDefaultSchema("dbo");
+
+            modelBuilder.Entity<DichVu>()
+                .Property(d => d.LoaiDichVu)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => ParseServiceChargeType(v)
+                );
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
@@ -83,9 +93,19 @@ namespace do_an_tot_nghiep.Models
                 .HasIndex(s => new { s.ServiceId, s.IsActive });
 
             modelBuilder.Entity<ServicePriceHistory>()
-                .ToTable(t => t.HasCheckConstraint("CK_ServicePriceHistory_EffectiveDates", "[EffectiveTo] >= [EffectiveFrom] OR [EffectiveTo] IS NULL"));
+                .ToTable(t =>
+                {
+                    t.HasCheckConstraint("CK_ServicePriceHistory_EffectiveDates", "[EffectiveTo] >= [EffectiveFrom] OR [EffectiveTo] IS NULL");
+                    t.HasTrigger("TRG_ServicePriceHistory_NoOverlap");
+                });
 
             // AuditLogs Configurations
+            modelBuilder.Entity<TenantBalance>()
+                .ToTable(t => t.HasTrigger("trg_TenantBalances_BlockDirectUpdate"));
+
+            modelBuilder.Entity<RoomAnalyticsSnapshot>()
+                .ToTable(t => t.HasTrigger("TRG_RoomAnalyticsSnapshots_InsertOnly"));
+
             modelBuilder.Entity<AuditLog>()
                 .HasIndex(a => new { a.EntityName, a.EntityId });
 
@@ -170,6 +190,23 @@ namespace do_an_tot_nghiep.Models
             }
 
             return TrangThaiHopDong.DangHieuLuc;
+        }
+
+        private static do_an_tot_nghiep.Models.Enums.ServiceChargeType ParseServiceChargeType(string v)
+        {
+            if (string.IsNullOrEmpty(v)) return do_an_tot_nghiep.Models.Enums.ServiceChargeType.FixedPerRoom;
+
+            if (Enum.TryParse<do_an_tot_nghiep.Models.Enums.ServiceChargeType>(v, out var result))
+            {
+                return result;
+            }
+
+            // Mappings for legacy database data
+            if (v == "PerUnit") return do_an_tot_nghiep.Models.Enums.ServiceChargeType.Metered;
+            if (v == "Fixed") return do_an_tot_nghiep.Models.Enums.ServiceChargeType.FixedPerRoom;
+            if (v == "Gửi xe") return do_an_tot_nghiep.Models.Enums.ServiceChargeType.UsageBased;
+
+            return do_an_tot_nghiep.Models.Enums.ServiceChargeType.FixedPerRoom;
         }
     }
 }
